@@ -4,5 +4,5 @@ from django.shortcuts import render
 
 # TODO: Sign-in Sheet
 #  please enter you name here, when you can connect gitlab
-#  Haoliang Huang, Chris
+#  Haoliang Huang, Chris (git + pyhcarm)
 
