@@ -40,3 +40,13 @@ class LogOutView(View):
 
     def post(self, request, *args, **kwargs):
         pass
+
+
+class DeleteAccountView(View):
+    template_name = ""  # waiting for html file
+
+    def get(self, request, *args, **kwargs):
+        pass
+
+    def post(self, request, *args, **kwargs):
+        pass
