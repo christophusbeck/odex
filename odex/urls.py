@@ -18,7 +18,7 @@ from django.urls import path, include
 from user.views import AboutUsView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
     path('user/', include('user.urls')),
     path('experiment/', include('experiment.urls')),
     path('aboutus/', AboutUsView.as_view())
