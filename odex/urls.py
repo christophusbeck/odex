@@ -21,5 +21,5 @@ urlpatterns = [
     # path('admin/', admin.site.urls),
     path('', include('user.urls')),
     path('experiment/', include('experiment.urls')),
-    path('aboutus/', AboutUsView.as_view())
+    path('aboutus/', AboutUsView.as_view()),
 ]
