@@ -3,11 +3,20 @@ from django.db import models
 
 # Create your models here.
 
-class UserInfo(models.Model):
-    username = models.CharField(max_length=16, verbose_name="username")
-    password = models.CharField(max_length=64, verbose_name="password")
-    tan = models.IntegerField(verbose_name="TAN")
-    create_time = models.DateTimeField(verbose_name="creating time")
+class User(models.Model):
+    username = models.CharField(verbose_name="user_name", max_length=64)
+    password = models.CharField(verbose_name="password", max_length=64)
 
-    def __str__(self):
-        return self.username
+class SecurityAnswer(models.Model):
+    username = models.CharField(verbose_name="user_name", max_length=64)
+    answer = models.CharField(verbose_name="user_name", max_length=64)
+    id = models.CharField(verbose_name="questionId", max_length=10)
+
+class SecurityQuestion(models.Model):
+    id = models.SmallIntegerField(verbose_name="questionId", max_length=10)
+    question = models.CharField(verbose_name="user_name", max_length=128)
+
+
+class TAN(models.Model):
+    authenticated = models.BooleanField(verbose_name="authenticated", default=0)
+    code = models.CharField(verbose_name="TAN", max_length=128)
