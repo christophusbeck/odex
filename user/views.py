@@ -23,7 +23,8 @@ class RegistrationView(View):
     template_name = ""  # waiting for html file
 
     def get(self, request, *args, **kwargs):
-        pass
+        form = RegisterForm()
+        return render(request, "register.html", {"form": form})
 
     def post(self, request, *args, **kwargs):
         form = RegisterForm()
@@ -71,4 +72,3 @@ class AboutUsView(View):
 
     def post(self, request, *args, **kwargs):
         pass
-
