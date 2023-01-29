@@ -1,0 +1,74 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container">
+        <div style="margin-bottom: 10px" class="clearfix">
+            <a class="btn btn-success" href="/experiment/add/">
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                New Run
+            </a>
+
+            <div style="float: right;width: 300px;">
+                <form method="get">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control" placeholder="Search for..."
+                               value="{{ search_data }}">
+                        <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        </button>
+                      </span>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                Experiments
+            </div>
+
+            <!-- Table -->
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Run name</th>
+                    <th>Database file</th>
+                    <th>Subspaces</th>
+                    <th>Start time</th>
+                    <th>ODM</th>
+                    <th>Duration</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for obj in queryset %}
+                    <tr>
+                        <th>{{ obj.status }}</th>
+                        <td>{{ obj.run_name }}</td>
+                        <td>{{ obj.database_file }}</td>
+                        <td>{{ obj.subspaces }}</td>
+                        <td>{{ obj.start_time }}</td>
+                        <td>{{ obj.odm }}</td>
+                        <td>{{ obj.duration }}</td>
+                        <td>
+                            <a class="btn btn-primary btn-xs" href="/pretty/{{ obj.id }}/edit/">Show details</a>
+                            <a class="btn btn-danger btn-xs" href="/pretty/{{ obj.id }}/delete/">Delete selection</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+        <div class="clearfix">
+            <ul class="pagination">
+                {{ page_string }}
+            </ul>
+
+        </div>
+
+    </div>
+{% endblock %}
