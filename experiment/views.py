@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 
 
@@ -6,7 +6,7 @@ from django.views import View
 
 class MainView(View):
     def get(self, request, *args, **kwargs):
-        pass
+        return render(request, 'main.html')
 
     def post(self, request, *args, **kwargs):
         pass
