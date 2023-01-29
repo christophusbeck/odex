@@ -20,11 +20,11 @@ class BootStrapModelForm(forms.ModelForm):
 
 class LoginForm(BootStrapModelForm):
     class Meta:
-        model = models.UserInfo
+        model = models.Users
         fields = ["username", "password"]
 
 
 class RegisterForm(BootStrapModelForm):
     class Meta:
-        model = models.UserInfo
+        model = models.Users
         fields = ["username", "password", "tan"]
