@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
@@ -6,7 +7,10 @@ from django.db import models
 class Users(models.Model):
     username = models.CharField(verbose_name="user_name", max_length=64)
     password = models.CharField(verbose_name="password", max_length=64)
-    tan = models.IntegerField(verbose_name="TAN")
+    tan = models.IntegerField(
+        verbose_name="TANv",
+        validators=[MaxValueValidator(100000), MinValueValidator(1)]
+    )
 
 
 class SecurityAnswers(models.Model):
@@ -16,7 +20,10 @@ class SecurityAnswers(models.Model):
 
 
 class SecurityQuestions(models.Model):
-    id = models.SmallIntegerField(verbose_name="questionId", max_length=10)
+    id = models.SmallIntegerField(
+        verbose_name="questionId",
+        validators=[MaxValueValidator(10), MinValueValidator(1)]
+    )
     question = models.CharField(verbose_name="user_name", max_length=128)
 
 
