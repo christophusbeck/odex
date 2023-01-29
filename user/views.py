@@ -1,5 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
+
+from user.forms import UserModelForm
 
 
 class LoginView(View):
@@ -9,7 +11,11 @@ class LoginView(View):
         pass
 
     def post(self, request, *args, **kwargs):
-        pass
+        form = UserModelForm()
+        if form.is_valid():
+            form.save()
+            return redirect('/experiment/main/')
+        return render(request, "login.html", {"form": form})
 
 
 class RegistrationView(View):
