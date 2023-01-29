@@ -8,7 +8,8 @@ class LoginView(View):
     template_name = ""  # waiting for html file
 
     def get(self, request, *args, **kwargs):
-        pass
+        form = LoginForm()
+        return render(request, "login.html", {"form": form})
 
     def post(self, request, *args, **kwargs):
         form = LoginForm()
