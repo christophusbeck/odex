@@ -1,3 +1,4 @@
+from django.db import models
 from django.shortcuts import render, redirect
 from django.views import View
 
@@ -14,7 +15,11 @@ class LoginView(View):
     def post(self, request, *args, **kwargs):
         form = LoginForm()
         if form.is_valid():
-            form.save()
+            user_obj = models.Users.objects.filter(**form.cleaned_data).first()
+            if not user_obj:
+                form.add_error("password", "error")
+                return render(request, "login.html", {"form": form})
+            request.session["info"] = {'id': user_obj.id, 'username': user_obj.username}
             return redirect('/experiment/main/')
         return render(request, "login.html", {"form": form})
 
