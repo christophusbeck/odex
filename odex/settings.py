@@ -83,10 +83,10 @@ WSGI_APPLICATION = 'odex.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE'  : 'django.db.backends.mysql',
-        'NAME'    : os.environ.get('MYSQL_DATABASE'),
+        'NAME'    : os.environ.get('MYSQL_DB'),
         'USER'    : os.environ.get('MYSQL_USER'),
-        'PASSWORD': os.environ.get('MYSQL_PASSWORD'),
-        'HOST'    : 'mysql',
+        'PASSWORD': os.environ.get('MYSQL_PASS'),
+        'HOST'    : os.environ.get('MYSQL_HOST'),
         'PORT'    : '3306',
         'CONN_MAX_AGE':60,
     }
