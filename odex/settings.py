@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 """these two lines is patch for MacOS on M1 (ARM, 64-bit)"""
@@ -83,11 +83,12 @@ WSGI_APPLICATION = 'odex.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE'  : 'django.db.backends.mysql',
-        'NAME'    : 'odexdb',
-        'USER'    : 'root',
-        'PASSWORD': 'odex123',
-        'HOST'    : '127.0.0.1',
+        'NAME'    : os.environ.get('MYSQL_DATABASE'),
+        'USER'    : os.environ.get('MYSQL_USER'),
+        'PASSWORD': os.environ.get('MYSQL_PASSWORD'),
+        'HOST'    : 'mysql',
         'PORT'    : '3306',
+        'CONN_MAX_AGE':60,
     }
 }
 
