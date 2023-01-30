@@ -1,7 +1,6 @@
 from django.db import models
 from django.shortcuts import render, redirect
 from django.views import View
-
 from user.forms import LoginForm, RegisterForm
 
 

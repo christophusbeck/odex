@@ -9,16 +9,18 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import sys
 from pathlib import Path
-
-"""these two lines is patch for MacOS on M1 (ARM, 64-bit)"""
+import os
+# these two lines is patch for macOS on M1 (ARM, 64-bit)
 import pymysql
+
 pymysql.install_as_MySQLdb()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Build package paths like this: sys.path.insert(0, os.path.join(BASE_DIR, 'name of package'))
+sys.path.insert(0, os.path.join(BASE_DIR, 'tools'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -30,7 +32,6 @@ SECRET_KEY = 'django-insecure-*$%!hhn8fj@y&f56myyl(+rik+1c*c3x&1g7f2!^$(n^!rr=pe
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -76,21 +77,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'odex.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE'  : 'django.db.backends.mysql',
-        'NAME'    : 'odexdb',
-        'USER'    : 'root',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'odexdb',
+        'USER': 'root',
         'PASSWORD': 'odex123',
-        'HOST'    : '127.0.0.1',
-        'PORT'    : '3306',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -110,7 +109,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -121,7 +119,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
