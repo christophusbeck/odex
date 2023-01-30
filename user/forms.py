@@ -28,7 +28,6 @@ class LoginForm(BootStrapModelForm):
         password = self.cleaned_data.get("password")
         return md5(password)
 
-
 class RegisterForm(BootStrapModelForm):
     class Meta:
         model = models.Users
