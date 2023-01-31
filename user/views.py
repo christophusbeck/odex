@@ -5,33 +5,33 @@ from user.forms import LoginForm, RegisterForm
 
 
 class LoginView(View):
-    template_name = "login.htm"  # waiting for html file
+    template_name = "login.html"  # waiting for html file
 
     def get(self, request, *args, **kwargs):
         form = LoginForm()
-        return render(request, template_name, {"form": form})
+        return render(request, self.template_name, {"form": form})
 
     def post(self, request, *args, **kwargs):
         form = LoginForm()
         if form.is_valid():
             form.save()
             return redirect('/experiment/main/')
-        return render(request, template_name, {"form": form})
+        return render(request, self.template_name, {"form": form})
 
 
 class RegistrationView(View):
-    template_name = "register.html"  # waiting for html file
+    template_name = "self.template_name"  # waiting for html file
 
     def get(self, request, *args, **kwargs):
         form = RegisterForm()
-        return render(request, template_name, {"form": form})
+        return render(request, self.template_name, {"form": form})
 
     def post(self, request, *args, **kwargs):
         form = RegisterForm()
         if form.is_valid():
             form.save()
             return redirect('/login/')
-        return render(request, template_name, {"form": form})
+        return render(request, self.template_name, {"form": form})
 
 
 class ResetPasswordView(View):
