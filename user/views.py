@@ -1,7 +1,10 @@
+from django.http import HttpResponse
+
+from user.models import Users
 from django.shortcuts import render, redirect
 from django.views import View
-
 from user.forms import LoginForm, RegisterForm
+from tools.encrypt import md5
 
 
 class LoginView(View):
@@ -12,9 +15,13 @@ class LoginView(View):
         return render(request, self.template_name, {"form": form})
 
     def post(self, request, *args, **kwargs):
-        form = LoginForm()
+        form = LoginForm(data=request.POST)
         if form.is_valid():
-            form.save()
+            user_obj = Users.objects.filter(**form.cleaned_data).first()
+            if not user_obj:
+                form.add_error("password", "error")
+                return render(request, "login.html", {"form": form})
+            request.session["info"] = {'id': user_obj.id, 'username': user_obj.username}
             return redirect('/experiment/main/')
         return render(request, self.template_name, {"form": form})
 
@@ -72,3 +79,9 @@ class AboutUsView(View):
 
     def post(self, request, *args, **kwargs):
         pass
+
+
+class Test(View):
+    def get(self, request):
+        Users.objects.create(username="tester", password=md5("123"), tan=123)
+        return HttpResponse("successful")
