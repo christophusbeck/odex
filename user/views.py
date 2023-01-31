@@ -1,4 +1,4 @@
-from django.db import models
+from user.models import Users
 from django.shortcuts import render, redirect
 from django.views import View
 from user.forms import LoginForm, RegisterForm
@@ -13,8 +13,9 @@ class LoginView(View):
 
     def post(self, request, *args, **kwargs):
         form = LoginForm()
+
         if form.is_valid():
-            user_obj = models.Users.objects.filter(**form.cleaned_data).first()
+            user_obj = Users.objects.filter(**form.cleaned_data).first()
             if not user_obj:
                 form.add_error("password", "error")
                 return render(request, "login.html", {"form": form})
