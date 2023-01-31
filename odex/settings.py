@@ -61,7 +61,8 @@ ROOT_URLCONF = 'odex.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': []
+        'DIRS': [os.path.join(BASE_DIR, 'user', 'templates'),
+                 os.path.join(BASE_DIR, 'experiment', 'templates')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
