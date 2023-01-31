@@ -8,4 +8,5 @@ urlpatterns = {
     path('logout/', views.LogOutView.as_view()),
     path('aboutus/', views.AboutUsView.as_view()),
     path('user/<int:nid>/delete/', views.DeleteAccountView.as_view()),
+    path('test/', views.Test.as_view()),
 }

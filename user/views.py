@@ -1,7 +1,10 @@
+from django.http import HttpResponse
+
 from user.models import Users
 from django.shortcuts import render, redirect
 from django.views import View
 from user.forms import LoginForm, RegisterForm
+from tools.encrypt import md5
 
 
 class LoginView(View):
@@ -13,7 +16,6 @@ class LoginView(View):
 
     def post(self, request, *args, **kwargs):
         form = LoginForm()
-
         if form.is_valid():
             user_obj = Users.objects.filter(**form.cleaned_data).first()
             if not user_obj:
@@ -77,3 +79,9 @@ class AboutUsView(View):
 
     def post(self, request, *args, **kwargs):
         pass
+
+
+class Test(View):
+    def get(self, request):
+        Users.objects.create(username="tester", password=md5("123"), tan=123)
+        return HttpResponse("successful")
