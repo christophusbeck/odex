@@ -15,7 +15,7 @@ class LoginView(View):
         return render(request, "login.html", {"form": form})
 
     def post(self, request, *args, **kwargs):
-        form = LoginForm()
+        form = LoginForm(data=request.POST)
         if form.is_valid():
             user_obj = Users.objects.filter(**form.cleaned_data).first()
             if not user_obj:
