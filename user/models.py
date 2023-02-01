@@ -5,11 +5,17 @@ from django.db import models
 # Create your models here.
 
 class Users(models.Model):
-    username = models.CharField(verbose_name="username", max_length=6, unique=True)
+    username = models.CharField(
+        verbose_name="username",
+        max_length=6,
+        unique=True,
+        help_text="Please enter within 6 letters"
+    )
     password = models.CharField(verbose_name="password", max_length=64)
     tan = models.IntegerField(
-        verbose_name="TANv",
-        validators=[MaxValueValidator(100000), MinValueValidator(1)]
+        verbose_name="TAN",
+        validators=[MaxValueValidator(100000), MinValueValidator(1)],
+        help_text="Please enter at least 6 characters"
     )
 
 
