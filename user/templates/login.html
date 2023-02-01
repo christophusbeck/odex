@@ -31,13 +31,13 @@
         {% csrf_token %}
         <div class="form-group">
             <label>Username</label>
-            {{ form.Username }}
+            {{ form.username }}
             <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
             <span style="color: red;">{{ form.username.errors.0 }}</span>
         </div>
         <div class="form-group">
             <label>Password</label>
-            {{ form.Password }}
+            {{ form.password }}
             <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
             <span style="color: red;">{{ form.password.errors.0 }}</span>
         </div>
