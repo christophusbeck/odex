@@ -20,7 +20,8 @@ class BootStrapModelForm(forms.ModelForm):
 
 
 class LoginForm(BootStrapModelForm):
-    username = forms.CharField(label="username", max_length=6)
+    username = forms.CharField(label="Username", max_length=6)
+
     class Meta:
         model = models.Users
         fields = ["password"]
@@ -29,9 +30,9 @@ class LoginForm(BootStrapModelForm):
         password = self.cleaned_data.get("password")
         return md5(password)
 
-class RegisterForm(BootStrapModelForm):
 
-    repeat_password = forms.CharField(max_length=100)
+class RegisterForm(BootStrapModelForm):
+    repeat_password = forms.CharField(max_length=10, widget=forms.TextInput(attrs={'placeholder': 'Search'}))
 
     class Meta:
         model = models.Users
@@ -45,5 +46,3 @@ class RegisterForm(BootStrapModelForm):
         else:
             from django.core.exceptions import ValidationError
             raise ValidationError('密码输入不一致')
-
-

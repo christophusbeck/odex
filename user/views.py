@@ -20,7 +20,7 @@ class LoginView(View):
             user_obj = Users.objects.filter(**form.cleaned_data).first()
             if not user_obj:
                 form.add_error("password", "password error")
-                return render(request, "login.html", {"form": form})
+                return render(request, self.template_name, {"form": form})
             request.session["info"] = {'id': user_obj.id, 'username': user_obj.username}
             return redirect('/main/')
         return render(request, self.template_name, {"form": form})
