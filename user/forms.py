@@ -20,7 +20,7 @@ class BootStrapModelForm(forms.ModelForm):
 
 
 class LoginForm(BootStrapModelForm):
-    username = forms.CharField(max_length=6)
+    username = forms.CharField(label="username", max_length=6)
     class Meta:
         model = models.Users
         fields = ["password"]
