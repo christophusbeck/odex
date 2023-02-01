@@ -20,5 +20,5 @@ from user.views import AboutUsView
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('', include('user.urls')),
-    path('experiment/', include('experiment.urls')),
+    path('', include('experiment.urls')),
 ]
