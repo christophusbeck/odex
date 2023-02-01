@@ -27,7 +27,7 @@ class LoginView(View):
 
 
 class RegistrationView(View):
-    template_name = "self.template_name"  # waiting for html file
+    template_name = "register.html"  # waiting for html file
 
     def get(self, request, *args, **kwargs):
         form = RegisterForm()
