@@ -33,9 +33,10 @@
 variables:
   # DJANGO_CONFIG: "test"
   MYSQL_DATABASE: $MYSQL_DB
-  MYSQL_ROOT_PASSWORD: $MYSQL_PASS
   MYSQL_USER: $MYSQL_USER
   MYSQL_PASSWORD: $MYSQL_PASS
+  MYSQL_HOST: $MYSQL_HOST
+  MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASS
 
 default:
   image: ubuntu:20.04
@@ -44,7 +45,7 @@ default:
   # Only needed when using a docker container to run your tests in.
   # Check out: https://docs.gitlab.com/ee/ci/services/index.html
   services:
-    - mysql:8.0
+    - mysql:5.7
   #
   # This folder is cached between builds
   # http://docs.gitlab.com/ee/ci/yaml/README.html#cache
@@ -62,9 +63,9 @@ default:
 migrations:
   stage: build
   script:
+    - python3 manage.py migrate
     - python3 manage.py makemigrations
     # - python3 manage.py makemigrations myapp
-    - python3 manage.py migrate
     - python3 manage.py check
 
 

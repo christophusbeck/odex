@@ -16,13 +16,18 @@ class Users(models.Model):
 class SecurityAnswers(models.Model):
     username = models.CharField(verbose_name="user_name", max_length=64)
     answer = models.CharField(verbose_name="user_name", max_length=64)
-    id = models.CharField(verbose_name="questionId", max_length=10)
+    id = models.CharField(
+        verbose_name="questionId",
+        max_length=10,
+        primary_key=True
+    )
 
 
 class SecurityQuestions(models.Model):
     id = models.SmallIntegerField(
         verbose_name="questionId",
-        validators=[MaxValueValidator(10), MinValueValidator(1)]
+        validators=[MaxValueValidator(10), MinValueValidator(1)],
+        primary_key=True
     )
     question = models.CharField(verbose_name="user_name", max_length=128)
 

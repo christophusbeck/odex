@@ -1,6 +1,7 @@
 from django import forms
-
 from user import models
+# Used to encrypt data
+from tools.encrypt import md5
 
 
 class BootStrapModelForm(forms.ModelForm):
@@ -23,6 +24,9 @@ class LoginForm(BootStrapModelForm):
         model = models.Users
         fields = ["username", "password"]
 
+    def clean_password(self):
+        password = self.cleaned_data.get("password")
+        return md5(password)
 
 class RegisterForm(BootStrapModelForm):
     class Meta:
