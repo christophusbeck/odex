@@ -11,7 +11,11 @@ class Users(models.Model):
         unique=True,
         help_text="Please enter within 6 letters"
     )
-    password = models.CharField(verbose_name="password", max_length=64)
+    password = models.CharField(
+        verbose_name="password",
+        max_length=64,
+        help_text="Please enter at least 6 characters"
+    )
     tan = models.IntegerField(
         verbose_name="TAN",
         validators=[MaxValueValidator(100000), MinValueValidator(1)],

@@ -20,11 +20,20 @@ class BootStrapModelForm(forms.ModelForm):
 
 
 class LoginForm(BootStrapModelForm):
-    username = forms.CharField(label="Username", max_length=6)
+    username = forms.CharField(
+        label="username",
+        max_length=6,
+        help_text="Please enter within 6 letters"
+    )
+    password = forms.CharField(
+        label="password",
+        max_length=64,
+        help_text="Please enter at least 6 characters"
+    )
 
     class Meta:
         model = models.Users
-        fields = ["password"]
+        fields = []
 
     def clean_password(self):
         password = self.cleaned_data.get("password")
