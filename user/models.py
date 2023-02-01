@@ -34,12 +34,7 @@ class SecurityAnswers(models.Model):
 
 
 class SecurityQuestions(models.Model):
-    id = models.SmallIntegerField(
-        verbose_name="questionId",
-        validators=[MaxValueValidator(10), MinValueValidator(1)],
-        primary_key=True
-    )
-    question = models.CharField(verbose_name="username", max_length=128)
+    question = models.CharField(verbose_name="question", max_length=1024)
 
 
 class TANs(models.Model):

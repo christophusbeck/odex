@@ -1,0 +1,81 @@
+[
+  {
+    "model": "user.users",
+    "pk": 1,
+    "fields": {
+        "username": "tester",
+        "password": "7088966d4c03aeb6a66c390ec6462589",
+        "tan": 123
+    }
+  },
+      {
+    "model": "user.SecurityQuestions",
+    "pk": 1,
+    "fields": {
+      "question": "Who was your favorite teacher?"
+    }
+  },
+  {
+    "model": "user.SecurityQuestions",
+    "pk": 2,
+    "fields": {
+      "question": "What's the name of your first pet?"
+    }
+  },
+  {
+    "model": "user.SecurityQuestions",
+    "pk": 3,
+    "fields": {
+      "question": "When is your birthday?"
+    }
+  },
+  {
+    "model": "user.SecurityQuestions",
+    "pk": 4,
+    "fields": {
+      "question": "Where are you born?"
+    }
+  },
+  {
+    "model": "user.SecurityQuestions",
+    "pk": 5,
+    "fields": {
+      "question": "What is your favorite movie?"
+    }
+  },
+  {
+    "model": "user.SecurityQuestions",
+    "pk": 6,
+    "fields": {
+      "question": "What is your mother’s maiden name?"
+    }
+  },
+  {
+    "model": "user.SecurityQuestions",
+    "pk": 7,
+    "fields": {
+      "question": "What primary school/high school did you attend?"
+    }
+  },
+  {
+    "model": "user.SecurityQuestions",
+    "pk": 8,
+    "fields": {
+      "question": "What was the name of the boy or the girl you first kissed?"
+    }
+  },
+  {
+    "model": "user.SecurityQuestions",
+    "pk": 9,
+    "fields": {
+      "question": "Where were you when you had your first kiss?"
+    }
+  },
+  {
+    "model": "user.SecurityQuestions",
+    "pk": 10,
+    "fields": {
+      "question": "What was the first exam you failed?"
+    }
+  }
+]
