@@ -22,7 +22,7 @@ class LoginView(View):
                 form.add_error("password", "password error")
                 return render(request, "login.html", {"form": form})
             request.session["info"] = {'id': user_obj.id, 'username': user_obj.username}
-            return redirect('/experiment/main/')
+            return redirect('/main/')
         return render(request, self.template_name, {"form": form})
 
 
