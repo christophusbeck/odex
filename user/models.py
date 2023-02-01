@@ -5,7 +5,7 @@ from django.db import models
 # Create your models here.
 
 class Users(models.Model):
-    username = models.CharField(verbose_name="username", max_length=64)
+    username = models.CharField(verbose_name="username", max_length=6, unique=True)
     password = models.CharField(verbose_name="password", max_length=64)
     tan = models.IntegerField(
         verbose_name="TANv",
