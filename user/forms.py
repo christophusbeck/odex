@@ -29,6 +29,20 @@ class LoginForm(BootStrapModelForm):
         return md5(password)
 
 class RegisterForm(BootStrapModelForm):
+
+    repeat_password = forms.CharField(max_length=100)
+
     class Meta:
         model = models.Users
         fields = ["username", "password", "tan"]
+
+    def clean(self):
+        v1 = self.cleaned_data['password']
+        v2 = self.cleaned_data['repeat_password']
+        if v1 == v2:
+            pass
+        else:
+            from django.core.exceptions import ValidationError
+            raise ValidationError('密码输入不一致')
+
+
