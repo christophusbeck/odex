@@ -39,10 +39,11 @@
             {{ form.password }}
             <span style="color: red;">{{ form.password.errors.0 }}</span>
         </div>
-        <div>
-            <span class="btn btn-primary btn-xs" href="/register.html/">Create Accout</span>
-            <span class="btn btn-primary btn-xs" href="/restorepassword/">Forgot password</span>
-        </div>
+
+        <button value="Create Account" onclick="window.location.href='register.html'">Create Account </button>>
+
+        <button value="Forget Password" onclick="window.location.href='.'"> Forget Password </button>>
+
         <div><input type="submit" value="Log in" class="btn btn-primary"></div>
 
     </form>
