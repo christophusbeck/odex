@@ -1,0 +1,97 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+
+    <h1 align="center">Statistics: {{ queryset.execution_title }}</h1>
+    <h1 align="center"><b>(Finished)</b></h1>
+
+    <br>
+    <h3>Selected Database: <br>{{ queryset.name_database }} </h3>
+    <h3>Detected subspaces: {% queryset.amount_subspaces %}</h3>
+    <br>
+
+    <table class="table table-bordered" align="center" border="1">
+        <thead>
+        <tr>
+            <th>Subspaces on *.csv</th>
+            <th>Indexing</th>
+        </tr>
+        </thead>
+        <tbody>
+        <br>
+        {% for obj in queryset %}
+            <tr>
+                <th>{{ obj.parameter_name }}</th>
+                <td>x{{ obj.index }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <br>
+
+    <h3>Configuration:</h3>
+    <table class="table table-bordered" border="1">
+        <thead>
+        <tr>
+            <th>parameter</th>
+            <th>Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <br>
+        {% for obj in queryset %}
+            <tr>
+                <th>{{ obj.parameter_name }}</th>
+                <td>{{ obj.value }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+
+    <h3>Detected outliers: {{ queryset.amount_outlier }}</h3>
+
+    <button type="button" name="download"> Download detected outliers as *.csv file</button>
+
+    {% if queryset.withGrundTruthFile == true %}
+        <h3>Performance based on ground truth file:</h3>
+        <table class="table table-bordered" border="1">
+            <thead>
+            <tr>
+                <th>metric</th>
+                <th>result</th>
+            </tr>
+            </thead>
+            <tbody>
+            <br>
+            {% for obj in queryset %}
+                <tr>
+                    <th>{{ obj.metric }}</th>
+                    <td>{{ obj.result }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <button type="button" name="download_with_additional_data"> Download detected outliers as *.csv file</button>
+        <br>
+
+        <h3>ROC curve:</h3>
+{#        queryset send the path of ROC as parameter#}
+        <img src="">
+    {% endif %}
+
+
+    {% if queryset.withaddtionalData == true %}
+        <h3>Detected outliers after mering with generated data: {{ queryset.amount_mering }}</h3>
+
+    {% endif %}
+
+
+    <br>
+    <br>
+    <button type="button" style="float: right" name="return"> Return</button>
+{% endblock %}

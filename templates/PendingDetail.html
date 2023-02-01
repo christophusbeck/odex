@@ -1,0 +1,56 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+
+    <h1 align="center">Statistics: {{ queryset.execution_title }}</h1>
+    <h1 align="center"><b>(Unfinished)</b></h1>
+
+    <br>
+    <h3>Selected Database: <br>{{ queryset.name_database }} </h3>
+    <h3>Detected subspaces: {% queryset.amount_subspaces %}</h3>
+    <br>
+
+    <table class="table table-bordered" align="center" border="1">
+        <thead>
+        <tr>
+            <th>Subspaces on *.csv</th>
+            <th>Indexing</th>
+        </tr>
+        </thead>
+        <tbody>
+        <br>
+        {% for obj in queryset %}
+            <tr>
+                <th>{{ obj.parameter_name }}</th>
+                <td>x{{ obj.index }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <br>
+
+    <h3>Configuration:</h3>
+    <table class="table table-bordered" border="1">
+        <thead>
+        <tr>
+            <th>parameter</th>
+            <th>Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <br>
+        {% for obj in queryset %}
+            <tr>
+                <th>{{ obj.parameter_name }}</th>
+                <td>{{ obj.value }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+    <br>
+    <button type="button" style="float: right" name="return"> Return </button>
+{% endblock %}

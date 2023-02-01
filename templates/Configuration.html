@@ -1,10 +1,101 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>New Runs:</title>
-</head>
-<body>
+{% extends 'layout.html' %}
 
-</body>
-</html>
+{% block content %}
+    <h1 align="center">New Run:</h1>
+    <br>
+    Run title: {{ queryset.execution_title }}
+    <br>
+    Detected subspaces: {% queryset.amount_subspaces %}
+    <br>
+    <table class="table table-bordered" align="center" border="1">
+        <thead>
+        <tr>
+            <th>Subspaces on *.csv</th>
+            <th>Indexing</th>
+        </tr>
+        </thead>
+        <tbody>
+        <br>
+        {% for obj in queryset %}
+            <tr>
+                <th>{{ obj.parameter_name }}</th>
+                <td>x{{ obj.index }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+
+    <form action="#">
+        <br>
+        <label>
+            <input type="radio" name="subspaces" value="1" checked>All subspaces</label>
+        <br>
+        <label>
+            <input type="radio" name="subspaces" value="2">All, except: </label>
+        <input type="text">
+        <br>
+        <label>
+            <input type="radio" name="subspaces" value="3">Combination: </label>
+        <input type="text">
+        <br>
+        <br>
+        Select Outlier Detection Method:<br>
+        <select id="odms" onclick="loadParameter()">
+            {#            static load some odms#}
+            <option value="0">1</option>
+            <option value="1">2</option>
+            <option value="2">3</option>
+            <option value="3">4</option>
+        </select>
+
+{#        static load of this parameters#}
+        <script type="text/javascript">
+            function loadParameter() {
+                choosen = document.getElementById('odms').value
+            {#    #}
+            }
+        </script>
+
+
+
+        Parameters:
+        <table class="table table-bordered" align="center" border="1">
+            <thead>
+            <tr>
+                <th>parameters</th>
+                <th>values</th>
+            </tr>
+            </thead>
+            <tbody>
+            {#        according to selection load different parameters of this odm#}
+            </tbody>
+        </table>
+
+        <label>
+            <input type="radio" name="run_model" value="1"> Outlier detection only </label>
+        <br>
+        <label>
+            <input type="radio" name="run_model" value="2"> Compare to ground truth file </label>
+        <button class="uploadGrundTruth" onclick="upload.click()">
+            <input type="file" name="uploadGrundTruth" id="1" style="display: none;"/> Browser
+        </button>
+        <br>
+        <input type="checkbox" name="run_again" value="1"> Run again with additional data
+        <button class="addtional" onclick="upload.click()">
+            <input type="file" name="addtional" id="1" style="display: none;"/> Browser
+        </button>
+        <br>
+    </form>
+
+
+    <button class="cancel" onclick="upload.click()">
+        <input type="button" name="cancel" id="2" style="display: none;"/> Cancel
+    </button>
+
+
+    <button class="btn btn-theme" onclick="upload.click()">
+        <input type="submit" name="submit" id="3" style="display: none;"/> Add run to queue
+    </button>
+
+{% endblock %}
