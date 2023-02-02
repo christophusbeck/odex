@@ -107,3 +107,32 @@ class AboutUs(View):
     def get(self, request, *args, **kwargs):
         form = CreateForm()
         return render(request, self.template_name, {"form": form})
+
+
+class FinishedDetailView(View):
+    template_name = "FinishedDetail.html"
+    def get(self, request, *args, **kwargs):
+        form = CreateForm()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        form = CreateForm()
+        if form.is_valid():
+            form.save()
+            return redirect('/main/')
+        return render(request, self.template_name, {"form": form})
+
+
+class PendingDeatilView(View):
+    template_name = "PendingDetail.html"
+
+    def get(self, request, *args, **kwargs):
+        form = CreateForm()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        form = CreateForm()
+        if form.is_valid():
+            form.save()
+            return redirect('/main/')
+        return render(request, self.template_name, {"form": form})
