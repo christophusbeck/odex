@@ -67,7 +67,7 @@
         </div>
 
         <div>
-            <input type="submit" value="Create Account" class="btn btn-primary">
+            <input type="submit" id="create" value="Create Account" class="btn btn-primary">
 
             <a href="/login/">
                 <button type="button" value="Cancel" class="btn btn-primary">Cancel</button>
@@ -90,13 +90,15 @@
                         if (data.flag) {
                             $('#notice').html("<span class='help-block'>Username already exists</span>");
                             $(function () {
-                                $('#username_form').last().addClass("has-error has-feedback")
-                            })
+                                $('#username_form').last().addClass("has-error has-feedback");
+                            });
+                            $("#create").attr("disabled", "disabled");
                         } else {
                             $('#notice').html('');
                             $(function () {
-                                $('#username_form').removeClass("has-error has-feedback")
-                            })
+                                $('#username_form').removeClass("has-error has-feedback");
+                            });
+                            $("#create").removeAttr("disabled");
                         }
                     }
                 });

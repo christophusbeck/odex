@@ -8,7 +8,7 @@ from tools.encrypt import md5
 
 
 class LoginView(View):
-    template_name = "login.html"  # waiting for html file
+    template_name = "login.html"
 
     def get(self, request, *args, **kwargs):
         form = LoginForm()
@@ -27,7 +27,7 @@ class LoginView(View):
 
 
 class RegistrationView(View):
-    template_name = "register.html"  # waiting for html file
+    template_name = "register.html"
 
     def get(self, request, *args, **kwargs):
         form = RegisterForm()
