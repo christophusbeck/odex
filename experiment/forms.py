@@ -16,9 +16,7 @@ class BootStrapModelForm(forms.ModelForm):
                 }
 
 
-'''
 class CreateForm(BootStrapModelForm):
     class Meta:
         model = models.Experiments
         fields = ["run_name"]
-        '''
