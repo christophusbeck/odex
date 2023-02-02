@@ -51,3 +51,7 @@ class RegisterForm(BootStrapModelForm):
         else:
             from django.core.exceptions import ValidationError
             raise ValidationError('密码输入不一致')
+
+    def clean_password(self):
+        password = self.cleaned_data.get("password")
+        return md5(password)
