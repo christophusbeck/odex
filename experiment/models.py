@@ -72,7 +72,7 @@ class Hyperparameters:
 
 
 class Results:
-    experiment_id = models.IntegerField(verbose_name="experiment id")
+    experiment_id = models.ForeignKey(Experiments, on_delete=models.CASCADE)
     start_time = models.TimeField(verbose_name="start time", auto_now=False, auto_now_add=True)
     duration = models.IntegerField(verbose_name="experiment id")
 

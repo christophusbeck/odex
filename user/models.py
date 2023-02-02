@@ -24,7 +24,7 @@ class Users(models.Model):
 
 
 class SecurityAnswers(models.Model):
-    username = models.CharField(verbose_name="username", max_length=64)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
     answer = models.CharField(verbose_name="username", max_length=64)
     id = models.CharField(
         verbose_name="questionId",
