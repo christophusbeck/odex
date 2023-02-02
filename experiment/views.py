@@ -98,3 +98,12 @@ class Configuration(View):
             form.save()
             return redirect('/main/')
         return render(request, self.template_name, {"form": form})
+
+
+
+
+class AboutUs(View):
+    template_name = "aboutus.html"
+    def get(self, request, *args, **kwargs):
+        form = CreateForm()
+        return render(request, self.template_name, {"form": form})

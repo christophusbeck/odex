@@ -62,23 +62,35 @@ class ResetPasswordView(View):
 
 
 class LogOutView(View):
-    template_name = ""  # waiting for html file
+    template_name = "login.html"  # waiting for html file
 
     def get(self, request, *args, **kwargs):
-        pass
+        form = RegisterForm()
+        return render(request, self.template_name, {"form": form})
 
     def post(self, request, *args, **kwargs):
-        pass
+        form = RegisterForm()
+        if form.is_valid():
+            form.save()
+            return redirect('/login/')
+        return render(request, self.template_name, {"form": form})
 
 
 class DeleteAccountView(View):
-    template_name = ""  # waiting for html file
+    template_name = "login.html"  # waiting for html file
 
+    # still need to handle with deleting
     def get(self, request, *args, **kwargs):
-        pass
+        form = RegisterForm()
+        return render(request, self.template_name, {"form": form})
 
     def post(self, request, *args, **kwargs):
-        pass
+        def post(self, request, *args, **kwargs):
+            form = RegisterForm()
+            if form.is_valid():
+                form.save()
+                return redirect('/login/')
+            return render(request, self.template_name, {"form": form})
 
 
 class AboutUsView(View):
