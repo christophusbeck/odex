@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views import View
 
-from experiment.forms import CreateForm
+#from experiment.forms import CreateForm
 from experiment import models
 
 
@@ -76,14 +76,16 @@ class MainView(View):
 
     def get(self, request, *args, **kwargs):
         queryset = models.Experiments.objects.all()
-        form = CreateForm()
+        #form = CreateForm()
         return render(request, self.template_name, {"queryset": queryset, "form": form})
 
     def post(self, request, *args, **kwargs):
+        '''
         form = CreateForm()
         if form.is_valid():
             form.save()
             return redirect('/main/')
+        '''
         return render(request, self.template_name, {"form": form})
 
 

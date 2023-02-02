@@ -1,11 +1,19 @@
 [
   {
+    "model": "user.tans",
+    "pk": 1,
+    "fields": {
+      "authenticated": 0,
+      "tan": 123
+    }
+  },
+  {
     "model": "user.users",
     "pk": 1,
     "fields": {
         "username": "tester",
         "password": "7088966d4c03aeb6a66c390ec6462589",
-        "tan": 123
+        "tan_id": 1
     }
   },
   {
@@ -16,10 +24,20 @@
         "run_name": "test run",
         "file_name": "test file",
         "state": "finished",
-        "columns": ["x1", "x2"],
         "odm": "text odm",
         "operation": "xi and x2",
-        "auxiliary_file": "test aux_file"
+        "auxiliary_file_name": "test aux_file",
+        "columns": "[\"x1\", \"x2\"]"
+    }
+  },
+  {
+    "model": "experiment.finishedexperiments",
+    "pk": 1,
+    "fields": {
+        "experiments_ptr_id": 1,
+        "result_path": "./test.csv",
+        "start_time": "00:00:00",
+        "duration": 100
     }
   },
   {
