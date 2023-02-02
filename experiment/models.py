@@ -21,8 +21,10 @@ class Experiment_state(models.TextChoices):
     failed = 'failed', _('failed')
 
 class Pyod_methods(models.TextChoices):
-    abod = 'ABOD', _('Angle-based Outlier Detector')
-    knn = 'KNN', _('k-Nearest Neighbors Detector')
+    detection_name  = models.CharField(verbose_name = "detection name", max_length=128)
+    contamination = models.FloatField(verbose_name = "contamination")
+    n_neighbors = models.IntegerField(verbose_name="neighbors")
+    method = models.CharField(verbose_name="experiment name", max_length=128)
 
 
 class Experiments(models.Model):
