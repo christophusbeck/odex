@@ -8,7 +8,21 @@
         "tan": 123
     }
   },
-      {
+  {
+    "model": "experiment.experiments",
+    "pk": 1,
+    "fields": {
+        "user_id": 1,
+        "run_name": "test run",
+        "file_name": "test file",
+        "state": "finished",
+        "columns": ["x1", "x2"],
+        "odm": "text odm",
+        "operation": "xi and x2",
+        "auxiliary_file": "test aux_file"
+    }
+  },
+  {
     "model": "user.SecurityQuestions",
     "pk": 1,
     "fields": {

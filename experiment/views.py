@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 
 from experiment.forms import CreateForm
+from experiment import models
 
 
 # Create your views here.
@@ -74,8 +75,9 @@ class MainView(View):
     template_name = "main.html"  # waiting for html file
 
     def get(self, request, *args, **kwargs):
+        queryset = models.Experiments.objects.all()
         form = CreateForm()
-        return render(request, self.template_name, {"form": form})
+        return render(request, self.template_name, {"queryset": queryset, "form": form})
 
     def post(self, request, *args, **kwargs):
         form = CreateForm()

@@ -19,4 +19,4 @@ class BootStrapModelForm(forms.ModelForm):
 class CreateForm(BootStrapModelForm):
     class Meta:
         model = models.Experiments
-        fields = ["experiment_name"]
+        fields = ["run_name"]
