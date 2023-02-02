@@ -36,7 +36,8 @@ class LoginForm(BootStrapModelForm):
 
 
 class RegisterForm(BootStrapModelForm):
-    repeat_password = forms.CharField(label="Please repeat password", max_length=10, widget=forms.TextInput(attrs={'placeholder': 'Search'}))
+    repeat_password = forms.CharField(label="Please repeat password", max_length=10)
+    security_answer = forms.CharField(label="Please enter your answer", max_length=1024)
 
     class Meta:
         model = models.Users

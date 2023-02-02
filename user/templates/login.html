@@ -33,13 +33,13 @@
             <label>Username</label>
             {{ form.username }}
             <small>{{ form.username.help_text }}</small>
-            <span style="color: red;">{{ form.username.errors.0 }}</span>
+            <div style="color: red;">{{ form.username.errors.0 }}</div>
         </div>
         <div class="form-group">
             <label>Password</label>
             {{ form.password }}
             <small>{{ form.password.help_text }}</small>
-            <span style="color: red;">{{ form.password.errors.0 }}</span>
+            <div  style="color: red;">{{ form.password.errors.0 }}</div>
         </div>
 
         <a href="/register/">
