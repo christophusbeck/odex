@@ -49,10 +49,33 @@
             <button type="button" value="Forget password">Forget password</button>
         </a>
 
-        <div><input type="submit" value="Log in" class="btn btn-primary"></div>
+        <div><input id="btnLogin" type="submit" value="Log in" class="btn btn-primary"></div>
 
     </form>
 </div>
 
+<script type="text/javascript">
+    $(function () {
+        bindBtnLoginEvent()
+    })
+
+    function bindBtnLoginEvent() {
+        $("#btnLogin").click(function () {
+            $.ajax({
+                url: 'login/',
+                type: "post",
+                data: {
+                    username: $("#txtUsername").val(),
+                    password: $("#txtPassword").val()
+                },
+                datatype: "JSON",
+                success: function (res) {
+                    window.location.href = "/main/";
+                }
+            })
+        })
+    }
+</script>
 </body>
 </html>
+
