@@ -49,7 +49,7 @@ class FinishedExperiment(Experiments):
 
 
 class OutlierDetectionMethods:
-    all_names_of_pyod_method = string
+    #all_names_of_pyod_method = string
 
     def __str__(self):
         return "ab"

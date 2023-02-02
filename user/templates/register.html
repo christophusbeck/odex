@@ -30,7 +30,7 @@
     <form method="post" novalidate autocomplete="off">
         {% csrf_token %}
         <div class="form-group" id="username_form">
-            <label>Username</label>
+            <label class="control-label">Username</label>
             {{ form.username }}
             <span id="notice"></span>
         </div>
