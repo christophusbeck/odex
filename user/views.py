@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 from user.models import Users
 from django.shortcuts import render, redirect
@@ -39,6 +39,16 @@ class RegistrationView(View):
             form.save()
             return redirect('/login/')
         return render(request, self.template_name, {"form": form})
+
+
+class CheckUsername(View):
+    def get(self, request, *args, **kwargs):
+        username = request.GET.get('username', None)
+        check = {
+            'flag': Users.objects.filter(username__iexact=username).exists()
+        }
+        print(check)
+        return JsonResponse(check)
 
 
 class ResetPasswordView(View):

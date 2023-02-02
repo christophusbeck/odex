@@ -27,20 +27,66 @@
 <body>
 <div class="account">
     <h2>odex</h2>
-    <form method="post" novalidate>
+    <form method="post" novalidate autocomplete="off">
         {% csrf_token %}
-        {% for field in form %}
-            <div class="form-group">
-                <label>{{ field.label }}</label>
-                {{ field }}
-                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-                <span style="color: red;">{{ field.errors.0 }}</span>
-            </div>
-        {% endfor %}
+        <div class="form-group" id="username_form">
+            <label>Username</label>
+            {{ form.username }}
+            <span id="notice"></span>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            {{ form.password }}
+        </div>
+        <div class="form-group">
+            <label>Repeat password</label>
+            {{ form.repeat_password }}
+        </div>
+        <div class="form-group">
+            <label>Security question</label>
+            {{ form.security_question }}
+        </div>
+        <div class="form-group">
+            <label>Security answer</label>
+            {{ form.security_answer }}
+        </div>
+        <div class="form-group">
+            <label>TAN</label>
+            {{ form.TAN }}
+        </div>
 
         <div><input type="submit" value="Create Account" class="btn btn-primary"></div>
 
     </form>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#id_username').on('change', function(){
+                const username = $(this).val();
+                $.ajax({
+                    url: "{% url 'check_username' %}",
+                    data: {
+                        'username': username
+                    },
+                    dataType: 'json',
+                    success: function(data){
+                        if (data.flag){
+                            $('#notice').html("<span class='help-block'>Username already exists</span>");
+                            $(function (){
+                                $('#username_form').last().addClass("has-error has-feedback")
+                            })
+                        }else{
+                            $('#notice').html('');
+                            $(function (){
+                                $('#username_form').removeClass("has-error has-feedback")
+                            })
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
 </div>
 
 </body>
