@@ -25,15 +25,10 @@ class LoginForm(BootStrapModelForm):
         max_length=6,
         help_text="Please enter within 6 letters"
     )
-    password = forms.CharField(
-        label="password",
-        max_length=64,
-        help_text="Please enter at least 6 characters"
-    )
 
     class Meta:
         model = models.Users
-        fields = []
+        fields = ["password"]
 
     def clean_password(self):
         password = self.cleaned_data.get("password")
@@ -41,7 +36,7 @@ class LoginForm(BootStrapModelForm):
 
 
 class RegisterForm(BootStrapModelForm):
-    repeat_password = forms.CharField(max_length=10, widget=forms.TextInput(attrs={'placeholder': 'Search'}))
+    repeat_password = forms.CharField(label="Please repeat password", max_length=10, widget=forms.TextInput(attrs={'placeholder': 'Search'}))
 
     class Meta:
         model = models.Users
