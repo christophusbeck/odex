@@ -50,7 +50,7 @@
         <div class="form-group">
             <label>Security Question</label>
             <select name="Security Question">
-                {% for obj in queryset %}
+                {% for obj in form %}
                     <option value={{ obj.id }}>{{ obj.question }}</option>
                 {% endfor %}
             </select>
