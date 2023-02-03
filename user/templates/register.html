@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1/css/bootstrap.min.css' %}">
     <style>
         .account {
-            width: 400px;
+            width: 450px;
             border: 1px solid #dddddd;
             border-radius: 5px;
             box-shadow: 5px 5px 20px #aaa;
@@ -26,43 +26,47 @@
 </head>
 <body>
 <div class="account">
-    <h2>odex</h2>
+    <h2>Odex</h2>
     <form method="post" novalidate autocomplete="off">
         {% csrf_token %}
         <div class="form-group" id="username_form">
             <label class="control-label">Username</label>
             {{ form.username }}
-            <small>{{ form.username.help_text }}</small>
+            <br><small>{{ form.username.help_text }}</small>
             <span id="notice"></span>
         </div>
         <div class="form-group">
             <label>Password</label>
             {{ form.password }}
-            <small>{{ form.password.help_text }}</small>
+            <br><small>{{ form.password.help_text }}</small>
             <div style="color: red;">{{ form.password.errors.0 }}</div>
         </div>
         <div class="form-group">
             <label>Repeat password</label>
             {{ form.repeat_password }}
-            <small>{{ form.repeat_password.help_text }}</small>
+            <br><small>{{ form.repeat_password.help_text }}</small>
             <div style="color: red;">{{ form.repeat_password.errors.0 }}{{ form.non_field_errors.0 }}</div>
         </div>
         <div class="form-group">
-            <label>Security question</label>
-            {{ form.question }}
-            <small>{{ form.question.help_text }}</small>
+            <label>Security Question</label>
+            <select name="Security Question">
+                {% for obj in queryset %}
+                    <option value={{ obj.id }}>{{ obj.question }}</option>
+                {% endfor %}
+            </select>
+            <br><small>{{ form.question.help_text }}</small>
             <div style="color: red;">{{ form.question.errors.0 }}</div>
         </div>
         <div class="form-group">
             <label>Security answer</label>
             {{ form.security_answer }}
-            <small>{{ form.security_answer.help_text }}</small>
+            <br><small>{{ form.security_answer.help_text }}</small>
             <div style="color: red;">{{ form.security_answer.errors.0 }}</div>
         </div>
         <div class="form-group">
             <label>TAN</label>
             {{ form.tan }}
-            <small>{{ form.tan.help_text }}</small>
+            <br><small>{{ form.tan.help_text }}</small>
             <div style="color: red;">{{ form.tan.errors.0 }}</div>
         </div>
 
