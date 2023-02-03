@@ -31,23 +31,17 @@ class RegistrationView(View):
     template_name = "register.html"
 
     def get(self, request, *args, **kwargs):
-        context = {
-            "form": RegisterForm(),
-            "question_form": QuestionForm()
-        }
-        return render(request, self.template_name, context)
+        form = RegisterForm()
+        return render(request, self.template_name, {"form": form})
 
     def post(self, request, *args, **kwargs):
         form = RegisterForm(data=request.POST)
-        question_form = QuestionForm(data=request.POST)
-        context = {
-            "form": RegisterForm(),
-            "question_form": QuestionForm()
-        }
         if form.is_valid():
-            form.save()
+            print(form.cleaned_data)
+            # form.save()
             return redirect('/login/')
-        return render(request, self.template_name, context)
+        print("falied")
+        return render(request, self.template_name, {"form": form})
 
 
 
@@ -60,7 +54,6 @@ class CheckUsername(View):
         check = {
             'flag': Users.objects.filter(username__iexact=username).exists()
         }
-        print(check)
         return JsonResponse(check)
 
 

@@ -41,22 +41,48 @@ class QuestionForm(BootStrapModelForm):
         fields = ["question"]
 
 
-class RegisterForm(BootStrapModelForm):
-    repeat_password = forms.CharField(label="Please repeat password", max_length=1)
-    security_answer = forms.CharField(label="Please enter your answer", max_length=1024)
+class RegisterForm(forms.Form):
+    repeat_password = forms.CharField(
+        label="Please repeat password",
+        max_length=64,
+        help_text="Please repeat passwords")
+    security_answer = forms.CharField(
+        label="Please enter your answer",
+        max_length=1024,
+        help_text="Please enter your answer"
+    )
+    username = forms.CharField(
+        label="username",
+        max_length=6,
+        help_text="Please enter within 6 letters"
+    )
+    password = forms.CharField(
+        label="password",
+        max_length=64,
+        help_text="Please enter at least 6 characters"
+    )
+    tan = forms.IntegerField(
+        label="TAN",
+        help_text="Please enter 3 characters"
+    )
+    question = forms.CharField(
+        label="Question",
+        max_length=64,
+        help_text="Please select your question"
+    )
 
-    class Meta:
-        model = models.Users
-        fields = ["username", "password", "tan"]
 
     def clean(self):
-        v1 = self.cleaned_data['password']
-        v2 = self.cleaned_data['repeat_password']
+        v1 = self.cleaned_data.get('password')
+        v2 = self.cleaned_data.get('repeat_password')
         if v1 == v2:
             pass
         else:
             from django.core.exceptions import ValidationError
-            raise ValidationError('密码输入不一致')
+            raise ValidationError('Inconsistent password input')
+
+    def clean_repeat_password(self):
+        return md5(self.cleaned_data.get("repeat_password"))
 
     def clean_password(self):
         password = self.cleaned_data.get("password")
