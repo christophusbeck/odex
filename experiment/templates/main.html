@@ -82,18 +82,20 @@
                     <h4 class="modal-title" id="myModalLabel">New Run</h4>
                 </div>
                 <div class="modal-body">
-
-                    <form id="formAdd">
+                    <form id="formAdd" enctype="multipart/form-data">
                         <div class="clearfix">
-                            {% for field in form %}
-                                <div class="col-xs-6">
-                                    <div class="form-group" style="position: relative;margin-bottom: 20px;">
-                                        <label>{{ field.label }}</label>
-                                        {{ field }}
-                                        <span class="error-msg" style="color: red;position: absolute;"></span>
-                                    </div>
+                            <div class="col-xs-6">
+                                <div class="form-group" style="position: relative;margin-bottom: 25px;">
+                                    <label>Run Name</label>
+                                    {{ form.run_name }}
+                                    <small>{{ form.username.help_text }}</small>
+                                    <div style="color: red;">{{ form.password.errors.0 }}</div>
                                 </div>
-                            {% endfor %}
+                            </div>
+                        </div>
+                        <div>
+                            <label>Select Database</label>
+                            <input type="file" id="File" name="File">
                         </div>
                     </form>
 
@@ -121,6 +123,7 @@
         </div>
     </div>
 
+
 {% endblock %}
 
 
@@ -133,7 +136,12 @@
             bindBtnSaveEvent();
             bindBtnDeleteEvent();
             bindBtnConfirmDeleteEvent();
+            changeAgentContent();
         })
+
+        function changeAgentContent() {
+            document.getElementById("inputFileAgent").value = document.getElementById("inputFile").value;
+        }
 
         function bindBtnAddEvent() {
             $("#btnAdd").click(function () {
