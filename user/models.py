@@ -5,7 +5,11 @@ from django.db import models
 # Create your models here.
 
 class SecurityQuestions(models.Model):
-    question = models.CharField(verbose_name="question", max_length=1024)
+    question = models.CharField(
+        verbose_name="question",
+        max_length=1024,
+        help_text="please select a security question"
+    )
 
 
 class TANs(models.Model):
@@ -13,7 +17,7 @@ class TANs(models.Model):
     tan = models.IntegerField(
         verbose_name="TAN",
         validators=[MaxValueValidator(100000), MinValueValidator(1)],
-        help_text="Please enter at least 6 characters"
+        help_text="Please enter 3 characters"
     )
 
 
@@ -33,6 +37,7 @@ class Users(models.Model):
         TANs,
         on_delete=models.CASCADE,
         verbose_name="TAN",
+        help_text="Please enter 3 characters"
     )
 
 

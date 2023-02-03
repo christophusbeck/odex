@@ -35,8 +35,14 @@ class LoginForm(BootStrapModelForm):
         return md5(password)
 
 
+class QuestionForm(BootStrapModelForm):
+    class Meta:
+        model = models.SecurityQuestions
+        fields = ["question"]
+
+
 class RegisterForm(BootStrapModelForm):
-    repeat_password = forms.CharField(label="Please repeat password", max_length=10)
+    repeat_password = forms.CharField(label="Please repeat password", max_length=1)
     security_answer = forms.CharField(label="Please enter your answer", max_length=1024)
 
     class Meta:

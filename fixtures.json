@@ -8,6 +8,14 @@
     }
   },
   {
+    "model": "user.tans",
+    "pk": 2,
+    "fields": {
+      "authenticated": 0,
+      "tan": 124
+    }
+  },
+  {
     "model": "user.users",
     "pk": 1,
     "fields": {

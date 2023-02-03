@@ -44,26 +44,26 @@
         <div class="form-group">
             <label>Repeat password</label>
             {{ form.repeat_password }}
-            <small>{{ form.password.help_text }}</small>
-            <div style="color: red;">{{ form.password.errors.0 }}</div>
+            <small>{{ form.repeat_password.help_text }}</small>
+            <div style="color: red;">{{ form.repeat_password.errors.0 }}</div>
         </div>
         <div class="form-group">
             <label>Security question</label>
-            {{ form.security_question }}
-            <small>{{ form.password.help_text }}</small>
-            <div style="color: red;">{{ form.password.errors.0 }}</div>
+            {{ question_form.question }}
+            <small>{{ question_form.question.help_text }}</small>
+            <div style="color: red;">{{ question_form.question.errors.0 }}</div>
         </div>
         <div class="form-group">
             <label>Security answer</label>
             {{ form.security_answer }}
-            <small>{{ form.password.help_text }}</small>
-            <div style="color: red;">{{ form.password.errors.0 }}</div>
+            <small>{{ form.security_answer.help_text }}</small>
+            <div style="color: red;">{{ form.security_answer.errors.0 }}</div>
         </div>
         <div class="form-group">
             <label>TAN</label>
             {{ form.tan }}
-            <small>{{ form.password.help_text }}</small>
-            <div style="color: red;">{{ form.password.errors.0 }}</div>
+            <small>{{ form.tan.help_text }}</small>
+            <div style="color: red;">{{ form.tan.errors.0 }}</div>
         </div>
 
         <div>
