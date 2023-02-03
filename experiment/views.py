@@ -84,7 +84,7 @@ class MainView(View):
         form = CreateForm()
         if form.is_valid():
             form.save()
-            return redirect('/main/')
+            return redirect('/configuration/')
         return render(request, self.template_name, {"form": form})
 
 
