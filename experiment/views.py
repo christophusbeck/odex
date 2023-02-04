@@ -4,6 +4,9 @@ from django.views import View
 from experiment.forms import CreateForm
 from experiment import models
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 # Create your views here.
 # To render the pages of configuration and details: we need following parameters
@@ -71,6 +74,8 @@ from experiment import models
 #     }
 
 
+
+@method_decorator(csrf_exempt, name='dispatch')
 class MainView(View):
     template_name = "main.html"  # waiting for html file
 
@@ -80,13 +85,22 @@ class MainView(View):
         return render(request, self.template_name, {"queryset": queryset, "form": form})
 
     def post(self, request, *args, **kwargs):
-        form = CreateForm(request.POST, request.FILE)
-        print(request.POST)
-        print(request.POST)
-        #if form.is_valid():
+        # form = CreateForm(request.POST, request.FILE)
+        # print(request.POST)
+        # print(request.POST)
+        # if form.is_valid():
 
-            #return redirect('/configuration/')
-        return render(request, self.template_name, {"form": form})
+        # return redirect('/configuration/')
+        # return render(request, self.template_name, {"form": form})
+
+        form = CreateForm(data=request.POST, files=request.FILES)
+        print(request.POST)
+        print(request.FILES)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({"status": True})
+
+        return JsonResponse({"status": False, 'error': form.errors})
 
 
 class Configuration(View):
@@ -104,10 +118,9 @@ class Configuration(View):
         return render(request, self.template_name, {"form": form})
 
 
-
-
 class AboutUs(View):
     template_name = "aboutus.html"
+
     def get(self, request, *args, **kwargs):
         form = CreateForm()
         return render(request, self.template_name, {"form": form})
@@ -115,6 +128,7 @@ class AboutUs(View):
 
 class FinishedDetailView(View):
     template_name = "FinishedDetail.html"
+
     def get(self, request, *args, **kwargs):
         form = CreateForm()
         return render(request, self.template_name, {"form": form})
