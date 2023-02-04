@@ -76,15 +76,16 @@ class MainView(View):
 
     def get(self, request, *args, **kwargs):
         queryset = models.Experiments.objects.all()
-        print(queryset)
         form = CreateForm()
         return render(request, self.template_name, {"queryset": queryset, "form": form})
 
     def post(self, request, *args, **kwargs):
-        form = CreateForm()
-        if form.is_valid():
-            form.save()
-            return redirect('/configuration/')
+        form = CreateForm(request.POST, request.FILE)
+        print(request.POST)
+        print(request.POST)
+        #if form.is_valid():
+
+            #return redirect('/configuration/')
         return render(request, self.template_name, {"form": form})
 
 

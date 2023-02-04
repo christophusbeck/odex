@@ -1,12 +1,11 @@
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, JsonResponse
 
-from user.models import Users,SecurityQuestions
+from user.models import Users, SecurityQuestions
 from django.shortcuts import render, redirect
 from django.views import View
 from user.forms import LoginForm, RegisterForm, QuestionForm
 from tools.encrypt import md5
-
 
 
 class LoginView(View):
@@ -30,24 +29,22 @@ class LoginView(View):
 
 class RegistrationView(View):
     template_name = "register.html"
+    queryset = SecurityQuestions.objects.all()
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs,):
         form = RegisterForm()
-        queryset = SecurityQuestions.objects.all()
-        return render(request, self.template_name, {"queryset": queryset,"form": form})
+        return render(request, self.template_name, {"queryset": self.queryset, "form": form})
 
     def post(self, request, *args, **kwargs):
         form = RegisterForm(data=request.POST)
+        print(request.POST)
+
         if form.is_valid():
             print(form.cleaned_data)
             # form.save()
             return redirect('/login/')
         print("falied")
-        return render(request, self.template_name, {"form": form})
-
-
-
-
+        return render(request, self.template_name, {"queryset": self.queryset, "form": form})
 
 
 class CheckUsername(View):
