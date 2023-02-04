@@ -80,7 +80,7 @@ class MainView(View):
         return render(request, self.template_name, {"queryset": queryset, "form": form})
 
     def post(self, request, *args, **kwargs):
-        #form = CreateForm(request.POST, request.FILE)
+        form = CreateForm(request.POST, request.FILE)
         print(request.POST)
         print(request.POST)
         #if form.is_valid():
