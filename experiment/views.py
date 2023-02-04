@@ -71,6 +71,10 @@ from experiment import models
 #     }
 
 
+def handle_uploaded_file(param):
+    pass
+
+
 class MainView(View):
     template_name = "main.html"  # waiting for html file
 
@@ -81,8 +85,9 @@ class MainView(View):
         return render(request, self.template_name, {"queryset": queryset, "form": form})
 
     def post(self, request, *args, **kwargs):
-        form = CreateForm()
+        form = CreateForm(request.POST, request.FILE)
         if form.is_valid():
+            handle_uploaded_file(request.FILES['file'])
             form.save()
             return redirect('/configuration/')
         return render(request, self.template_name, {"form": form})

@@ -51,9 +51,9 @@ class RegisterForm(BootStrapForm):
         label="TAN",
         help_text="Please enter 3 characters"
     )
-    question = forms.CharField(
+    question = forms.ModelChoiceField(
         label="Question",
-        max_length=64,
+        queryset=models.SecurityQuestions.objects.all(),
         help_text="Please select your question"
     )
 

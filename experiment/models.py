@@ -47,10 +47,15 @@ class Experiments(models.Model):
         return json.loads(self.columns)
 
 
+def user_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'user_{0}/{1}/{2}'.format(instance.user.id, instance.experiment.id, filename)
+
+
 class PendingExperiments(Experiments):
-    main_file_path = models.CharField(verbose_name="main file path", max_length=128)
-    generated_file_path = models.CharField(verbose_name="generated file path", max_length=128)
-    ground_truth_path = models.CharField(verbose_name="ground truth path", max_length=128)
+    main_file = models.FileField(verbose_name="main file path", upload_to=user_directory_path)
+    generated_file = models.FileField(verbose_name="generated file path", upload_to=user_directory_path)
+    ground_truth = models.FileField(verbose_name="ground truth path", upload_to=user_directory_path)
 
 
 class FinishedExperiments(Experiments):
