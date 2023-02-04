@@ -95,7 +95,7 @@ class LogOutView(View):
 
 
 class DeleteAccountView(View):
-    template_name = "login.html"  # waiting for html file
+    template_name = "login.html"
 
     # still need to handle with deleting
     def get(self, request, *args, **kwargs):
@@ -112,10 +112,10 @@ class DeleteAccountView(View):
 
 
 class AboutUsView(View):
-    template_name = ""  # waiting for html file
+    template_name = "aboutus.html"
 
     def get(self, request, *args, **kwargs):
-        pass
+        return render(request, self.template_name)
 
     def post(self, request, *args, **kwargs):
         pass
