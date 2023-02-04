@@ -1,22 +1,7 @@
 from django import forms
 from user import models
-# Used to encrypt data
 from tools.encrypt import md5
-
-
-class BootStrapModelForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        for name, field in self.fields.items():
-            if field.widget.attrs:
-                field.widget.attrs["class"] = "form-control"
-                field.widget.attrs["placeholder"] = field.label
-            else:
-                field.widget.attrs = {
-                    "class": "form-control",
-                    "placeholder": field.label
-                }
+from tools.bootstrap import BootStrapForm, BootStrapModelForm
 
 
 class LoginForm(BootStrapModelForm):
@@ -41,11 +26,12 @@ class QuestionForm(BootStrapModelForm):
         fields = ["question"]
 
 
-class RegisterForm(forms.Form):
+class RegisterForm(BootStrapForm):
     repeat_password = forms.CharField(
         label="Please repeat password",
         max_length=64,
         help_text="Please repeat passwords")
+
     security_answer = forms.CharField(
         label="Please enter your answer",
         max_length=1024,
@@ -70,7 +56,6 @@ class RegisterForm(forms.Form):
         max_length=64,
         help_text="Please select your question"
     )
-
 
     def clean(self):
         v1 = self.cleaned_data.get('password')
