@@ -29,11 +29,11 @@
     <h2>Odex</h2>
     <form method="post" novalidate autocomplete="off" >
         {% csrf_token %}
-        <div class="form-group">
-            <label>Username</label>
+        <div class="form-group" id="username_form">
+            <label class="control-label">Username</label>
             {{ form.username }}
-            <small>{{ form.username.help_text }}</small>
-            <div style="color: red;">{{ form.password.errors.0 }}</div>
+            <small>{{ form.password.help_text }}</small>
+            <span id="notice"></span>
         </div>
         <div class="form-group">
             <label>Password</label>
@@ -49,7 +49,8 @@
         </div>
         <div class="form-group">
             <label>Security Question</label>
-            <select name="Security Question">
+            <select class="form-control" id="question">
+            <option selected="">Select your security question</option>
                 {% for obj in queryset %}
                     <option value={{ obj.id }}>{{ obj.question }}</option>
                 {% endfor %}
@@ -94,7 +95,7 @@
                         if (data.flag) {
                             $('#notice').html("<span class='help-block'>Username already exists</span>");
                             $(function () {
-                                $('#username_form').last().addClass("has-error has-feedback");
+                                $('#username_form').last().addClass("has-error");
                             });
                             $("#create").attr("disabled", "disabled");
                         } else {
