@@ -94,8 +94,8 @@ class MainView(View):
         # return render(request, self.template_name, {"form": form})
 
         form = CreateForm(data=request.POST, files=request.FILES)
-        #print(request.POST)
-        #print(request.FILES)
+        print(request.POST)
+        print(request.FILES)
         if form.is_valid():
             form.save()
             return JsonResponse({"status": True})
