@@ -90,12 +90,14 @@
                                     {{ form.run_name }}
                                     <small>{{ form.username.help_text }}</small>
                                     <div style="color: red;">{{ form.password.errors.0 }}</div>
+                                    <div class="form-group" style="position: relative;margin-bottom: 25px;">
+                                        <label>Run Name</label>
+                                        {{ form.main_file }}
+                                        <small>{{ form.username.help_text }}</small>
+                                        <div style="color: red;">{{ form.password.errors.0 }}</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div>
-                            <label>Select Database</label>
-                            <input type="file" id="File" name="File">
                         </div>
                     </form>
 
@@ -156,14 +158,16 @@
                 $(".error-msg").empty();
 
                 $.ajax({
-                    url: "/newrun/",//  -> /order/edit/?uid=12
+                    url: "/main/",//  -> /order/edit/?uid=12
                     type: "post",
-                    data: $("#formAdd").serialize(),//获取表单中用户填写的数据
+                    data: new FormData($("#formAdd")[0]),//获取表单中用户填写的数据
+                    processData: false,
+                    contentType: false,
                     dataType: "JSON",
                     success: function (res) {
                         if (res.status) {
-                            location.reload();
-                            //window.location.href="/configuration/";
+                            //location.reload();
+                            window.location.href = "/configuration/";
                         } else {
                             // 把错误信息显示在对话框中。
                             $.each(res.error, function (name, errorList) {
