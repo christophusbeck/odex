@@ -33,8 +33,6 @@ class RegistrationView(View):
 
     def get(self, request, *args, **kwargs,):
         form = RegisterForm()
-        print(self.queryset.values())
-        print(form)
         return render(request, self.template_name, {"queryset": self.queryset, "form": form})
 
     def post(self, request, *args, **kwargs):
