@@ -30,8 +30,8 @@ class RegisterForm(BootStrapForm):
     repeat_password = forms.CharField(
         label="Please repeat password",
         max_length=64,
-        help_text="Please repeat passwords")
-
+        help_text="Please repeat passwords"
+    )
     answer = forms.CharField(
         label="Please enter your answer",
         max_length=1024,
