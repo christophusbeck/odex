@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, JsonResponse
 
-from user.models import Users, SecurityQuestions
+from user.models import Users, SecurityQuestions, TANs
 from django.shortcuts import render, redirect
 from django.views import View
 from user.forms import LoginForm, RegisterForm, QuestionForm
