@@ -71,25 +71,21 @@ from experiment import models
 #     }
 
 
-def handle_uploaded_file(param):
-    pass
-
-
 class MainView(View):
     template_name = "main.html"  # waiting for html file
 
     def get(self, request, *args, **kwargs):
         queryset = models.Experiments.objects.all()
-        print(queryset)
         form = CreateForm()
         return render(request, self.template_name, {"queryset": queryset, "form": form})
 
     def post(self, request, *args, **kwargs):
-        form = CreateForm(request.POST, request.FILE)
-        if form.is_valid():
-            handle_uploaded_file(request.FILES['file'])
-            form.save()
-            return redirect('/configuration/')
+        #form = CreateForm(request.POST, request.FILE)
+        print(request.POST)
+        print(request.POST)
+        #if form.is_valid():
+
+            #return redirect('/configuration/')
         return render(request, self.template_name, {"form": form})
 
 
