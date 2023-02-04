@@ -33,18 +33,31 @@ class RegistrationView(View):
 
     def get(self, request, *args, **kwargs,):
         form = RegisterForm()
-        return render(request, self.template_name, {"queryset": self.queryset, "form": form})
+        return render(request, self.template_name, {"form": form})
 
     def post(self, request, *args, **kwargs):
         form = RegisterForm(data=request.POST)
-        print(request.POST)
-
+        # queryset = QuestionForm(data=request.POST)
         if form.is_valid():
             print(form.cleaned_data)
-            # form.save()
-            return redirect('/login/')
-        print("falied")
-        return render(request, self.template_name, {"queryset": self.queryset, "form": form})
+            tan = form.cleaned_data.get("tan")
+            check = TANs.objects.filter(tan__exact=tan).exists()
+            print(tan)
+            print(check)
+            if not check:
+                form.add_error("tan", "invalid tan")
+                return render(request, self.template_name, {"form": form})
+
+            check.authenticated = True
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            q_id = form.cleaned_data['id']
+            answer = form.cleaned_data['answer']
+
+            user = Users.objects.create(username=username, password=password, tan=tan)
+            SecurityAnswers.objects.create(user_id=user.id, answer=answer, question_id=q_id)
+
+        return render(request, self.template_name, {"form": form})
 
 
 class CheckUsername(View):
@@ -106,9 +119,3 @@ class AboutUsView(View):
 
     def post(self, request, *args, **kwargs):
         pass
-
-
-class Test(View):
-    def get(self, request):
-        Users.objects.create(username="tester", password=md5("123"), tan=123)
-        return HttpResponse("successful")
