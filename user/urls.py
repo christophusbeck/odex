@@ -9,5 +9,6 @@ urlpatterns = [
     path('logout/', views.LogOutView.as_view()),
     # after user clicks logout, he/she should return to login page
     path('delete/', views.DeleteAccountView.as_view()),
+    path('resetpassword/', views.ResetPasswordView.as_view())
     # delete account also like logout, the only difference is that, the count should be deleted(according to suffix nid) and after that get into login page
 ]
