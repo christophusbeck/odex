@@ -47,7 +47,7 @@ class RegisterForm(BootStrapForm):
         max_length=64,
         help_text="Please enter at least 6 characters"
     )
-    tan = forms.IntegerField(
+    tan = forms.CharField(
         label="TAN",
         help_text="Please enter 3 characters"
     )
