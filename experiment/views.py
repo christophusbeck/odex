@@ -74,10 +74,9 @@ from django.utils.decorators import method_decorator
 #     }
 
 
-
 @method_decorator(csrf_exempt, name='dispatch')
 class MainView(View):
-    template_name = "main.html"  # waiting for html file
+    template_name = "main.html"
 
     def get(self, request, *args, **kwargs):
         queryset = models.Experiments.objects.all()
@@ -104,7 +103,7 @@ class MainView(View):
 
 
 class Configuration(View):
-    template_name = "Configuration.html"  # waiting for html file
+    template_name = "Configuration.html"
 
     def get(self, request, *args, **kwargs):
         form = CreateForm()
@@ -116,7 +115,6 @@ class Configuration(View):
             form.save()
             return redirect('/main/')
         return render(request, self.template_name, {"form": form})
-
 
 
 class FinishedDetailView(View):
@@ -134,7 +132,7 @@ class FinishedDetailView(View):
         return render(request, self.template_name, {"form": form})
 
 
-class PendingDeatilView(View):
+class PendingDetailView(View):
     template_name = "PendingDetail.html"
 
     def get(self, request, *args, **kwargs):
