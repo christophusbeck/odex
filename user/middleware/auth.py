@@ -15,6 +15,3 @@ class AuthMiddleware(MiddlewareMixin):
         if info_dict:
             return
         return redirect('/login/')
-
-    def process_response(self, request):
-        return
