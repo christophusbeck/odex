@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, JsonResponse
 
-from user.models import Users, SecurityQuestions, TANs
+from user.models import Users, SecurityQuestions, TANs, SecurityAnswers
 from django.shortcuts import render, redirect
 from django.views import View
 from user.forms import LoginForm, RegisterForm, QuestionForm
@@ -22,7 +22,7 @@ class LoginView(View):
             if not user_obj:
                 form.add_error("password", "password error")
                 return render(request, self.template_name, {"form": form})
-            request.session["info"] = {'id': user_obj.id, 'username': user_obj.username}
+            request.session["info"] = {'id': user_obj.id, 'username': user_obj.username, 'is_login': True}
             return redirect('/main/')
         return render(request, self.template_name, {"form": form})
 
@@ -31,33 +31,37 @@ class RegistrationView(View):
     template_name = "register.html"
     queryset = SecurityQuestions.objects.all()
 
-    def get(self, request, *args, **kwargs,):
+    def get(self, request, *args, **kwargs, ):
         form = RegisterForm()
         return render(request, self.template_name, {"form": form})
 
     def post(self, request, *args, **kwargs):
         form = RegisterForm(data=request.POST)
-        # queryset = QuestionForm(data=request.POST)
         if form.is_valid():
             print(form.cleaned_data)
-            tan = form.cleaned_data.get("tan")
-            check = TANs.objects.filter(tan__exact=tan).exists()
-            print(tan)
-            print(check)
+            check = TANs.objects.filter(tan__exact=form.cleaned_data.get("tan")).first()
             if not check:
                 form.add_error("tan", "invalid tan")
                 return render(request, self.template_name, {"form": form})
 
-            check.authenticated = True
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            q_id = form.cleaned_data['id']
-            answer = form.cleaned_data['answer']
+            q_id = form.cleaned_data['question']
+            security_answer = form.cleaned_data['answer']
 
-            user = Users.objects.create(username=username, password=password, tan=tan)
-            SecurityAnswers.objects.create(user_id=user.id, answer=answer, question_id=q_id)
+            check.authenticated = True
+            user = Users()
+            user.username = username
+            user.password = password
+            user.save()
 
-        return render(request, self.template_name, {"form": form})
+            answer = SecurityAnswers()
+            answer.answer = security_answer
+            answer.user = user
+            answer.question_id = q_id
+            answer.save()
+
+        return redirect("/login/")
 
 
 class CheckUsername(View):
