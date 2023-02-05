@@ -11,6 +11,7 @@ from user.models import Users
 class CSVFileField(models.FileField):
     #content_types
     max_upload_size = 0
+    #super.path
 
     #def clean():
 

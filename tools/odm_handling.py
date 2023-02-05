@@ -29,6 +29,7 @@ from pyod.models.rod import ROD
 from pyod.models.sampling import Sampling
 from pyod.models.vae import VAE
 
+
 def write_data_to_csv(path: str, data):
     writefile = open(path, 'w', newline='')
     writer = csv.writer(writefile, delimiter=',')
