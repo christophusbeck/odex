@@ -116,3 +116,9 @@ def get_odm_dict():
         "VAE": VAE,
     }
     return odm_dict
+
+def match_odm_by_name(name:str):
+    odm_dict = get_odm_dict()
+    if odm_dict.keys().__contains__(name):
+        return odm_dict[name]
+    return ABOD  # arbitrary default option
