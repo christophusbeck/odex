@@ -91,8 +91,6 @@ class MainView(View):
 
     def post(self, request, *args, **kwargs):
         form = CreateForm(data=request.POST, files=request.FILES)
-        print(request.POST)
-        print(request.FILES)
         if form.is_valid():
             user_id = models.Users.objects.get(id=request.session["info"]["id"])
             pending = models.PendingExperiments(user_id=user_id)
@@ -101,7 +99,7 @@ class MainView(View):
             pending.state = "edited"
             pending.main_file = form.files['main_file']
             pending.save()
-            return JsonResponse({"status": True})
+            return JsonResponse({"status": True, "id": pending.id})
 
         return JsonResponse({"status": False, 'error': form.errors})
 
@@ -117,9 +115,10 @@ class Configuration(View):
     template_name = "Configuration.html"
 
     def get(self, request, *args, **kwargs):
-        exp_Info = models.Experiments.objects.all()
+        exp_Info = models.Experiments.objects.filter(id=request.GET['id'])
         form = ConfigForm()
         upform = UpForm()
+        print(request.GET)
         return render(request, self.template_name, {"exp_Info": exp_Info, "form": form, "upform":upform})
 
     def post(self, request, *args, **kwargs):

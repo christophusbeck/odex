@@ -166,8 +166,8 @@
                     dataType: "JSON",
                     success: function (res) {
                         if (res.status) {
-                            //location.reload();
-                            window.location.href = "/configuration/";
+                            //location.reload()
+                            window.location.href = "/configuration/?id=" + res.id;
                         } else {
                             // 把错误信息显示在对话框中。
                             $.each(res.error, function (name, errorList) {
