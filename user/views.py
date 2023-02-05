@@ -88,12 +88,15 @@ class LogOutView(View):
 
     def get(self, request, *args, **kwargs):
         request.session.clear()
-        return redirect('/login')
+        return redirect('/login/')
+
+    def post(self, request, *args, **kwargs):
+        request.session.clear()
+        return redirect('/login/')
 
 
 class DeleteAccountView(View):
     def get(self, request, *args, **kwargs):
-
         return redirect("/login/")
 
 
