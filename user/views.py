@@ -99,20 +99,9 @@ class LogOutView(View):
 
 
 class DeleteAccountView(View):
-    template_name = "login.html"
-
-    # still need to handle with deleting
     def get(self, request, *args, **kwargs):
-        form = RegisterForm()
-        return render(request, self.template_name, {"form": form})
 
-    def post(self, request, *args, **kwargs):
-        def post(self, request, *args, **kwargs):
-            form = RegisterForm()
-            if form.is_valid():
-                form.save()
-                return redirect('/login/')
-            return render(request, self.template_name, {"form": form})
+        return redirect("/login/")
 
 
 class AboutUsView(View):

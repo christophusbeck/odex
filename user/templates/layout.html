@@ -33,9 +33,9 @@
                        aria-expanded="false">{{ request.session.info.username }}<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="/aboutus/">About us</a></li>
-                        <li><a href="/login/">Delete Accout</a></li>
+                        <li><a href="/delete/">Delete Accout</a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a href="/login/">log out</a></li>
+                        <li><a href="/logout/">log out</a></li>
                     </ul>
                 </li>
             </ul>
@@ -47,10 +47,6 @@
     {% block content %}{% endblock %}
 </div>
 
-
-<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
-<script src="{% static 'plugins/bootstrap-3.4.1/js/bootstrap.min.js' %}"></script>
-{% block js %}{% endblock %}
 </body>
 </html>
 
