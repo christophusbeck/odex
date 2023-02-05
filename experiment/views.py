@@ -1,12 +1,18 @@
+from http.client import HTTPResponse
+
+from django.forms import fields, widgets
 from django.shortcuts import render, redirect
 from django.views import View
 
-from experiment.forms import CreateForm
+from experiment.forms import CreateForm, ConfigForm, UpForm
 from experiment import models
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+
+from tools.bootstrap import BootStrapModelForm
+
 
 # Create your views here.
 # To render the pages of configuration and details: we need following parameters
@@ -111,15 +117,22 @@ class Configuration(View):
     template_name = "Configuration.html"
 
     def get(self, request, *args, **kwargs):
-        form = CreateForm()
-        return render(request, self.template_name, {"form": form})
+        exp_Info = models.Experiments.objects.all()
+        form = ConfigForm()
+        upform = UpForm()
+        return render(request, self.template_name, {"exp_Info": exp_Info, "form": form, "upform":upform})
 
     def post(self, request, *args, **kwargs):
-        form = CreateForm()
+        form = UpForm(data=request.POST, files=request.FILES)
+
+        exp_Info = models.Experiments.objects.all()
+        upform = UpForm()
+        formConf = ConfigForm()
+
         if form.is_valid():
-            form.save()
-            return redirect('/main/')
-        return render(request, self.template_name, {"form": form})
+            print(form.cleaned_data)
+            return HttpResponse("true")
+        return redirect("main/")
 
 
 class FinishedDetailView(View):

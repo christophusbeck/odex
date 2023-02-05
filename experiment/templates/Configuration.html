@@ -4,10 +4,11 @@
     <div class="configuration">
         <h1 align="center">New Run:</h1>
         <br>
-        Run title: {{ info.run_name }}
+        Run title: {{ exp_Info.run_name }}
         <br>
-        Detected subspaces: {{ info.amount_detected_subspace }}
-        <br>
+        Detected subspaces: {{ exp_Info.amount_detected_subspace }}
+
+
         <table class="table table-bordered" align="center" border="1">
             <thead>
             <tr>
@@ -17,53 +18,60 @@
             </thead>
             <tbody>
 
-            {% for para in info.columns %}
+            {% for para in exp_Info.columns %}
                 <tr>
                     <td>{{ para }}</td>
                     <td>{{ para.id }}</td>
                 </tr>
             {% endfor %}
 
-
-
-
             <br>
         </table>
         <br>
 
-        <form action="#">
+
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <br>
-            <label>
-                <input type="radio" name="subspaces" value="1" checked>All subspaces</label>
-            <br>
-            <label>
-                <input type="radio" name="subspaces" value="2">All, except: </label>
-            <input type="text">
-            <br>
-            <label>
-                <input type="radio" name="subspaces" value="3">Combination: </label>
-            <input type="text">
-            <br>
-            <br>
-            Select Outlier Detection Method:<br>
-            <select id="odms" onclick="loadParameter()">
-                {#            static load some odms#}
-                <option value="0">1</option>
-                <option value="1">2</option>
-                <option value="2">3</option>
-                <option value="3">4</option>
-            </select>
 
-            {#        static load of this parameters#}
-            <script type="text/javascript">
-                function loadParameter() {
-                    choosen = document.getElementById('odms').value
-                }
-            </script>
+            <br>
+            <div class="operation">
+                {{ form.operation_model }}
+                {#                it should be a text input#}
+                <div class="form-group">
+                    <label>{{ upform.operation.label }}: </label>
+                    {{ upform.operation }}
+                    <span style="color: red;">{{ field.errors.0 }}</span>
+                </div>
 
 
-            Parameters:
+            </div>
+
+            <div style="float: right ">
+                <div>If use ground truth file:</div>
+                <div>{{ form.ground_truth }}</div>
+
+                <button class="ground_truth_file">
+                    <label>{{ upform.ground_truth.label }}: </label>
+                    {{ upform.ground_truth }}
+                    <span style="color: red;">{{ field.errors.0 }}</span>
+                </button>
+            </div>
+
+
+            <div>
+                <p> {{ form.addtional_data }} Run again with additional data</p>
+
+                <button class="addtional">
+                    <label>{{ upform.add_data.label }}: </label>
+                    {{ upform.add_data }}
+                    <span style="color: red;">{{ field.errors.0 }}</span>
+                </button>
+                <br>
+            </div>
+
+
+            <br>
+            Select Outlier Detection Method and input parameters: {{ form.odm }} <br>
             <table class="table table-bordered" align="center" border="1">
                 <thead>
                 <tr>
@@ -72,37 +80,29 @@
                 </tr>
                 </thead>
                 <tbody>
-                {#        according to selection load different parameters of this odm#}
+
+                {% for para in form.parameter %}
+                    <td>{{ para }}</td>
+                    <td><input type="text"></td>
+                {% endfor %}
+
+
                 </tbody>
             </table>
 
-            <label>
-                <input type="radio" name="run_model" value="1"> Outlier detection only </label>
-            <br>
-            <label>
-                <input type="radio" name="run_model" value="2"> Compare to ground truth file </label>
 
-            <button class="uploadGrundTruth">
-                <input type="file" name="uploadGrundTruth" accept="text/csv"/>
-            </button>
-            <br>
-            <input type="checkbox" name="run_again" value="1"> Run again with additional data
-            <button class="addtional">
-                <input type="file" name="addtional" accept="text/csv"/>
-            </button>
-            <br>
+            <div>
+                <br>
+                <a href="/main/" style="margin-right: 500px">
+                    <button type="button" value="cancel">Cancel</button>
+                </a>
+
+                <a href="/main/">
+                    <button type="submit" value="Add run to queue">Add run to queue</button>
+                </a>
+            </div>
         </form>
-        <div>
-            <br>
-            <a href="/main/" style="margin-right: 500px">
-                <button type="button" value="cancel">Cancel</button>
-            </a>
 
-            <a href="/main/">
-                <button type="button" value="cancel">Add run to queue</button>
-            </a>
-
-        </div>
     </div>
 
 
