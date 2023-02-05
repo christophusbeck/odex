@@ -17,4 +17,4 @@ class AuthMiddleware(MiddlewareMixin):
         return redirect('/login/')
 
     def process_response(self, request):
-        pass
+        return
