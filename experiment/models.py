@@ -40,7 +40,11 @@ class Experiments(models.Model):
         verbose_name="user id",
         help_text="Please enter 3 characters"
     )
-    run_name = models.CharField(verbose_name="experiment name", max_length=128)
+    run_name = models.CharField(
+        verbose_name="experiment name",
+        max_length=128,
+        help_text="please enter a name"
+    )
     file_name = models.CharField(verbose_name="file", max_length=128)
     state = models.CharField(verbose_name="state", max_length=200, choices=Experiment_state.choices, blank=True, null=True)
     odm = models.CharField(verbose_name="odm", max_length=128, choices=Pyod_methods.choices, blank=True, null=True)
