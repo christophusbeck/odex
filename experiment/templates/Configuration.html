@@ -73,12 +73,31 @@
             <br>
             Select Outlier Detection Method and input parameters:
             <label>
-                <select>
+                <select id="odms" onchange="odm_paras()">
                     {% for key in odms %}
-                        <option name="odms" value="{{ forloop.counter }}" onclick="getPara(this)"> {{ key }}
+                        <option value="{{ forloop.counter }}"> {{ key }}
                     {% endfor %}
                 </select>
             </label>
+
+
+        {% load odms_para %}
+            <script>
+                function odm_paras() {
+                    var options = $("#odms option:selected");
+                    var odm = options.val();
+                    var para_list = {{ odm|odm_para }}
+                }
+
+                var table = document.getElementById("parameters");
+
+                for(var i=0; i<para_list.length();i++) {
+                    var para = para_list[i];
+                    var span = document.createElement("span");
+                    span.innerText = "<td> para </td> <td><input type=\"text\"></td>";
+                }
+            </script>
+
 
             <table class="table table-bordered" align="center" border="1">
                 <thead>
@@ -87,15 +106,11 @@
                     <th>values</th>
                 </tr>
                 </thead>
-                <tbody>
-
-
-                {% for para in form.parameter %}
-                    <td>{{ para }}</td>
-                    <td><input type="text"></td>
-                {% endfor %}
-
-
+                <tbody id="parameters">
+{#                {% for para in form.parameter %}#}
+{#                    <td>{{ para }}</td>#}
+{#                    <td><input type="text"></td>#}
+{#                {% endfor %}#}
                 </tbody>
             </table>
 

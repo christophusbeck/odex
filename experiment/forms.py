@@ -2,6 +2,7 @@ from django import forms
 from django.forms import fields, widgets
 from django.shortcuts import render, redirect
 
+import tools.odm_handling
 from experiment import models
 from tools.bootstrap import BootStrapForm, BootStrapModelForm
 
