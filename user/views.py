@@ -84,13 +84,8 @@ class ResetPasswordView(View):
 
 
 class LogOutView(View):
-    template_name = "login.html"  # waiting for html file
 
     def get(self, request, *args, **kwargs):
-        request.session.clear()
-        return redirect('/login/')
-
-    def post(self, request, *args, **kwargs):
         request.session.clear()
         return redirect('/login/')
 
@@ -98,7 +93,6 @@ class LogOutView(View):
 class DeleteAccountView(View):
     def get(self, request, *args, **kwargs):
         return redirect("/login/")
-
 
 
 class AboutUsView(View):

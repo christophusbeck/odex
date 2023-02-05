@@ -12,7 +12,6 @@ class AuthMiddleware(MiddlewareMixin):
             return
 
         info_dict = request.session.get("info")
-        print(info_dict)
         if info_dict:
             return
         return redirect('/login/')
