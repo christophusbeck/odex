@@ -115,6 +115,7 @@ class DeleteAccountView(View):
             return render(request, self.template_name, {"form": form})
 
 
+
 class AboutUsView(View):
     template_name = "aboutus.html"
 

@@ -4,6 +4,7 @@ from django.forms import fields, widgets
 from django.shortcuts import render, redirect
 from django.views import View
 
+import tools.odm_handling
 from experiment.forms import CreateForm, ConfigForm, UpForm
 from experiment import models
 
@@ -115,11 +116,15 @@ class Configuration(View):
     template_name = "Configuration.html"
 
     def get(self, request, *args, **kwargs):
-        exp_Info = models.Experiments.objects.filter(id=request.GET['id'])
+
+        # only for test
+        exp_Info = models.Experiments.objects.all()
+        # exp_Info = models.Experiments.objects.filter(id=request.GET['id'])
         form = ConfigForm()
         upform = UpForm()
-        print(request.GET)
-        return render(request, self.template_name, {"exp_Info": exp_Info, "form": form, "upform":upform})
+        # print(request.GET)
+        odms = dict(tools.odm_handling.get_odm_dict()).keys()
+        return render(request, self.template_name, {"exp_Info": exp_Info, "form": form, "upform":upform, "odms":odms})
 
     def post(self, request, *args, **kwargs):
         form = UpForm(data=request.POST, files=request.FILES)

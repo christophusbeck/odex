@@ -15,12 +15,6 @@ class CreateForm(BootStrapModelForm):
 
 class ConfigForm(forms.Form):
 
-
-    odm = fields.ChoiceField(
-        choices=[(1,"1"),(2,"2"),(3,"3"),],
-        initial=2
-    )
-
     ground_truth = fields.CharField(
         widget= widgets.RadioSelect(choices= [(1, "detection only"), (2, "compare with a grund truth file"),]),
     )
@@ -38,6 +32,7 @@ class ConfigForm(forms.Form):
 class UpForm(BootStrapForm):
     operation = forms.CharField(label="detected subspaces")
     ground_truth = forms.FileField(label= "upload a ground truth file")
+    # still need to check if this is a valid file or not
     add_data = forms.FileField(label= "upload an addtional data file")
     # upload all the informations in a table! only for test
     # parameter = forms.CharField(label="parameters")
