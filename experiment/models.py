@@ -48,7 +48,12 @@ class Experiments(models.Model):
     file_name = models.CharField(verbose_name="file", max_length=128)
     state = models.CharField(verbose_name="state", max_length=200, choices=Experiment_state.choices, blank=True, null=True)
     odm = models.CharField(verbose_name="odm", max_length=128, choices=Pyod_methods.choices, blank=True, null=True)
-    operation = models.CharField(verbose_name="logical formula", max_length=128, blank=True, null=True)
+    operation = models.CharField(
+        verbose_name="logical formula",
+        max_length=128,
+        blank=True,
+        null=True
+    )
     auxiliary_file_name = models.CharField(verbose_name="file", max_length=128, blank=True, null=True)
     columns = models.TextField(null=True)
 
@@ -63,17 +68,37 @@ def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     return 'user_{0}/{1}/{2}'.format(instance.user_id, instance.id, filename)
 
+def validate_file_extension(value):
+    import os
+    from django.core.exceptions import ValidationError
+    ext = os.path.splitext(value.name)[1]  # [0] returns path+filename
+    valid_extensions = ['.csv']
+    if not ext.lower() in valid_extensions:
+        raise ValidationError('Unsupported file extension.')
 
 class PendingExperiments(Experiments):
     main_file = models.FileField(
         verbose_name="main file path",
         upload_to=user_directory_path,
         help_text="please upload a file",
+        validators=[validate_file_extension],
         blank=True,
         null=True
     )
-    generated_file = models.FileField(verbose_name="generated file path", upload_to=user_directory_path, blank=True, null=True)
-    ground_truth = models.FileField(verbose_name="ground truth path", upload_to=user_directory_path, blank=True, null=True)
+    generated_file = models.FileField(
+        verbose_name="generated file path",
+        upload_to=user_directory_path,
+        help_text="please upload a generated file",
+        blank=True,
+        null=True
+    )
+    ground_truth = models.FileField(
+        verbose_name="ground truth path",
+        upload_to=user_directory_path,
+        help_text="please upload a ground truth file",
+        blank=True,
+        null=True
+    )
 
 
 class FinishedExperiments(Experiments):
