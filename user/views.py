@@ -104,6 +104,7 @@ class DeleteAccountView(View):
         return redirect("/login/")
 
 
+
 class AboutUsView(View):
     template_name = "aboutus.html"
 

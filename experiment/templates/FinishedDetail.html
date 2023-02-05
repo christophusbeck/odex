@@ -57,9 +57,11 @@
 
         <h3>Detected outliers: {{ queryset.amount_outlier }}</h3>
 
-        <button type="button" name="download"> Download detected outliers as *.csv file</button>
+        <a href="" class ="DownloadButton">Download detected outliers as *.csv file</a>
 
-        {% if queryset.withGrundTruthFile == true %}
+{#        <button type="button" name="download"> Download detected outliers as *.csv file</button>#}
+
+        {% if form.withGrundTruthFile == true %}
             <h3>Performance based on ground truth file:</h3>
             <table class="table table-bordered" border="1">
                 <thead>
@@ -79,8 +81,8 @@
                 </tbody>
             </table>
 
-            <button type="button" name="download_with_additional_data"> Download detected outliers as *.csv file
-            </button>
+            <a href="" class ="DownloadButton">Download detected outliers as *.csv file</a>
+
             <br>
 
             <h3>ROC curve:</h3>
@@ -89,8 +91,8 @@
         {% endif %}
 
 
-        {% if queryset.withaddtionalData == true %}
-            <h3>Detected outliers after mering with generated data: {{ queryset.amount_mering }}</h3>
+        {% if form.withaddtionalData == true %}
+            <h3>Detected outliers after mering with generated data: {{ form.amount_mering }}</h3>
 
         {% endif %}
 

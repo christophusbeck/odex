@@ -44,7 +44,7 @@
                 </thead>
                 <tbody>
                 {% for obj in queryset %}
-                    <tr uid="{{ obj.id }}">
+                    <tr id="{{ obj.id }}">
                         <td>{{ obj.state }}</td>
                         <td>{{ obj.run_name }}</td>
                         <td>{{ obj.file_name }}</td>
@@ -53,9 +53,9 @@
                         <td>{{ obj.odm }}</td>
                         <td>{{ obj.duration }}</td>
                         <td>
-                            <input uid="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button"
+                            <input id="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button"
                                    value="Delete">
-                            <input uid="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button"
+                            <input id="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button"
                                    value="Show details">
                         </td>
                     </tr>
@@ -166,8 +166,8 @@
                     dataType: "JSON",
                     success: function (res) {
                         if (res.status) {
-                            //location.reload();
-                            window.location.href = "/configuration/";
+                            //location.reload()
+                            window.location.href = "/configuration/?id=" + res.id;
                         } else {
                             // 把错误信息显示在对话框中。
                             $.each(res.error, function (name, errorList) {
@@ -186,17 +186,17 @@
                 $("#deleteModal").modal('show');
 
                 // 获取当前行的ID并赋值给全部变量。
-                DELETE_ID = $(this).attr("uid");
+                DELETE_ID = $(this).attr("id");
             });
         }
 
         function bindBtnConfirmDeleteEvent() {
             $("#btnConfirmDelete").click(function () {
                 $.ajax({
-                    url: "/experiment/delete/",  //    => /order/delete/?uid=123
+                    url: "/delete/",  //    => /order/delete/?uid=123
                     type: "GET",
                     data: {
-                        uid: DELETE_ID
+                        id: DELETE_ID
                     },
                     dataType: "JSON",
                     success: function (res) {
