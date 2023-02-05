@@ -3,6 +3,7 @@ import json
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from user.models import Users
 
 
 # Create your models here.
@@ -17,6 +18,7 @@ class CSVFileField(models.FileField):
 class Experiment_state(models.TextChoices):
     finished = 'finished', _('finished')
     pending = 'pending', _('pending')
+    edited = 'edited', _('edited')
     failed = 'failed', _('failed')
 
 class Pyod_methods(models.TextChoices):
@@ -31,7 +33,12 @@ class Pyod_methods(models.TextChoices):
 
 
 class Experiments(models.Model):
-    user_id = models.IntegerField(verbose_name="user id")
+    user_id = models.ForeignKey(
+        Users,
+        on_delete=models.CASCADE,
+        verbose_name="user id",
+        help_text="Please enter 3 characters"
+    )
     run_name = models.CharField(verbose_name="experiment name", max_length=128)
     file_name = models.CharField(verbose_name="file", max_length=128)
     state = models.CharField(verbose_name="state", max_length=200, choices=Experiment_state.choices, blank=True, null=True)
@@ -49,13 +56,19 @@ class Experiments(models.Model):
 
 def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return 'user_{0}/{1}/{2}'.format(instance.user.id, instance.experiment.id, filename)
+    return 'user_{0}/{1}/{2}'.format(instance.user_id, instance.id, filename)
 
 
 class PendingExperiments(Experiments):
-    main_file = models.FileField(verbose_name="main file path", upload_to=user_directory_path)
-    generated_file = models.FileField(verbose_name="generated file path", upload_to=user_directory_path)
-    ground_truth = models.FileField(verbose_name="ground truth path", upload_to=user_directory_path)
+    main_file = models.FileField(
+        verbose_name="main file path",
+        upload_to=user_directory_path,
+        help_text="please upload a file",
+        blank=True,
+        null=True
+    )
+    generated_file = models.FileField(verbose_name="generated file path", upload_to=user_directory_path, blank=True, null=True)
+    ground_truth = models.FileField(verbose_name="ground truth path", upload_to=user_directory_path, blank=True, null=True)
 
 
 class FinishedExperiments(Experiments):

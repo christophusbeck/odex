@@ -85,22 +85,27 @@ class MainView(View):
         return render(request, self.template_name, {"queryset": queryset, "form": form})
 
     def post(self, request, *args, **kwargs):
-        # form = CreateForm(request.POST, request.FILE)
-        # print(request.POST)
-        # print(request.POST)
-        # if form.is_valid():
-
-        # return redirect('/configuration/')
-        # return render(request, self.template_name, {"form": form})
-
         form = CreateForm(data=request.POST, files=request.FILES)
         print(request.POST)
         print(request.FILES)
         if form.is_valid():
-            form.save()
+            user_id = models.Users.objects.get(id=request.session["info"]["id"])
+            pending = models.PendingExperiments(user_id=user_id)
+            pending.run_name = form.cleaned_data['run_name']
+            pending.file_name = form.files['main_file'].name
+            pending.state = "edited"
+            pending.main_file = form.files['main_file']
+            pending.save()
             return JsonResponse({"status": True})
 
         return JsonResponse({"status": False, 'error': form.errors})
+
+
+class DeleteView(View):
+    def get(self, request, *args, **kwargs):
+        print(request.GET['id'])
+        models.Experiments.objects.filter(id=request.GET['id']).delete()
+        return redirect("/main/")
 
 
 class Configuration(View):

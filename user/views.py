@@ -22,7 +22,7 @@ class LoginView(View):
             if not user_obj:
                 form.add_error("password", "password error")
                 return render(request, self.template_name, {"form": form})
-            request.session["info"] = {'id': user_obj.id, 'username': user_obj.username}
+            request.session["info"] = {'id': user_obj.id, 'name': user_obj.username}
             return redirect('/main/')
         return render(request, self.template_name, {"form": form})
 
@@ -55,7 +55,7 @@ class RegistrationView(View):
             answer = form.cleaned_data['answer']
 
             user = Users.objects.create(username=username, password=password, tan=tan)
-            SecurityAnswers.objects.create(user_id=user.id, answer=answer, question_id=q_id)
+            #SecurityAnswers.objects.create(user_id=user.id, answer=answer, question_id=q_id)
 
         return render(request, self.template_name, {"form": form})
 
