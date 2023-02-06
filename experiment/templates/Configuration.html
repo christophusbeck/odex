@@ -4,9 +4,9 @@
     <div class="configuration">
         <h1 align="center">New Run:</h1>
         <br>
-        Run title: {{ exp_Info.run_name }}
+        Run title: {{ exp.0.run_name }}
         <br>
-        Detected subspaces: {{ exp_Info.amount_detected_subspace }}
+        Detected subspaces: {{ columns|length }}
 
 
         <table class="table table-bordered" align="center" border="1">
@@ -18,10 +18,10 @@
             </thead>
             <tbody>
 
-            {% for para in exp_Info.columns %}
+            {% for column in columns %}
                 <tr>
-                    <td>{{ para }}</td>
-                    <td>{{ para.id }}</td>
+                    <td>{{ column }}</td>
+                    <td>{{ forloop.counter }}</td>
                 </tr>
             {% endfor %}
 
@@ -35,35 +35,45 @@
 
             <br>
             <div class="operation">
-                {{ form.operation_model }}
-                {#                it should be a text input#}
+
+                {% for choice in form.operation_model_options %}
+                    <div class="form-group">
+                    <p>{{ choice }}</p>
+                    </div>
+                {% endfor %}
+
                 <div class="form-group">
-                    <label>{{ upform.operation.label }}: </label>
-                    {{ upform.operation }}
+                    <label>{{ form.operation.label }}: </label>
+                    {{ form.operation }}
                     <span style="color: red;">{{ field.errors.0 }}</span>
                 </div>
 
 
             </div>
 
-            <div style="float: right ">
+            <div>
                 <div>If use ground truth file:</div>
-                <div>{{ form.ground_truth }}</div>
+                {% for choice in form.ground_truth_options %}
+                    <div class="form-group">
+                    <p>{{ choice }}</p>
+                    </div>
+                {% endfor %}
+
 
                 <button class="ground_truth_file">
-                    <label>{{ upform.ground_truth.label }}: </label>
-                    {{ upform.ground_truth }}
+                    <label>{{ form.ground_truth.label }}: </label>
+                    {{ form.ground_truth }}
                     <span style="color: red;">{{ field.errors.0 }}</span>
                 </button>
             </div>
 
 
             <div>
-                <p> {{ form.addtional_data }} Run again with additional data</p>
+                <p> {{ form.additional_data_option }} Run again with additional data</p>
 
                 <button class="addtional">
-                    <label>{{ upform.add_data.label }}: </label>
-                    {{ upform.add_data }}
+                    <label>{{ form.generated_file.label }}: </label>
+                    {{ form.generated_file }}
                     <span style="color: red;">{{ field.errors.0 }}</span>
                 </button>
                 <br>

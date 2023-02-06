@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 
 import tools.odm_handling
-from experiment.forms import CreateForm, ConfigForm, UpForm
+from experiment.forms import CreateForm, ConfigForm
 from experiment import models
 
 from django.http import JsonResponse, HttpResponse
@@ -113,7 +113,9 @@ class MainView(View):
 class DeleteView(View):
     def get(self, request, *args, **kwargs):
         print(request.GET['id'])
+        print(models.Users.objects.all())
         models.Experiments.objects.filter(id=request.GET['id']).delete()
+        print(models.Users.objects.all())
         return redirect("/main/")
 
 
@@ -124,19 +126,17 @@ class Configuration(View):
 
         # only for test
         # exp_Info = models.Experiments.objects.all()
-        exp_Info = models.Experiments.objects.filter(id=request.GET['id'])
+        exp = models.Experiments.objects.filter(id=request.GET['id'])
+        columns = exp[0].get_columns()
         form = ConfigForm()
-        upform = UpForm()
-        # print(request.GET)
         odms = tools.odm_handling.get_odm_dict().keys()
         print("here is odems: ", dict(tools.odm_handling.get_def_value_dict(tools.odm_handling.match_odm_by_name("ABOD"))).keys())
-        return render(request, self.template_name, {"exp_Info": exp_Info, "form": form, "upform":upform, "odms":odms})
+        return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms":odms})
 
     def post(self, request, *args, **kwargs):
-        form = UpForm(data=request.POST, files=request.FILES)
+        form = ConfigForm(data=request.POST, files=request.FILES)
 
         exp_Info = models.Experiments.objects.all()
-        upform = UpForm()
         formConf = ConfigForm()
 
         if form.is_valid():
