@@ -1,21 +1,17 @@
-import json
-
-import pandas as pd
 from http.client import HTTPResponse
 
 from django.forms import fields, widgets
 from django.shortcuts import render, redirect
 from django.views import View
 
-import tools.odm_handling
-from experiment.forms import CreateForm, ConfigForm
+from experiment.forms import CreateForm, ConfigForm, UpForm
 from experiment import models
 
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
-
+from tools.bootstrap import BootStrapModelForm
 
 
 # Create your views here.
@@ -89,23 +85,23 @@ class MainView(View):
     template_name = "main.html"
 
     def get(self, request, *args, **kwargs):
-        queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"])
+        queryset = models.Experiments.objects.all()
         form = CreateForm()
         return render(request, self.template_name, {"queryset": queryset, "form": form})
 
     def post(self, request, *args, **kwargs):
         form = CreateForm(data=request.POST, files=request.FILES)
+        print(request.POST)
+        print(request.FILES)
         if form.is_valid():
-            user = models.Users.objects.get(id=request.session["info"]["id"])
-            pending = models.PendingExperiments(user=user)
+            user_id = models.Users.objects.get(id=request.session["info"]["id"])
+            pending = models.PendingExperiments(user_id=user_id)
             pending.run_name = form.cleaned_data['run_name']
             pending.file_name = form.files['main_file'].name
             pending.state = "edited"
             pending.main_file = form.files['main_file']
-            data = pd.read_csv(pending.main_file)
-            pending.set_columns(list(data))
             pending.save()
-            return JsonResponse({"status": True, "id": pending.id})
+            return JsonResponse({"status": True})
 
         return JsonResponse({"status": False, 'error': form.errors})
 
@@ -113,9 +109,7 @@ class MainView(View):
 class DeleteView(View):
     def get(self, request, *args, **kwargs):
         print(request.GET['id'])
-        print(models.Users.objects.all())
         models.Experiments.objects.filter(id=request.GET['id']).delete()
-        print(models.Users.objects.all())
         return redirect("/main/")
 
 
@@ -123,20 +117,16 @@ class Configuration(View):
     template_name = "Configuration.html"
 
     def get(self, request, *args, **kwargs):
-
-        # only for test
-        # exp_Info = models.Experiments.objects.all()
-        exp = models.Experiments.objects.filter(id=request.GET['id'])
-        columns = exp[0].get_columns()
+        exp_Info = models.Experiments.objects.all()
         form = ConfigForm()
-        odms = tools.odm_handling.get_odm_dict().keys()
-        print("here is odems: ", dict(tools.odm_handling.get_def_value_dict(tools.odm_handling.match_odm_by_name("ABOD"))).keys())
-        return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms":odms})
+        upform = UpForm()
+        return render(request, self.template_name, {"exp_Info": exp_Info, "form": form, "upform":upform})
 
     def post(self, request, *args, **kwargs):
-        form = ConfigForm(data=request.POST, files=request.FILES)
+        form = UpForm(data=request.POST, files=request.FILES)
 
         exp_Info = models.Experiments.objects.all()
+        upform = UpForm()
         formConf = ConfigForm()
 
         if form.is_valid():
