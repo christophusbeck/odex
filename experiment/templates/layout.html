@@ -58,7 +58,7 @@
             cursor: pointer;
         }
 
-        .UploadButton{
+        .UploadButton {
             background-color: lightskyblue;
             border: none;
             color: white;
@@ -71,8 +71,57 @@
             cursor: pointer;
         }
 
+        .gt:checked ~ .ground_truth_file {
+            display: block;
+        }
+
     </style>
     {% block css %}{% endblock %}
+
+
+    <script>
+        function showGT() {
+            var up = document.getElementById("ground_truth_file")
+            up.style.display = 'block';
+        }
+
+        function hideGT() {
+            var up = document.getElementById("ground_truth_file")
+            up.style.display = 'none';
+        }
+
+        function showAdd(obj) {
+            var up = document.getElementById("addtional")
+            if (obj.checked === true) {
+                up.style.display = 'block';
+            } else up.style.display = 'none'
+
+        }
+
+        function showCombo() {
+            var combo = document.getElementById("combo")
+            var exc = document.getElementById("except")
+            combo.style.display = 'block'
+            exc.style.display = 'none'
+
+        }
+
+        function showExcept() {
+            var combo = document.getElementById("combo")
+            var exc = document.getElementById("except")
+            combo.style.display = 'none'
+            exc.style.display = 'block'
+        }
+
+        function hideLogAndCombo() {
+            var combo = document.getElementById("combo")
+            var exc = document.getElementById("except")
+            combo.style.display = 'none'
+            exc.style.display = 'none'
+        }
+
+
+    </script>
 </head>
 <body>
 <nav class="navbar navbar-default">
