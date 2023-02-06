@@ -1,3 +1,6 @@
+import json
+
+import pandas as pd
 from http.client import HTTPResponse
 
 from django.forms import fields, widgets
@@ -12,7 +15,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
-from tools.bootstrap import BootStrapModelForm
+
 
 
 # Create your views here.
@@ -99,6 +102,8 @@ class MainView(View):
             pending.file_name = form.files['main_file'].name
             pending.state = "edited"
             pending.main_file = form.files['main_file']
+            data = pd.read_csv(pending.main_file)
+            pending.set_columns(list(data))
             pending.save()
             return JsonResponse({"status": True, "id": pending.id})
 
@@ -118,8 +123,8 @@ class Configuration(View):
     def get(self, request, *args, **kwargs):
 
         # only for test
-        exp_Info = models.Experiments.objects.all()
-        # exp_Info = models.Experiments.objects.filter(id=request.GET['id'])
+        # exp_Info = models.Experiments.objects.all()
+        exp_Info = models.Experiments.objects.filter(id=request.GET['id'])
         form = ConfigForm()
         upform = UpForm()
         # print(request.GET)
