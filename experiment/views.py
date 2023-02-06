@@ -86,7 +86,7 @@ class MainView(View):
     template_name = "main.html"
 
     def get(self, request, *args, **kwargs):
-        queryset = models.Experiments.objects.all()
+        queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"])
         form = CreateForm()
         return render(request, self.template_name, {"queryset": queryset, "form": form})
 
@@ -94,7 +94,7 @@ class MainView(View):
         form = CreateForm(data=request.POST, files=request.FILES)
         if form.is_valid():
             user = models.Users.objects.get(id=request.session["info"]["id"])
-            pending = models.PendingExperiments(user_id=user)
+            pending = models.PendingExperiments(user=user)
             pending.run_name = form.cleaned_data['run_name']
             pending.file_name = form.files['main_file'].name
             pending.state = "edited"

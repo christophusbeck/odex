@@ -3,7 +3,7 @@ import inspect
 import numpy as np
 
 from pyod.models.abod import ABOD
-from pyod.models.auto_encoder import AutoEncoder
+#from pyod.models.auto_encoder import AutoEncoder
 from pyod.models.cblof import CBLOF
 from pyod.models.cof import COF
 from pyod.models.copod import COPOD
@@ -27,7 +27,7 @@ from pyod.models.rgraph import RGraph
 from pyod.models.pca import PCA
 from pyod.models.rod import ROD
 from pyod.models.sampling import Sampling
-from pyod.models.vae import VAE
+#from pyod.models.vae import VAE
 
 
 def write_data_to_csv(path: str, data):
@@ -89,7 +89,7 @@ def get_list_of_odm():
 def get_odm_dict():
     odm_dict = {
         "ABOD": ABOD,
-        "AutoEncoder": AutoEncoder,
+        #"AutoEncoder": AutoEncoder,
         "CBLOF": CBLOF,
         "COF": COF,
         "COPOD": COPOD,
@@ -113,7 +113,7 @@ def get_odm_dict():
         "RGraph": RGraph,
         "ROD": ROD,
         "Sampling": Sampling,
-        "VAE": VAE,
+        #"VAE": VAE,
     }
     return odm_dict
 

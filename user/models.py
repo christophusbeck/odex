@@ -24,7 +24,7 @@ class TANs(models.Model):
 class Users(models.Model):
     username = models.CharField(
         verbose_name="username",
-        max_length=6,
+        max_length=16,
         help_text="Please enter within 6 letters"
     )
     password = models.CharField(

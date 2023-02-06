@@ -19,7 +19,15 @@
     "model": "user.users",
     "pk": 1,
     "fields": {
-        "username": "tester",
+        "username": "tester1",
+        "password": "7088966d4c03aeb6a66c390ec6462589"
+    }
+  },
+  {
+    "model": "user.users",
+    "pk": 2,
+    "fields": {
+        "username": "tester2",
         "password": "7088966d4c03aeb6a66c390ec6462589"
     }
   },
