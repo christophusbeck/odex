@@ -1,17 +1,21 @@
+import json
+
+import pandas as pd
 from http.client import HTTPResponse
 
 from django.forms import fields, widgets
 from django.shortcuts import render, redirect
 from django.views import View
 
-from experiment.forms import CreateForm, ConfigForm, UpForm
+import tools.odm_handling
+from experiment.forms import CreateForm, ConfigForm
 from experiment import models
 
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
-from tools.bootstrap import BootStrapModelForm
+
 
 
 # Create your views here.
@@ -85,23 +89,23 @@ class MainView(View):
     template_name = "main.html"
 
     def get(self, request, *args, **kwargs):
-        queryset = models.Experiments.objects.all()
+        queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"])
         form = CreateForm()
         return render(request, self.template_name, {"queryset": queryset, "form": form})
 
     def post(self, request, *args, **kwargs):
         form = CreateForm(data=request.POST, files=request.FILES)
-        print(request.POST)
-        print(request.FILES)
         if form.is_valid():
-            user_id = models.Users.objects.get(id=request.session["info"]["id"])
-            pending = models.PendingExperiments(user_id=user_id)
+            user = models.Users.objects.get(id=request.session["info"]["id"])
+            pending = models.PendingExperiments(user=user)
             pending.run_name = form.cleaned_data['run_name']
             pending.file_name = form.files['main_file'].name
             pending.state = "edited"
             pending.main_file = form.files['main_file']
+            data = pd.read_csv(pending.main_file)
+            pending.set_columns(list(data))
             pending.save()
-            return JsonResponse({"status": True})
+            return JsonResponse({"status": True, "id": pending.id})
 
         return JsonResponse({"status": False, 'error': form.errors})
 
@@ -109,7 +113,9 @@ class MainView(View):
 class DeleteView(View):
     def get(self, request, *args, **kwargs):
         print(request.GET['id'])
+        print(models.Users.objects.all())
         models.Experiments.objects.filter(id=request.GET['id']).delete()
+        print(models.Users.objects.all())
         return redirect("/main/")
 
 
@@ -117,22 +123,42 @@ class Configuration(View):
     template_name = "Configuration.html"
 
     def get(self, request, *args, **kwargs):
-        exp_Info = models.Experiments.objects.all()
+
+        # only for test
+        # exp_Info = models.Experiments.objects.all()
+        exp = models.Experiments.objects.filter(id=request.GET['id'])
+        columns = exp[0].get_columns()
         form = ConfigForm()
-        upform = UpForm()
-        return render(request, self.template_name, {"exp_Info": exp_Info, "form": form, "upform":upform})
+        odms = tools.odm_handling.get_odm_dict().keys()
+        print("odms:", odms)
+        print("list(odms)[1]:", list(odms)[1])
+        #print("odms:", odms)
+        print("tools.odm_handling.get_odm_dict(): ", tools.odm_handling.get_odm_dict())
+        print("tools.odm_handling.get_odm_dict().keys(): ", tools.odm_handling.get_odm_dict().keys())
+        print("here is odems dirc: ", tools.odm_handling.get_def_value_dict(tools.odm_handling.match_odm_by_name("ABOD")))
+        print("here is odems: ", dict(tools.odm_handling.get_def_value_dict(tools.odm_handling.match_odm_by_name("ABOD"))).keys())
+        return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms":odms})
 
     def post(self, request, *args, **kwargs):
-        form = UpForm(data=request.POST, files=request.FILES)
+        form = ConfigForm(data=request.POST, files=request.FILES)
 
         exp_Info = models.Experiments.objects.all()
-        upform = UpForm()
         formConf = ConfigForm()
 
         if form.is_valid():
             print(form.cleaned_data)
             return HttpResponse("true")
         return redirect("main/")
+
+
+class ResultView(View):
+    template_name = "Result.html"
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+
+    def post(self, request, *args, **kwargs):
+        return render(request, self.template_name)
 
 
 class FinishedDetailView(View):

@@ -55,7 +55,8 @@ class Experiments(models.Model):
         null=True
     )
     auxiliary_file_name = models.CharField(verbose_name="file", max_length=128, blank=True, null=True)
-    columns = models.TextField(null=True)
+    columns = models.TextField(blank=True, null=True)
+    #parameter = models.TextField(blank=True, null=True)
 
     def set_columns(self, x):
         self.columns = json.dumps(x)
@@ -89,6 +90,7 @@ class PendingExperiments(Experiments):
         verbose_name="generated file path",
         upload_to=user_directory_path,
         help_text="please upload a generated file",
+        validators=[validate_file_extension],
         blank=True,
         null=True
     )
@@ -96,9 +98,11 @@ class PendingExperiments(Experiments):
         verbose_name="ground truth path",
         upload_to=user_directory_path,
         help_text="please upload a ground truth file",
+        validators=[validate_file_extension],
         blank=True,
         null=True
     )
+
 
 
 class FinishedExperiments(Experiments):
