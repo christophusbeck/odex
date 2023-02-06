@@ -93,8 +93,8 @@ class MainView(View):
     def post(self, request, *args, **kwargs):
         form = CreateForm(data=request.POST, files=request.FILES)
         if form.is_valid():
-            user_id = models.Users.objects.get(id=request.session["info"]["id"])
-            pending = models.PendingExperiments(user_id=user_id)
+            user = models.Users.objects.get(id=request.session["info"]["id"])
+            pending = models.PendingExperiments(user_id=user)
             pending.run_name = form.cleaned_data['run_name']
             pending.file_name = form.files['main_file'].name
             pending.state = "edited"

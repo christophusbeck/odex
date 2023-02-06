@@ -40,13 +40,15 @@ class RegistrationView(View):
         if form.is_valid():
             print(form.cleaned_data)
             check = TANs.objects.filter(tan__exact=form.cleaned_data.get("tan")).first()
-            if not check:
+            print(check, check.authenticated)
+            if not check or check.authenticated:
+                print("enter invalid tan")
                 form.add_error("tan", "invalid tan")
                 return render(request, self.template_name, {"form": form})
 
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            q_id = form.cleaned_data['question']
+            question = form.cleaned_data['question']
             security_answer = form.cleaned_data['answer']
 
             check.authenticated = True
@@ -58,10 +60,13 @@ class RegistrationView(View):
             answer = SecurityAnswers()
             answer.answer = security_answer
             answer.user = user
-            answer.question_id = q_id
+            answer.question = question
             answer.save()
 
-        return redirect("/login/")
+            return redirect("/login/")
+
+        return render(request, self.template_name, {"form": form})
+
 
 
 class CheckUsername(View):

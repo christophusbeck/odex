@@ -34,7 +34,7 @@ class Pyod_methods(models.TextChoices):
 
 
 class Experiments(models.Model):
-    user_id = models.ForeignKey(
+    user = models.ForeignKey(
         Users,
         on_delete=models.CASCADE,
         verbose_name="user id",

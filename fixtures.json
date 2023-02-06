@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "tan": "123",
-      "authenticated": 0
+      "authenticated": 1
     }
   },
   {

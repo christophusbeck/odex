@@ -40,7 +40,7 @@ class SecurityAnswers(models.Model):
         on_delete=models.CASCADE,
         verbose_name="user"
     )
-    question_id = models.OneToOneField(
+    question = models.ForeignKey(
         to="SecurityQuestions",
         on_delete=models.CASCADE,
         verbose_name="question id",
