@@ -5,15 +5,13 @@ from tools.bootstrap import BootStrapForm, BootStrapModelForm
 
 
 class LoginForm(BootStrapModelForm):
-    username = forms.CharField(
-        label="username",
-        max_length=6,
-        help_text="Please enter within 6 letters"
-    )
-
     class Meta:
         model = models.Users
-        fields = ["password"]
+        fields = ["username", "password"]
+        widgets = {
+            "password": forms.PasswordInput(
+                attrs={'placeholder': '********', 'autocomplete': 'off', 'data-toggle': 'password'})
+        }
 
     def clean_password(self):
         password = self.cleaned_data.get("password")
@@ -30,7 +28,9 @@ class RegisterForm(BootStrapForm):
     repeat_password = forms.CharField(
         label="Please repeat password",
         max_length=64,
-        help_text="Please repeat passwords"
+        help_text="Please repeat passwords",
+        widget=forms.PasswordInput(
+            attrs={'placeholder': '********', 'autocomplete': 'off', 'data-toggle': 'repeat_password'})
     )
     answer = forms.CharField(
         label="Please enter your answer",
@@ -45,7 +45,9 @@ class RegisterForm(BootStrapForm):
     password = forms.CharField(
         label="password",
         max_length=64,
-        help_text="Please enter at least 6 characters"
+        help_text="Please enter at least 6 characters",
+        widget = forms.PasswordInput(
+        attrs={'placeholder': '********', 'autocomplete': 'off', 'data-toggle': 'password'})
     )
     tan = forms.CharField(
         label="TAN",

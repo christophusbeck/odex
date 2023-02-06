@@ -123,8 +123,8 @@ class Configuration(View):
         form = ConfigForm()
         upform = UpForm()
         # print(request.GET)
-        odms = dict(tools.odm_handling.get_odm_dict()).keys()
-        print(dict(tools.odm_handling.get_def_value_dict(tools.odm_handling.match_odm_by_name("ABOD"))).keys())
+        odms = tools.odm_handling.get_odm_dict().keys()
+        print("here is odems: ", dict(tools.odm_handling.get_def_value_dict(tools.odm_handling.match_odm_by_name("ABOD"))).keys())
         return render(request, self.template_name, {"exp_Info": exp_Info, "form": form, "upform":upform, "odms":odms})
 
     def post(self, request, *args, **kwargs):
