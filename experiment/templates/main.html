@@ -200,7 +200,6 @@
                         if (res.status) {
                             location.reload();
                         } else {
-                            // 删除失败
                             alert(res.error);
                         }
                     }
@@ -220,7 +219,7 @@
                     dataType: "JSON",
                     success: function (res) {
                         if (res.status) {
-                            location.reload();
+                            window.location.href = "/result/?id=" + res.id;
                         } else {
                             alert(res.error);
                         }
