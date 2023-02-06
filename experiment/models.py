@@ -110,6 +110,13 @@ class FinishedExperiments(Experiments):
     start_time = models.TimeField(verbose_name="start time", auto_now=False, auto_now_add=True)
     duration = models.IntegerField(verbose_name="run duration")
 
+    def get_metrics(self): #dummy method to test display
+        results = {Accuracy: 1,
+                   Precision: 1,
+                   othermetric: 10}
+        return results
+
+
 
 class OutlierDetectionMethods:
     #all_names_of_pyod_method = string
