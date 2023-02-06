@@ -38,12 +38,12 @@ class RegistrationView(View):
     def post(self, request, *args, **kwargs):
         form = RegisterForm(data=request.POST)
         if form.is_valid():
-            print(form.cleaned_data)
             check = TANs.objects.filter(tan__exact=form.cleaned_data.get("tan")).first()
-            print(check, check.authenticated)
-            if not check or check.authenticated:
-                print("enter invalid tan")
+            if not check:
                 form.add_error("tan", "invalid tan")
+                return render(request, self.template_name, {"form": form})
+            elif check.authenticated:
+                form.add_error("tan", "tan is used")
                 return render(request, self.template_name, {"form": form})
 
             username = form.cleaned_data['username']
