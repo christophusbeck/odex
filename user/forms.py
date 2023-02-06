@@ -39,7 +39,7 @@ class RegisterForm(BootStrapForm):
     )
     username = forms.CharField(
         label="username",
-        max_length=6,
+        max_length=64,
         help_text="Please enter within 6 letters"
     )
     password = forms.CharField(
@@ -74,3 +74,4 @@ class RegisterForm(BootStrapForm):
     def clean_password(self):
         password = self.cleaned_data.get("password")
         return md5(password)
+

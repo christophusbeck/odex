@@ -68,7 +68,6 @@ class RegistrationView(View):
         return render(request, self.template_name, {"form": form})
 
 
-
 class CheckUsername(View):
     def get(self, request, *args, **kwargs):
         username = request.GET.get('username', None)
@@ -79,7 +78,7 @@ class CheckUsername(View):
 
 
 class ResetPasswordView(View):
-    template_name = ""  # waiting for html file
+    template_name = "resetpassword"  # waiting for html file
 
     def get(self, request, *args, **kwargs):
         pass
