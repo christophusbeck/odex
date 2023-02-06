@@ -132,14 +132,19 @@ class Configuration(View):
         columns = exp[0].get_columns()
         form = ConfigForm()
         odms = tools.odm_handling.get_odm_dict().keys()
-        print("odms:", odms)
-        print("list(odms)[1]:", list(odms)[1])
-        #print("odms:", odms)
-        print("tools.odm_handling.get_odm_dict(): ", tools.odm_handling.get_odm_dict())
-        print("tools.odm_handling.get_odm_dict().keys(): ", tools.odm_handling.get_odm_dict().keys())
-        print("here is odems dirc: ", tools.odm_handling.get_def_value_dict(tools.odm_handling.match_odm_by_name("ABOD")))
-        print("here is odems: ", dict(tools.odm_handling.get_def_value_dict(tools.odm_handling.match_odm_by_name("ABOD"))).keys())
-        return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms":odms})
+
+        odms_para_dic = []
+        for item in odms:
+            odms_para_dic.append(tools.odm_handling.get_def_value_dict(tools.odm_handling.match_odm_by_name(item)))
+
+        for item in odms_para_dic:
+            item = item.keys()
+
+        print(odms_para_dic[0])
+
+        return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms":odms, "parameter_dic": odms_para_dic})
+
+
 
     def post(self, request, *args, **kwargs):
         form = ConfigForm(data=request.POST, files=request.FILES)
