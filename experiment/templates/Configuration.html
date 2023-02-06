@@ -36,22 +36,38 @@
             <br>
             <div class="operation">
 
-                {% for choice in form.operation_model_options %}
-                    <div class="form-group">
-                        <p>{{ choice }}</p>
-                    </div>
-                {% endfor %}
+                {#            form way#}
+                {#                {% for choice in form.operation_model_options %}#}
+                {#                    <div class="form-group">#}
+                {#                        <p>{{ choice }}</p>#}
+                {#                    </div>#}
+                {#                {% endfor %}#}
+                <input type="radio" id="sub" name="sub" onclick="hideLogAndCombo()" value="all">
+                <label>All subspaces:</label><br>
+                <input type="radio" id="sub" name="sub" onclick="showExcept()" value="except">
+                <label>All, except:</label><br>
+                <input type="radio" id="sub" name="sub" onclick="showCombo()" value="combo">
+                <label>Combination:</label>
 
-                <div class="form-group">
-                    <label>{{ form.operation.label }}: </label>
-                    {{ form.operation }}
+                <div class="form-group" id="except" style="display: none">
+                    <label> All subspaces, except: </label> <br>
+                    <input type="text" placeholder="All subspaces, except:">
                     <span style="color: red;">{{ field.errors.0 }}</span>
                 </div>
 
+                <div class="form-group" id="combo" style="display: none">
+                    <label> Combination: </label> <br>
+                    <input type="text" placeholder="Combination:" >
+                    <span style="color: red;">{{ field.errors.0 }}</span>
+                    {#                    form way#}
+                    {#                    <label>{{ form.operation.label }}: </label>#}
+                    {#                    {{ form.operation }}#}
+                    {#                    <span style="color: red;">{{ field.errors.0 }}</span>#}
+                </div>
 
 
             </div>
-        {#            form way#}
+            {#            form way#}
             {#                {% for choice in form.ground_truth_options %}#}
             {#                    <div class="form-group">#}
             {#                    <p>{{ choice }}</p>#}
@@ -72,10 +88,9 @@
             </div>
 
 
-
             <div>
-                                {#            form way#}
-{#                <div> {{ form.additional_data_option }} <h3>Run again with additional data</h3></div>#}
+                {#            form way#}
+                {#                <div> {{ form.additional_data_option }} <h3>Run again with additional data</h3></div>#}
                 <h3>Run again with additional data:<input type="checkbox" onclick="showAdd(this)"></h3>
 
                 <button id="addtional" style="display: none">

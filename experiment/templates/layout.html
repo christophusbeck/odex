@@ -92,21 +92,33 @@
 
         function showAdd(obj) {
             var up = document.getElementById("addtional")
-            if(obj.checked === true) {
+            if (obj.checked === true) {
                 up.style.display = 'block';
             } else up.style.display = 'none'
 
         }
 
-        $(function () {
-            $(".barcodeSavePrint").click(function () {
-                if (this.checked == true) {
-                    alert("选中");
-                } else {
-                    alert("不选中");
-                }
-            })
-        })
+        function showCombo() {
+            var combo = document.getElementById("combo")
+            var exc = document.getElementById("except")
+            combo.style.display = 'block'
+            exc.style.display = 'none'
+
+        }
+
+        function showExcept() {
+            var combo = document.getElementById("combo")
+            var exc = document.getElementById("except")
+            combo.style.display = 'none'
+            exc.style.display = 'block'
+        }
+
+        function hideLogAndCombo() {
+            var combo = document.getElementById("combo")
+            var exc = document.getElementById("except")
+            combo.style.display = 'none'
+            exc.style.display = 'none'
+        }
 
 
     </script>

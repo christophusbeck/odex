@@ -38,10 +38,10 @@ class ConfigForm(BootStrapModelForm):
             'ground_truth': 'upload a ground truth file'
         }
 
-    odm_options = fields.ChoiceField(
-        choices=[(1, "1"), (2, "2"), (3, "3"), ],
-        initial=2
-    )
+    # odm_options = fields.ChoiceField(
+    #     choices=[(1, "1"), (2, "2"), (3, "3"), ],
+    #     initial=2
+    # )
 
     ground_truth_options = fields.ChoiceField(
         choices=[(1, "detection only"), (2, "compare with a grund truth file")],
