@@ -110,13 +110,15 @@ class MainView(View):
         return JsonResponse({"status": False, 'error': form.errors})
 
 
+
+@method_decorator(csrf_exempt, name='dispatch')
 class DeleteView(View):
     def get(self, request, *args, **kwargs):
         print(request.GET['id'])
         print(models.Users.objects.all())
         models.Experiments.objects.filter(id=request.GET['id']).delete()
         print(models.Users.objects.all())
-        return redirect("/main/")
+        return JsonResponse({"status": True})
 
 
 class Configuration(View):
@@ -130,6 +132,12 @@ class Configuration(View):
         columns = exp[0].get_columns()
         form = ConfigForm()
         odms = tools.odm_handling.get_odm_dict().keys()
+        print("odms:", odms)
+        print("list(odms)[1]:", list(odms)[1])
+        #print("odms:", odms)
+        print("tools.odm_handling.get_odm_dict(): ", tools.odm_handling.get_odm_dict())
+        print("tools.odm_handling.get_odm_dict().keys(): ", tools.odm_handling.get_odm_dict().keys())
+        print("here is odems dirc: ", tools.odm_handling.get_def_value_dict(tools.odm_handling.match_odm_by_name("ABOD")))
         print("here is odems: ", dict(tools.odm_handling.get_def_value_dict(tools.odm_handling.match_odm_by_name("ABOD"))).keys())
         return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms":odms})
 
@@ -143,6 +151,17 @@ class Configuration(View):
             print(form.cleaned_data)
             return HttpResponse("true")
         return redirect("main/")
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ResultView(View):
+    template_name = "Result.html"
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+
+    def post(self, request, *args, **kwargs):
+        return render(request, self.template_name)
 
 
 class FinishedDetailView(View):

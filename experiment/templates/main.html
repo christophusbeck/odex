@@ -55,7 +55,7 @@
                         <td>
                             <input id="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button"
                                    value="Delete">
-                            <input id="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button"
+                            <input id="{{ obj.id }}" class="btn btn-primary btn-xs btn-details" type="button"
                                    value="Show details">
                         </td>
                     </tr>
@@ -118,7 +118,7 @@
                 <h4>Are you sure to delete?</h4>
                 <p style="text-align: right;">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button id="btnConfirmDelete" type="button" class="btn btnSave">Delete</button>
+                    <button id="btnConfirmDelete" type="button" class="btn btn-danger">Delete</button>
                 </p>
             </div>
 
@@ -138,12 +138,8 @@
             bindBtnSaveEvent();
             bindBtnDeleteEvent();
             bindBtnConfirmDeleteEvent();
-            changeAgentContent();
+            bindBtnDetailsEvent();
         })
-
-        function changeAgentContent() {
-            document.getElementById("inputFileAgent").value = document.getElementById("inputFile").value;
-        }
 
         function bindBtnAddEvent() {
             $("#btnAdd").click(function () {
@@ -187,6 +183,7 @@
 
                 // 获取当前行的ID并赋值给全部变量。
                 DELETE_ID = $(this).attr("id");
+
             });
         }
 
@@ -203,7 +200,6 @@
                         if (res.status) {
                             location.reload();
                         } else {
-                            // 删除失败
                             alert(res.error);
                         }
                     }
@@ -211,6 +207,28 @@
             });
         }
 
+        function bindBtnDetailsEvent() {
+            $(".btn-details").click(function () {
+                Details_ID = $(this).attr("id");
+                $.ajax({
+                    url: "/result/",  //    => /order/delete/?uid=123
+                    type: "GET",
+                    data: {
+                        id: Details_ID
+                    },
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            window.location.href = "/result/?id=" + res.id;
+                        } else {
+                            alert(res.error);
+                        }
+                    }
+                })
+
+
+            });
+        }
     </script>
 {% endblock %}
 
