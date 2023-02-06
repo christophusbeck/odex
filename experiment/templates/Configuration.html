@@ -38,7 +38,7 @@
 
                 {% for choice in form.operation_model_options %}
                     <div class="form-group">
-                    <p>{{ choice }}</p>
+                        <p>{{ choice }}</p>
                     </div>
                 {% endfor %}
 
@@ -49,18 +49,22 @@
                 </div>
 
 
+
             </div>
+        {#            form way#}
+            {#                {% for choice in form.ground_truth_options %}#}
+            {#                    <div class="form-group">#}
+            {#                    <p>{{ choice }}</p>#}
+            {#                    </div>#}
+            {#                {% endfor %}#}
 
             <div>
-                <div>If use ground truth file:</div>
-                {% for choice in form.ground_truth_options %}
-                    <div class="form-group">
-                    <p>{{ choice }}</p>
-                    </div>
-                {% endfor %}
+                <div><h3>If use ground truth file:</h3></div>
+                <input type="radio" name="gt" onclick="hideGT()"> Detection only <br>
+                <input type="radio" name="gt" onclick="showGT()"> Compare with a grund truth file
+                <br>
 
-
-                <button class="ground_truth_file">
+                <button id="ground_truth_file" style="display: none">
                     <label>{{ form.ground_truth.label }}: </label>
                     {{ form.ground_truth }}
                     <span style="color: red;">{{ field.errors.0 }}</span>
@@ -68,10 +72,13 @@
             </div>
 
 
-            <div>
-                <p> {{ form.additional_data_option }} Run again with additional data</p>
 
-                <button class="addtional">
+            <div>
+                                {#            form way#}
+{#                <div> {{ form.additional_data_option }} <h3>Run again with additional data</h3></div>#}
+                <h3>Run again with additional data:<input type="checkbox" onclick="showAdd(this)"></h3>
+
+                <button id="addtional" style="display: none">
                     <label>{{ form.generated_file.label }}: </label>
                     {{ form.generated_file }}
                     <span style="color: red;">{{ field.errors.0 }}</span>
@@ -91,17 +98,18 @@
             </label>
 
 
-        {% load odms_para %}
+            {% load odms_para %}
             <script>
                 function odm_paras() {
                     var options = $("#odms option:selected");
                     var odm = options.val();
-                    var para_list = {{ odm|odm_para }}
+                    var para_list =
+                    {{ odm|odm_para }}
                 }
 
                 var table = document.getElementById("parameters");
 
-                for(var i=0; i<para_list.length();i++) {
+                for (var i = 0; i < para_list.length(); i++) {
                     var para = para_list[i];
                     var span = document.createElement("span");
                     span.innerText = "<td> para </td> <td><input type=\"text\"></td>";
@@ -117,10 +125,10 @@
                 </tr>
                 </thead>
                 <tbody id="parameters">
-{#                {% for para in form.parameter %}#}
-{#                    <td>{{ para }}</td>#}
-{#                    <td><input type="text"></td>#}
-{#                {% endfor %}#}
+                {#                {% for para in form.parameter %}#}
+                {#                    <td>{{ para }}</td>#}
+                {#                    <td><input type="text"></td>#}
+                {#                {% endfor %}#}
                 </tbody>
             </table>
 

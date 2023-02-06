@@ -58,7 +58,7 @@
             cursor: pointer;
         }
 
-        .UploadButton{
+        .UploadButton {
             background-color: lightskyblue;
             border: none;
             color: white;
@@ -71,8 +71,45 @@
             cursor: pointer;
         }
 
+        .gt:checked ~ .ground_truth_file {
+            display: block;
+        }
+
     </style>
     {% block css %}{% endblock %}
+
+
+    <script>
+        function showGT() {
+            var up = document.getElementById("ground_truth_file")
+            up.style.display = 'block';
+        }
+
+        function hideGT() {
+            var up = document.getElementById("ground_truth_file")
+            up.style.display = 'none';
+        }
+
+        function showAdd(obj) {
+            var up = document.getElementById("addtional")
+            if(obj.checked === true) {
+                up.style.display = 'block';
+            } else up.style.display = 'none'
+
+        }
+
+        $(function () {
+            $(".barcodeSavePrint").click(function () {
+                if (this.checked == true) {
+                    alert("选中");
+                } else {
+                    alert("不选中");
+                }
+            })
+        })
+
+
+    </script>
 </head>
 <body>
 <nav class="navbar navbar-default">
