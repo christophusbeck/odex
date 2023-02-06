@@ -55,7 +55,7 @@
                         <td>
                             <input id="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button"
                                    value="Delete">
-                            <input id="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button"
+                            <input id="{{ obj.id }}" class="btn btn-primary btn-xs btn-details" type="button"
                                    value="Show details">
                         </td>
                     </tr>
@@ -138,12 +138,8 @@
             bindBtnSaveEvent();
             bindBtnDeleteEvent();
             bindBtnConfirmDeleteEvent();
-            changeAgentContent();
+            bindBtnDetailsEvent();
         })
-
-        function changeAgentContent() {
-            document.getElementById("inputFileAgent").value = document.getElementById("inputFile").value;
-        }
 
         function bindBtnAddEvent() {
             $("#btnAdd").click(function () {
@@ -187,6 +183,7 @@
 
                 // 获取当前行的ID并赋值给全部变量。
                 DELETE_ID = $(this).attr("id");
+
             });
         }
 
@@ -194,7 +191,7 @@
             $("#btnConfirmDelete").click(function () {
                 $.ajax({
                     url: "/delete/",  //    => /order/delete/?uid=123
-                    type: "GET",
+                    type: "Post",
                     data: {
                         id: DELETE_ID
                     },
@@ -211,6 +208,28 @@
             });
         }
 
+        function bindBtnDetailsEvent() {
+            $(".btn-details").click(function () {
+                Details_ID = $(this).attr("id");
+                $.ajax({
+                    url: "/result/",  //    => /order/delete/?uid=123
+                    type: "Post",
+                    data: {
+                        id: Details_ID
+                    },
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            location.reload();
+                        } else {
+                            alert(res.error);
+                        }
+                    }
+                })
+
+
+            });
+        }
     </script>
 {% endblock %}
 
