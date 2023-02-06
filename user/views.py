@@ -81,14 +81,10 @@ class ResetPasswordView(View):
     template_name = "resetpassword"  # waiting for html file
 
     def get(self, request, *args, **kwargs):
-        form = RegisterForm()
-        return render(request, self.template_name, {"form": form})
+        pass
 
     def post(self, request, *args, **kwargs):
-        form = RegisterForm()
-        username = request.POST.get('username')
-        question = Users.objects.filter(username).
-        return render(request, self.template_name, {"form": form, "question": question})
+        pass
 
 
 class LogOutView(View):
