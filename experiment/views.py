@@ -110,13 +110,15 @@ class MainView(View):
         return JsonResponse({"status": False, 'error': form.errors})
 
 
+
+@method_decorator(csrf_exempt, name='dispatch')
 class DeleteView(View):
     def get(self, request, *args, **kwargs):
         print(request.GET['id'])
         print(models.Users.objects.all())
         models.Experiments.objects.filter(id=request.GET['id']).delete()
         print(models.Users.objects.all())
-        return redirect("/main/")
+        return JsonResponse({"status": True})
 
 
 class Configuration(View):
@@ -151,6 +153,7 @@ class Configuration(View):
         return redirect("main/")
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class ResultView(View):
     template_name = "Result.html"
 

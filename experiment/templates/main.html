@@ -118,7 +118,7 @@
                 <h4>Are you sure to delete?</h4>
                 <p style="text-align: right;">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button id="btnConfirmDelete" type="button" class="btn btnSave">Delete</button>
+                    <button id="btnConfirmDelete" type="button" class="btn btn-danger">Delete</button>
                 </p>
             </div>
 
@@ -191,7 +191,7 @@
             $("#btnConfirmDelete").click(function () {
                 $.ajax({
                     url: "/delete/",  //    => /order/delete/?uid=123
-                    type: "Post",
+                    type: "GET",
                     data: {
                         id: DELETE_ID
                     },
@@ -213,7 +213,7 @@
                 Details_ID = $(this).attr("id");
                 $.ajax({
                     url: "/result/",  //    => /order/delete/?uid=123
-                    type: "Post",
+                    type: "GET",
                     data: {
                         id: Details_ID
                     },
