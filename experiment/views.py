@@ -10,6 +10,7 @@ from django.views import View
 from django.utils import timezone
 
 import tools.odm_handling
+from tools.detector_thread import DetectorThread
 from experiment.forms import CreateForm, ConfigForm
 from experiment import models
 
@@ -142,7 +143,7 @@ class Configuration(View):
     def post(self, request, *args, **kwargs):
         form = ConfigForm(data=request.POST, files=request.FILES)
         odms = tools.odm_handling.static_odms_dic()
-        exp = models.Experiments.objects.filter(id=request.GET['id']).first()
+        exp = models.PendingExperiments.objects.filter(id=request.GET['id']).first()
         columns = exp.get_columns()
 
         print("request.POST: ", request.POST)
@@ -170,6 +171,8 @@ class Configuration(View):
 
             exp.start_time = timezone.now()
             exp.save()
+
+            DetectorThread(exp.id).start()
 
             # return HttpResponse(
             #     [json.dumps(selected_odm),
