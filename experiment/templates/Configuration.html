@@ -112,8 +112,10 @@
                 </select>
             </label>
 
+
             {% for key, para in odms.items %}
-                <table align="center" border="1" style="display: none" id="odm{{ forloop.counter }}">
+                <div style="display: none" id="odm{{ forloop.counter }}">
+                <table class="table table-bordered" align="center" border="1" >
                     <thead>
                     <tr>
                         <th>parameters</th>
@@ -132,6 +134,7 @@
                     </div>
                     </tbody>
                 </table>
+                </div>
             {% endfor %}
 
             <div>
