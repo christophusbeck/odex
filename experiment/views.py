@@ -168,6 +168,7 @@ class Configuration(View):
             if 'ground_truth' in form.files:
                 exp.ground_truth = form.files['ground_truth']
 
+            exp.start_time = timezone.now()
             exp.save()
 
             # return HttpResponse(
