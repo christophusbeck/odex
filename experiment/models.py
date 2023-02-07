@@ -65,7 +65,7 @@ class Experiments(models.Model):
         return json.loads(self.columns)
 
     def set_para(self, x):
-        self.columns = json.dumps(x)
+        self.parameters = json.dumps(x)
 
     def get_para(self):
         return json.loads(self.parameters)

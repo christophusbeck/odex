@@ -140,15 +140,19 @@ class Configuration(View):
         form = ConfigForm(data=request.POST, files=request.FILES)
         odms = tools.odm_handling.static_odms_dic()
 
+        print("request.POST: ", request.POST)
+        print("request.GET: ", request.GET)
+
         if request.POST.get('exp_id', False):
             time.sleep(1)
             exp_id = request.POST.get('exp_id', False)
         else:
             exp_id = request.GET.get('id', False)
-        pending = models.Experiments.objects.filter(id=exp_id).first()
+        pending = models.PendingExperiments.objects.filter(id=exp_id).first()
 
         if form.is_valid():
             print("form.cleaned_data: ", form.cleaned_data)
+            print("form.files: ", form.files)
             odms = tools.odm_handling.static_odms_dic()
             selected_odm = list(odms.keys())[int(request.POST['odms']) - 1]
 
@@ -161,12 +165,13 @@ class Configuration(View):
 
             pending.odm = form.cleaned_data['odm'] = selected_odm
             pending.set_para(parameters)
-            pending.generated_file = form.files['generated_file']
-            pending.ground_truth = form.files['ground_truth']
+
+            if 'generated_file' in form.files:
+                pending.generated_file = form.files['generated_file']
+            if 'ground_truth' in form.files:
+                pending.ground_truth = form.files['ground_truth']
+
             pending.save()
-
-
-            print("save successful")
 
             # return HttpResponse(
             #     [json.dumps(selected_odm),
