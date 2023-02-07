@@ -56,7 +56,7 @@ class Experiments(models.Model):
     )
     auxiliary_file_name = models.CharField(verbose_name="file", max_length=128, blank=True, null=True)
     columns = models.TextField(blank=True, null=True)
-    #parameter = models.TextField(blank=True, null=True)
+    parameters = models.TextField(blank=True, null=True)
 
     def set_columns(self, x):
         self.columns = json.dumps(x)
@@ -64,10 +64,26 @@ class Experiments(models.Model):
     def get_columns(self):
         return json.loads(self.columns)
 
+    def set_para(self, x):
+        self.columns = json.dumps(x)
 
-def user_directory_path(instance, filename):
+    def get_para(self):
+        return json.loads(self.parameters)
+
+
+def user_main_file_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return 'user_{0}/{1}/{2}'.format(instance.user_id, instance.id, filename)
+    return 'user_{0}/{1}/main_{2}'.format(instance.user_id, instance.id, filename)
+
+def user_generated_file_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'user_{0}/{1}/additional_{2}'.format(instance.user_id, instance.id, filename)
+
+def user_ground_truth_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'user_{0}/{1}/ground_truth_{2}'.format(instance.user_id, instance.id, filename)
+
+
 
 def validate_file_extension(value):
     import os
@@ -80,7 +96,7 @@ def validate_file_extension(value):
 class PendingExperiments(Experiments):
     main_file = models.FileField(
         verbose_name="main file path",
-        upload_to=user_directory_path,
+        upload_to=user_main_file_path,
         help_text="please upload a file",
         validators=[validate_file_extension],
         blank=True,
@@ -88,7 +104,7 @@ class PendingExperiments(Experiments):
     )
     generated_file = models.FileField(
         verbose_name="generated file path",
-        upload_to=user_directory_path,
+        upload_to=user_generated_file_path,
         help_text="please upload a generated file",
         validators=[validate_file_extension],
         blank=True,
@@ -96,7 +112,7 @@ class PendingExperiments(Experiments):
     )
     ground_truth = models.FileField(
         verbose_name="ground truth path",
-        upload_to=user_directory_path,
+        upload_to=user_ground_truth_path,
         help_text="please upload a ground truth file",
         validators=[validate_file_extension],
         blank=True,
@@ -110,11 +126,11 @@ class FinishedExperiments(Experiments):
     start_time = models.TimeField(verbose_name="start time", auto_now=False, auto_now_add=True)
     duration = models.IntegerField(verbose_name="run duration")
 
-    def get_metrics(self): #dummy method to test display
-        results = {Accuracy: 1,
-                   Precision: 1,
-                   othermetric: 10}
-        return results
+    # def get_metrics(self): #dummy method to test display
+    #     results = {Accuracy: 1,
+    #                Precision: 1,
+    #                othermetric: 10}
+    #     return results
 
 
 

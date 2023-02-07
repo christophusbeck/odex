@@ -46,8 +46,8 @@ class RegisterForm(BootStrapForm):
         label="password",
         max_length=64,
         help_text="Please enter at least 6 characters",
-        widget = forms.PasswordInput(
-        attrs={'placeholder': '********', 'autocomplete': 'off', 'data-toggle': 'password'})
+        widget=forms.PasswordInput(
+            attrs={'placeholder': '********', 'autocomplete': 'off', 'data-toggle': 'password'})
     )
     tan = forms.CharField(
         label="TAN",

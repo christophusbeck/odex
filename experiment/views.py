@@ -1,4 +1,5 @@
 import json
+import time
 
 import pandas as pd
 from http.client import HTTPResponse
@@ -126,27 +127,59 @@ class Configuration(View):
 
     def get(self, request, *args, **kwargs):
 
-        # only for test
-        # exp_Info = models.Experiments.objects.all()
-        exp = models.Experiments.objects.filter(id=request.GET['id'])
-        columns = exp[0].get_columns()
+        exp = models.Experiments.objects.filter(id=request.GET['id']).first()
+        columns = exp.get_columns()
         form = ConfigForm()
         odms = tools.odm_handling.static_odms_dic()
 
-        return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms":odms, "parameter_dic": list(odms.values())})
+        return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms":odms})
 
 
 
     def post(self, request, *args, **kwargs):
         form = ConfigForm(data=request.POST, files=request.FILES)
+        odms = tools.odm_handling.static_odms_dic()
 
-        exp_Info = models.Experiments.objects.all()
-        formConf = ConfigForm()
+        if request.POST.get('exp_id', False):
+            time.sleep(1)
+            exp_id = request.POST.get('exp_id', False)
+        else:
+            exp_id = request.GET.get('id', False)
+        pending = models.Experiments.objects.filter(id=exp_id).first()
 
         if form.is_valid():
-            print(form.cleaned_data)
-            return HttpResponse("true")
-        return redirect("main/")
+            print("form.cleaned_data: ", form.cleaned_data)
+            odms = tools.odm_handling.static_odms_dic()
+            selected_odm = list(odms.keys())[int(request.POST['odms']) - 1]
+
+            # this is specified parameters by user
+            parameters = odms[selected_odm].copy()
+            for key in parameters.keys():
+                para = eval('selected_odm') + '_' + eval('key')
+                if request.POST[para]:
+                    parameters[key] = request.POST[para]
+
+            pending.odm = form.cleaned_data['odm'] = selected_odm
+            pending.set_para(parameters)
+            pending.generated_file = form.files['generated_file']
+            pending.ground_truth = form.files['ground_truth']
+            pending.save()
+
+
+            print("save successful")
+
+            # return HttpResponse(
+            #     [json.dumps(selected_odm),
+            #      ":     ",
+            #      json.dumps(odms[selected_odm]),
+            #      '          specified para:',
+            #      json.dumps(parameters)
+            #      ]
+            # )
+            # return JsonResponse({"status": True})
+            return redirect("/main/")
+
+        return JsonResponse({"status": False, 'error': form.errors})
 
 
 @method_decorator(csrf_exempt, name='dispatch')

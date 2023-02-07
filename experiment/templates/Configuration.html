@@ -4,7 +4,7 @@
     <div class="configuration">
         <h1 align="center">New Run:</h1>
         <br>
-        Run title: {{ exp.0.run_name }}
+        Run title: {{ exp.run_name }}
         <br>
         Detected subspaces: {{ columns|length }}
 
@@ -30,7 +30,7 @@
         <br>
 
 
-        <form method="post" enctype="multipart/form-data">
+        <form id="formAdd" method="post" enctype="multipart/form-data">
             {% csrf_token %}
 
             <br>
@@ -51,14 +51,16 @@
 
                 <div class="form-group" id="except" style="display: none">
                     <label> All subspaces, except: </label> <br>
-                    <input type="text" placeholder="All subspaces, except:">
-                    <span style="color: red;">{{ field.errors.0 }}</span>
+                    {{ form.operation_except }}
+                    <small>{{ form.operation_except.help_text }}</small>
+                    <span style="color: red;">{{ form.operation_except.errors.0 }}</span>
                 </div>
 
                 <div class="form-group" id="combo" style="display: none">
                     <label> Combination: </label> <br>
-                    <input type="text" placeholder="Combination:">
-                    <span style="color: red;">{{ field.errors.0 }}</span>
+                    {{ form.operation_written }}
+                    <small>{{ form.operation_written.help_text }}</small>
+                    <span style="color: red;">{{ form.operation_written.errors.0 }}</span>
                     {#                    form way#}
                     {#                    <label>{{ form.operation.label }}: </label>#}
                     {#                    {{ form.operation }}#}
@@ -76,8 +78,8 @@
 
             <div>
                 <div><h3>If use ground truth file:</h3></div>
-                <input type="radio" name="gt" onclick="hideGT()"> Detection only <br>
-                <input type="radio" name="gt" onclick="showGT()"> Compare with a grund truth file
+                <input type="radio" name="gt" onclick="hideGT()" value="False"> Detection only <br>
+                <input type="radio" name="gt" onclick="showGT()" value="True"> Compare with a grund truth file
                 <br>
 
                 <button id="ground_truth_file" style="display: none">
@@ -128,7 +130,7 @@
                         {% for name, default in para.items %}
                             <tr>
                                 <td>{{ name }}</td>
-                                <td><input type="text" placeholder="{{ default }}"></td>
+                                <td><input type="text" placeholder="{{ default }}" name="{{ key }}_{{ name }}"></td>
                             </tr>
                         {% endfor %}
                     </div>
@@ -143,13 +145,51 @@
                     <button type="button" value="cancel">Cancel</button>
                 </a>
 
-                <a href="/main/">
-                    <button type="submit" value="Add run to queue">Add run to queue</button>
-                </a>
+{#                <a href="/main/">#}
+                    <button id="btnSave" type="submit" value="Add run to queue">Add run to queue</button>
+{#                </a>#}
             </div>
         </form>
 
     </div>
 
 
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        $(function () {
+            bindBtnSaveEvent()
+        })
+
+        function bindBtnSaveEvent() {
+            $("#btnSave").click(function () {
+                var formData = new FormData($("#formAdd")[0])
+                formData.append('exp_id' , {{ exp.id }})
+
+                // 清除错误信息
+                $(".error-msg").empty();
+
+                $.ajax({
+                    url: "/configuration/",//  -> /order/edit/?uid=12
+                    type: "post",
+                    data: formData,//获取表单中用户填写的数据
+                    processData: false,
+                    contentType: false,
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            //location.reload()
+                            window.location.href = "/main/";
+                        } else {
+                            // 把错误信息显示在对话框中。
+                            $.each(res.error, function (name, errorList) {
+                                $("#id_" + name).next().text(errorList[0]);
+                            })
+                        }
+                    }
+                })
+            });
+        }
+    </script>
 {% endblock %}
