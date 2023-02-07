@@ -109,14 +109,17 @@
             <label>
                 <select name="odms" id="odms" onchange="test(this)">
                     {% for key in odms %}
-                        <option value="{{ forloop.counter }}"> {{ key }}
+                        <option value="{{ forloop.counter }}" {% if forloop.first %}selected{% endif %}> {{ key }}
                     {% endfor %}
                 </select>
             </label>
 
 
             {% for key, para in odms.items %}
-                <div style="display: none" id="odm{{ forloop.counter }}">
+                <div  id="odm{{ forloop.counter }}"
+                      {% if forloop.first %}style="display: block"
+                      {% else %}style="display: none"
+                      {% endif %}>
                 <table class="table table-bordered" align="center" border="1" >
                     <thead>
                     <tr>
