@@ -33,6 +33,7 @@
             <table class="table table-bordered">
                 <thead>
                 <tr>
+                    <th>Created Time</th>
                     <th>State</th>
                     <th>Run name</th>
                     <th>Database file</th>
@@ -45,6 +46,7 @@
                 <tbody>
                 {% for obj in queryset %}
                     <tr id="{{ obj.id }}">
+                        <td>{{ obj.created_time }}</td>
                         <td>{{ obj.state }}</td>
                         <td>{{ obj.run_name }}</td>
                         <td>{{ obj.file_name }}</td>

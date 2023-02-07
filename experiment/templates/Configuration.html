@@ -145,9 +145,7 @@
                     <button type="button" value="cancel">Cancel</button>
                 </a>
 
-{#                <a href="/main/">#}
-                    <button id="btnSave" type="submit" value="Add run to queue">Add run to queue</button>
-{#                </a>#}
+                <button id="btnSave" type="submit" value="Add run to queue">Add run to queue</button>
             </div>
         </form>
 
@@ -156,40 +154,40 @@
 
 {% endblock %}
 
-{% block js %}
-    <script type="text/javascript">
-        $(function () {
-            bindBtnSaveEvent()
-        })
-
-        function bindBtnSaveEvent() {
-            $("#btnSave").click(function () {
-                var formData = new FormData($("#formAdd")[0])
-                formData.append('exp_id' , {{ exp.id }})
-
-                // 清除错误信息
-                $(".error-msg").empty();
-
-                $.ajax({
-                    url: "/configuration/",//  -> /order/edit/?uid=12
-                    type: "post",
-                    data: formData,//获取表单中用户填写的数据
-                    processData: false,
-                    contentType: false,
-                    dataType: "JSON",
-                    success: function (res) {
-                        if (res.status) {
-                            //location.reload()
-                            window.location.href = "/main/";
-                        } else {
-                            // 把错误信息显示在对话框中。
-                            $.each(res.error, function (name, errorList) {
-                                $("#id_" + name).next().text(errorList[0]);
-                            })
-                        }
-                    }
-                })
-            });
-        }
-    </script>
-{% endblock %}
+{#{% block js %}#}
+{#    <script type="text/javascript">#}
+{#        $(function () {#}
+{#            bindBtnSaveEvent()#}
+{#        })#}
+{##}
+{#        function bindBtnSaveEvent() {#}
+{#            $("#btnSave").click(function () {#}
+{#                var formData = new FormData($("#formAdd")[0])#}
+{#                formData.append('exp_id' , {{ exp.id }})#}
+{##}
+{#                // 清除错误信息#}
+{#                $(".error-msg").empty();#}
+{##}
+{#                $.ajax({#}
+{#                    url: "/configuration/",//  -> /order/edit/?uid=12#}
+{#                    type: "post",#}
+{#                    data: {formData},//获取表单中用户填写的数据#}
+{#                    processData: false,#}
+{#                    contentType: false,#}
+{#                    dataType: "JSON",#}
+{#                    success: function (res) {#}
+{#                        if (res.status) {#}
+{#                            //location.reload()#}
+{#                            window.location.href = "/main/";#}
+{#                        } else {#}
+{#                            // 把错误信息显示在对话框中。#}
+{#                            $.each(res.error, function (name, errorList) {#}
+{#                                $("#id_" + name).next().text(errorList[0]);#}
+{#                            })#}
+{#                        }#}
+{#                    }#}
+{#                })#}
+{#            });#}
+{#        }#}
+{#    </script>#}
+{#{% endblock %}#}

@@ -57,6 +57,8 @@ class Experiments(models.Model):
     auxiliary_file_name = models.CharField(verbose_name="file", max_length=128, blank=True, null=True)
     columns = models.TextField(blank=True, null=True)
     parameters = models.TextField(blank=True, null=True)
+    created_time = models.DateTimeField(verbose_name="created time", blank=True, null=True)
+    start_time = models.DateTimeField(verbose_name="start time", blank=True, null=True)
 
     def set_columns(self, x):
         self.columns = json.dumps(x)
@@ -123,7 +125,6 @@ class PendingExperiments(Experiments):
 
 class FinishedExperiments(Experiments):
     result_path = models.CharField(verbose_name="result path", max_length=128)
-    start_time = models.TimeField(verbose_name="start time", auto_now=False, auto_now_add=True)
     duration = models.IntegerField(verbose_name="run duration")
 
     # def get_metrics(self): #dummy method to test display

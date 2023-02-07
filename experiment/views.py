@@ -7,6 +7,7 @@ from http.client import HTTPResponse
 from django.forms import fields, widgets
 from django.shortcuts import render, redirect
 from django.views import View
+from django.utils import timezone
 
 import tools.odm_handling
 from experiment.forms import CreateForm, ConfigForm
@@ -105,7 +106,9 @@ class MainView(View):
             pending.main_file = form.files['main_file']
             data = pd.read_csv(pending.main_file)
             pending.set_columns(list(data))
+            pending.created_time = timezone.now()
             pending.save()
+            print(timezone.now())
             return JsonResponse({"status": True, "id": pending.id})
 
         return JsonResponse({"status": False, 'error': form.errors})
@@ -132,28 +135,22 @@ class Configuration(View):
         form = ConfigForm()
         odms = tools.odm_handling.static_odms_dic()
 
-        return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms":odms})
+        return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms})
 
 
 
     def post(self, request, *args, **kwargs):
         form = ConfigForm(data=request.POST, files=request.FILES)
         odms = tools.odm_handling.static_odms_dic()
+        exp = models.Experiments.objects.filter(id=request.GET['id']).first()
+        columns = exp.get_columns()
 
         print("request.POST: ", request.POST)
         print("request.GET: ", request.GET)
 
-        if request.POST.get('exp_id', False):
-            time.sleep(1)
-            exp_id = request.POST.get('exp_id', False)
-        else:
-            exp_id = request.GET.get('id', False)
-        pending = models.PendingExperiments.objects.filter(id=exp_id).first()
-
         if form.is_valid():
             print("form.cleaned_data: ", form.cleaned_data)
             print("form.files: ", form.files)
-            odms = tools.odm_handling.static_odms_dic()
             selected_odm = list(odms.keys())[int(request.POST['odms']) - 1]
 
             # this is specified parameters by user
@@ -163,15 +160,15 @@ class Configuration(View):
                 if request.POST[para]:
                     parameters[key] = request.POST[para]
 
-            pending.odm = form.cleaned_data['odm'] = selected_odm
-            pending.set_para(parameters)
+            exp.odm = form.cleaned_data['odm'] = selected_odm
+            exp.set_para(parameters)
 
             if 'generated_file' in form.files:
-                pending.generated_file = form.files['generated_file']
+                exp.generated_file = form.files['generated_file']
             if 'ground_truth' in form.files:
-                pending.ground_truth = form.files['ground_truth']
+                exp.ground_truth = form.files['ground_truth']
 
-            pending.save()
+            exp.save()
 
             # return HttpResponse(
             #     [json.dumps(selected_odm),
@@ -181,10 +178,9 @@ class Configuration(View):
             #      json.dumps(parameters)
             #      ]
             # )
-            # return JsonResponse({"status": True})
             return redirect("/main/")
 
-        return JsonResponse({"status": False, 'error': form.errors})
+        return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms})
 
 
 @method_decorator(csrf_exempt, name='dispatch')
