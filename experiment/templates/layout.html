@@ -123,12 +123,12 @@
 
         function test() {
             var opt = $("#odms").val();
-
             document.getElementById("odm" + opt).style.display = 'block'
 
-            for (let i = 0; i < {{ odms|length }}; i++) {
+
+            for (let i = 0; i < {{odms|length}}; i++) {
                 if (i !== opt) {
-                    var toHide = document.getElementById("odm" + i)
+                    var toHide = document.getElementById("odm" + i);
                     toHide.style.display = 'none';
                 }
             }
