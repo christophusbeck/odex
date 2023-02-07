@@ -57,7 +57,7 @@
 
                 <div class="form-group" id="combo" style="display: none">
                     <label> Combination: </label> <br>
-                    <input type="text" placeholder="Combination:" >
+                    <input type="text" placeholder="Combination:">
                     <span style="color: red;">{{ field.errors.0 }}</span>
                     {#                    form way#}
                     {#                    <label>{{ form.operation.label }}: </label>#}
@@ -107,28 +107,32 @@
             <label>
                 <select name="odms" id="odms" onchange="test(this)">
                     {% for key in odms %}
-                        <option value="{{ forloop.counter }}" > {{ key }}
+                        <option value="{{ forloop.counter }}"> {{ key }}
                     {% endfor %}
                 </select>
             </label>
 
+            {% for key, para in odms.items %}
+                <table align="center" border="1" style="display: none" id="odm{{ forloop.counter }}">
+                    <thead>
+                    <tr>
+                        <th>parameters</th>
+                        <th>values</th>
+                    </tr>
+                    </thead>
 
-
-            <table class="table table-bordered" align="center" border="1">
-                <thead>
-                <tr>
-                    <th>parameters</th>
-                    <th>values</th>
-                </tr>
-                </thead>
-                <tbody id="parameters">
-                {#                {% for para in form.parameter %}#}
-                {#                    <td>{{ para }}</td>#}
-                {#                    <td><input type="text"></td>#}
-                {#                {% endfor %}#}
-                </tbody>
-            </table>
-
+                    <tbody id="parameters" >
+                    <div>
+                        {% for name, default in para.items %}
+                            <tr>
+                                <td>{{ name }}</td>
+                                <td><input type="text" placeholder="{{ default }}"></td>
+                            </tr>
+                        {% endfor %}
+                    </div>
+                    </tbody>
+                </table>
+            {% endfor %}
 
             <div>
                 <br>

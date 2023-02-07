@@ -122,3 +122,11 @@ def match_odm_by_name(name:str):
     if odm_dict.keys().__contains__(name):
         return odm_dict[name]
     return ABOD  # arbitrary default option
+
+
+def static_odms_dic():
+    odms = {}
+    for d in get_odm_dict():
+        odm_para = get_def_value_dict(match_odm_by_name(d))
+        odms[d] = odm_para
+    return odms

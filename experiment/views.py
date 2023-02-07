@@ -131,18 +131,9 @@ class Configuration(View):
         exp = models.Experiments.objects.filter(id=request.GET['id'])
         columns = exp[0].get_columns()
         form = ConfigForm()
-        odms = tools.odm_handling.get_odm_dict().keys()
+        odms = tools.odm_handling.static_odms_dic()
 
-        odms_para_dic = []
-        for item in odms:
-            odms_para_dic.append(tools.odm_handling.get_def_value_dict(tools.odm_handling.match_odm_by_name(item)))
-
-        for item in odms_para_dic:
-            item = item.keys()
-
-        print(odms_para_dic[0])
-
-        return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms":odms, "parameter_dic": odms_para_dic})
+        return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms":odms, "parameter_dic": list(odms.values())})
 
 
 
