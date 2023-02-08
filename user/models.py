@@ -15,7 +15,7 @@ class TANs(models.Model):
     tan = models.CharField(
         verbose_name="TAN",
         max_length=6,
-        help_text="Please enter 3 characters",
+        help_text="Please enter a valid 3-digit tan number",
         default="None"
     )
     authenticated = models.BooleanField(verbose_name="authenticated", default=0)
@@ -25,7 +25,7 @@ class Users(models.Model):
     username = models.CharField(
         verbose_name="username",
         max_length=16,
-        help_text="Please enter within 6 letters"
+        help_text="Please enter within 16 letters"
     )
     password = models.CharField(
         verbose_name="password",

@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1/css/bootstrap.min.css' %}">
+    <style>
+        .account {
+            width: 450px;
+            border: 1px solid #dddddd;
+            border-radius: 5px;
+            box-shadow: 5px 5px 20px #aaa;
+
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 10px;
+            padding: 20px 40px;
+        }
+
+        .account h2 {
+            margin-top: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="account">
+    <h2>Enter your new name</h2>
+    <form method="post" novalidate autocomplete="off" >
+        {% csrf_token %}
+        <div class="form-group" id="username_form">
+            <label class="control-label">Username</label>
+            {{ form.username }}
+            <small>{{ form.username.help_text }}</small>
+            <span id="notice"></span>
+        </div>
+
+        <div>
+            <input type="submit" id="create" value="Change Name" class="btn btn-primary">
+
+            <a href="/main/">
+                <button type="button" value="Cancel" class="btn btn-primary">Cancel</button>
+            </a>
+        </div>
+
+    </form>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#id_username').on('change', function () {
+                const username = $(this).val();
+                $.ajax({
+                    url: "{% url 'check_username' %}",
+                    data: {
+                        'username': username
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.flag) {
+                            $('#notice').html("<span class='help-block'>Username already exists</span>");
+                            $(function () {
+                                $('#username_form').last().addClass("has-error");
+                            });
+                            $("#create").attr("disabled", "disabled");
+                        } else {
+                            $('#notice').html('');
+                            $(function () {
+                                $('#username_form').removeClass("has-error has-feedback");
+                            });
+                            $("#create").removeAttr("disabled");
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+</div>
+
+</body>
+</html>

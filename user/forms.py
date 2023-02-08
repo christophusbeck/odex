@@ -40,7 +40,7 @@ class RegisterForm(BootStrapForm):
     username = forms.CharField(
         label="username",
         max_length=64,
-        help_text="Please enter within 6 letters"
+        help_text="Please enter within 16 letters"
     )
     password = forms.CharField(
         label="password",
@@ -51,7 +51,7 @@ class RegisterForm(BootStrapForm):
     )
     tan = forms.CharField(
         label="TAN",
-        help_text="Please enter 3 characters"
+        help_text="Please enter a valid 3-digit tan number"
     )
     question = forms.ModelChoiceField(
         label="Question",
@@ -80,14 +80,14 @@ class InitialResetForm(BootStrapForm):
     username = forms.CharField(
         label="username",
         max_length=64,
-        help_text="Please enter within 6 letters"
+        help_text="Please enter within 16 letters"
     )
 
 class ResetPasswordForm(BootStrapForm):
     password = forms.CharField(
         label="password",
         max_length=64,
-        help_text="Please enter at least 6 characters",
+        help_text="Please enter at least 16 characters",
         widget=forms.PasswordInput(
             attrs={'placeholder': '********', 'autocomplete': 'off', 'data-toggle': 'password'})
     )
@@ -119,6 +119,12 @@ class ResetPasswordForm(BootStrapForm):
     def clean_password(self):
         password = self.cleaned_data.get("password")
         return md5(password)
+
+
+class ChangeNameForm(BootStrapModelForm):
+    class Meta:
+        model = models.Users
+        fields = ["username"]
 
 
 
