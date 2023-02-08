@@ -19,7 +19,7 @@ class CSVFileField(models.FileField):
 class Experiment_state(models.TextChoices):
     finished = 'finished', _('finished')
     pending = 'pending', _('pending')
-    edited = 'edited', _('edited')
+    editing = 'editing', _('editing')
     failed = 'failed', _('failed')
 
 class Pyod_methods(models.TextChoices):

@@ -103,7 +103,7 @@ class MainView(View):
             pending = models.PendingExperiments(user=user)
             pending.run_name = form.cleaned_data['run_name']
             pending.file_name = form.files['main_file'].name
-            pending.state = "edited"
+            pending.state = "editing"
             pending.main_file = form.files['main_file']
             data = pd.read_csv(pending.main_file)
             pending.set_columns(list(data))
@@ -169,6 +169,7 @@ class Configuration(View):
                 exp.ground_truth = form.files['ground_truth']
 
             exp.start_time = timezone.now()
+            exp.state = "pending"
             exp.save()
 
             DetectorThread(exp.id).start()
