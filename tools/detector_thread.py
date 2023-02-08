@@ -1,3 +1,4 @@
+import os
 import threading
 from django.utils import timezone
 
@@ -37,11 +38,10 @@ class DetectorThread(threading.Thread):
             for row in user_data:
                 if outlier_classification[i]:
                     result_csv.append(row[0])
-                i = i  + 1
+                i = i + 1
 
-            result_csv_path = "user_" + str(exp.user_id) + "/" + str(exp.id) + "/results_" + exp.file_name
-            if not os.path.exists("user_" + str(exp.user_id) + "/" + str(exp.id)):
-                os.mkdir("user_" + str(exp.user_id) + "/" + str(exp.id))
+            result_csv_path = models.user_result_path(exp, exp.file_name)
+
             odm_handling.write_data_to_csv(result_csv_path, result_csv)
 
             if exp.ground_truth != "":
