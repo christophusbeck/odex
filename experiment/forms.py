@@ -25,6 +25,13 @@ class ConfigForm(BootStrapModelForm):
             'ground_truth': 'upload a ground truth file'
         }
 
+    # operation = forms.CharField(
+    #     label="Subspace Combination",
+    #     max_length=64,
+    #     help_text="enter the subspace",
+    #     required=False
+    # )
+
     operation_except = forms.CharField(
         label="All subspaces, except",
         max_length=64,
@@ -39,25 +46,30 @@ class ConfigForm(BootStrapModelForm):
         required=False
     )
 
-    # odm_options = fields.ChoiceField(
-    #     choices=[(1, "1"), (2, "2"), (3, "3"), ],
-    #     initial=2
-    # )
+    ground_truth_options = fields.ChoiceField(
+        choices=[("1", "Detection only"), ("2", "Compare with a ground truth file")],
+        widget=widgets.RadioSelect(attrs={
+            'id': 'ground_truth',
+            'style': 'width:30px; height:20px'
+            }),
+        initial=1
+    )
 
-    # ground_truth_options = fields.ChoiceField(
-    #     choices=[(1, "detection only"), (2, "compare with a grund truth file")],
-    #     widget=widgets.RadioSelect(attrs={'style':'width:30px; height:20px'}),
-    # )
     #
     # additional_data_option = fields.ChoiceField(
-    #     widget=widgets.CheckboxInput(attrs={'style':'width:30px; height:20px'}),
+    #     widget=widgets.CheckboxInput(attrs={
+    #         'style': 'width:30px; height:20px',
+    #     }),
     # )
-    #
-    # operation_model_options = fields.ChoiceField(
-    #     choices=[(1, "All subspaces"), (2, "All, except:"), (3, "Combination:")],
-    #     widget=widgets.RadioSelect(attrs={'style':'width:30px; height:20px'}),
-    #     initial=1
-    # )
+
+    operation_model_options = fields.ChoiceField(
+        choices=[("1", "All subspaces"), ("2", "All, except:"), ("3", "Combination:")],  # （value, label）
+        widget=widgets.RadioSelect(attrs={
+            'id': 'operation_model',
+            'style': 'width:30px; height:20px'
+        }),
+        initial=1
+    )
 
 
 # class UpForm(BootStrapForm):

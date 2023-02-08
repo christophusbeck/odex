@@ -152,6 +152,29 @@ class Configuration(View):
             print("form.files: ", form.files)
             selected_odm = list(odms.keys())[int(request.POST['odms']) - 1]
 
+            if form.cleaned_data['operation_model_options'] == '1':
+                subspaces = columns
+
+            elif form.cleaned_data['operation_model_options'] == '2':
+                if not form.cleaned_data['operation_except']:
+                    print("Please enter your excluded subspaces")
+                    form.add_error('operation_except', "Please enter your excluded subspaces")
+                    return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms})
+                # here parser the subspaces input
+                elif not tools.odm_handling.subspace_selection_parser(form.cleaned_data['operation']):
+                    form.add_error('operation_except', "Please enter your excluded subspaces in correct format")
+                    return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms})
+
+            elif form.cleaned_data['operation_model_options'] == '3':
+                if not form.cleaned_data['operation_written']:
+                    form.add_error('operation_written', "Please enter your subspace combination")
+                    return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms})
+                # here parser the subspaces input
+                elif not tools.odm_handling.subspace_selection_parser(form.cleaned_data['operation']):
+                    form.add_error('operation_written', "Please enter your subspace combination in correct format")
+                    return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms})
+
+
             # this is specified parameters by user
             parameters = odms[selected_odm].copy()
             for key in parameters.keys():
@@ -173,14 +196,6 @@ class Configuration(View):
 
             DetectorThread(exp.id).start()
 
-            # return HttpResponse(
-            #     [json.dumps(selected_odm),
-            #      ":     ",
-            #      json.dumps(odms[selected_odm]),
-            #      '          specified para:',
-            #      json.dumps(parameters)
-            #      ]
-            # )
             return redirect("/main/")
 
         return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms})

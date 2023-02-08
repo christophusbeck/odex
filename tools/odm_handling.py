@@ -88,7 +88,7 @@ def subspace_combination_check(user_choice: str, max_col):
 
 
 def subspace_selection_parser(user_choice: str):
-    pass
+    return True
 
 
 def get_head_indexing(data: list[list[str]]):

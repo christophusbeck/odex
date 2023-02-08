@@ -35,20 +35,22 @@
 
             <br>
             <div class="operation">
+                <fieldset>
+                    <legend>Select Subspaces</legend>
+                    {% for radio in form.operation_model_options %}
+                        <label for="{{ radio.id_for_label }}">
+                            <span class="radio">{{ radio.tag }}</span>
+                            {{ radio.choice_label }}
+                        </label>
+                    {% endfor %}
+                </fieldset>
 
-                {#            form way#}
-                {#                {% for choice in form.operation_model_options %}#}
-                {#                    <div class="form-group">#}
-                {#                        <p>{{ choice }}</p>#}
-                {#                    </div>#}
-                {#                {% endfor %}#}
-                <input type="radio" id="sub" name="sub" onclick="hideLogAndCombo()" value="all">
-                <label>All subspaces:</label><br>
-                <input type="radio" id="sub" name="sub" onclick="showExcept()" value="except">
-                <label>All, except:</label><br>
-                <input type="radio" id="sub" name="sub" onclick="showCombo()" value="combo">
-                <label>Combination:</label>
-
+{#                <input type="radio" id="sub" name="sub" onclick="hideLogAndCombo()" value="all">#}
+{#                <label>All subspaces:</label><br>#}
+{#                <input type="radio" id="sub" name="sub" onclick="showExcept()" value="except">#}
+{#                <label>All, except:</label><br>#}
+{#                <input type="radio" id="sub" name="sub" onclick="showCombo()" value="combo">#}
+{#                <label>Combination:</label>#}
                 <div class="form-group" id="except" style="display: none">
                     <label> All subspaces, except: </label> <br>
                     {{ form.operation_except }}
@@ -61,13 +63,7 @@
                     {{ form.operation_written }}
                     <small>{{ form.operation_written.help_text }}</small>
                     <span style="color: red;">{{ form.operation_written.errors.0 }}</span>
-                    {#                    form way#}
-                    {#                    <label>{{ form.operation.label }}: </label>#}
-                    {#                    {{ form.operation }}#}
-                    {#                    <span style="color: red;">{{ field.errors.0 }}</span>#}
                 </div>
-
-
             </div>
             {#            form way#}
             {#                {% for choice in form.ground_truth_options %}#}
@@ -76,18 +72,26 @@
             {#                    </div>#}
             {#                {% endfor %}#}
 
-            <div>
-                <div><h3>If use ground truth file:</h3></div>
-                <input type="radio" name="gt" onclick="hideGT()" value="False"> Detection only <br>
-                <input type="radio" name="gt" onclick="showGT()" value="True"> Compare with a grund truth file
-                <br>
+            <fieldset>
+                    <legend>If use ground truth file</legend>
+                {% for radio in form.ground_truth_options %}
+                        <label for="{{ radio.id_for_label }}">
+                            <span class="radio">{{ radio.tag }}</span>
+                            {{ radio.choice_label }}
+                        </label>
+                {% endfor %}
+            </fieldset>
+
+{#                <input type="radio" name="gt" onclick="hideGT()" value="False"> Detection only <br>#}
+{#                <input type="radio" name="gt" onclick="showGT()" value="True"> Compare with a grund truth file#}
+{#                <br>#}
 
                 <button id="ground_truth_file" style="display: none">
                     <label>{{ form.ground_truth.label }}: </label>
                     {{ form.ground_truth }}
                     <span style="color: red;">{{ field.errors.0 }}</span>
                 </button>
-            </div>
+
 
 
             <div>
@@ -160,6 +164,83 @@
 {% block js %}
 
     <script>
+
+     $('#operation_model_0').change(function() {
+        var select = $(this);
+        var exc = $('#except');
+        var combo = $('#combo');
+        exc.hide();
+        combo.hide();
+    });
+
+    $('#operation_model_1').change(function() {
+        var select = $(this);
+        var exc = $('#except');
+        var combo = $('#combo');
+        exc.show();
+        combo.hide();
+    });
+
+    $('#operation_model_2').change(function() {
+        var select = $(this);
+        var exc = $('#except');
+        var combo = $('#combo');
+        exc.hide();
+        combo.show();
+    });
+
+    $('#ground_truth_0').change(function() {
+        var select = $(this);
+        var gt = $('#ground_truth_file');
+        gt.hide();
+    });
+
+    $('#ground_truth_1').change(function() {
+        var select = $(this);
+        var gt = $('#ground_truth_file');
+        gt.show();
+    });
+
+        function showGT() {
+            var up = document.getElementById("ground_truth_file")
+            up.style.display = 'block';
+        }
+
+        function hideGT() {
+            var up = document.getElementById("ground_truth_file")
+            up.style.display = 'none';
+        }
+
+        function showAdd(obj) {
+            var up = document.getElementById("addtional")
+            if (obj.checked === true) {
+                up.style.display = 'block';
+            } else up.style.display = 'none'
+
+        }
+
+        function showCombo() {
+            var combo = document.getElementById("combo")
+            var exc = document.getElementById("except")
+            combo.style.display = 'block'
+            exc.style.display = 'none'
+
+        }
+
+        function showExcept() {
+            var combo = document.getElementById("combo")
+            var exc = document.getElementById("except")
+            combo.style.display = 'none'
+            exc.style.display = 'block'
+        }
+
+        function hideLogAndCombo() {
+            var combo = document.getElementById("combo")
+            var exc = document.getElementById("except")
+            combo.style.display = 'none'
+            exc.style.display = 'none'
+        }
+
         function displaySelected() {
             var opt = $("#odms").val();
             document.getElementById("odm" + 1).style.display = 'none'
