@@ -1,3 +1,4 @@
+import os.path
 import threading
 from django.utils import timezone
 
@@ -17,30 +18,31 @@ class DetectorThread(threading.Thread):
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
             exp_odm = odm_handling.match_odm_by_name(exp.odm)
             exp_para = exp.get_para()
-
-            user_csv = odm_handling.get_data_from_csv(exp.main_file)
+            user_csv = odm_handling.get_data_from_csv(exp.main_file.path)
             user_data = odm_handling.get_array_from_csv_data(user_csv[1:])
 
             print("exp_odm: ", exp_odm)
             print("exp_para: ", exp_para)
 
             clf = exp_odm(**exp_para)
-            clf.fit(self, user_data)
+            clf.fit(user_data)
 
-            outlier_classification = clf.predict(self, user_data)
-
-            print("outlier classification: ", outlier_classification)
+            outlier_classification = clf.predict(user_data)
 
             metrics = {}
             metrics["Detected Outliers"] = sum(outlier_classification)
 
-
             result_csv = []
-            result_csv.append(user_csv[1])
-            for (row, i) in user_data:
+            result_csv.append(user_csv[0])
+            i = 0
+            for row in user_data:
                 if outlier_classification[i]:
-                    result_csv.append(row)
-            result_csv_path = exp.user_id + "/" + exp.id + "/results_" + exp.file_name
+                    result_csv.append(row[0])
+                i = i  + 1
+
+            result_csv_path = "user_" + str(exp.user_id) + "/" + str(exp.id) + "/results_" + exp.file_name
+            if not os.path.exists("user_" + str(exp.user_id) + "/" + str(exp.id)):
+                os.mkdir("user_" + str(exp.user_id) + "/" + str(exp.id))
             odm_handling.write_data_to_csv(result_csv_path, result_csv)
 
             if exp.ground_truth != "":
