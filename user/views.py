@@ -4,7 +4,8 @@ from django.http import HttpResponse, JsonResponse
 from user.models import Users, SecurityQuestions, TANs, SecurityAnswers
 from django.shortcuts import render, redirect
 from django.views import View
-from user.forms import LoginForm, RegisterForm, ResetPasswordForm, InitialResetForm, ChangeNameForm
+from user.forms import LoginForm, RegisterForm, ChangeNameForm, ForgetPasswordForm, \
+    InitialForgetForm, InitialChangePasswordForm, ChangePasswordForm
 from tools.encrypt import md5
 
 
@@ -67,23 +68,15 @@ class RegistrationView(View):
         return render(request, self.template_name, {"form": form})
 
 
-class CheckUsername(View):
-    def get(self, request, *args, **kwargs):
-        username = request.GET.get('username', None)
-        check = {
-            'flag': Users.objects.filter(username__iexact=username).exists()
-        }
-        return JsonResponse(check)
-
-
-class ResetPasswordView(View):
-    template_name = "reset_password.html"  # waiting for html file
+class ForgetPasswordView(View):
+    template_name = "forget_password.html"  # waiting for html file
 
     def get(self, request, *args, **kwargs):
-        initial_form = InitialResetForm()
-        form = ResetPasswordForm()
+        print("here")
+        initial_form = InitialForgetForm()
+        form = ForgetPasswordForm()
         if request.GET.get('username', False):
-            initial_form = InitialResetForm(data=request.GET)
+            initial_form = InitialForgetForm(data=request.GET)
             if initial_form.is_valid():
                 user = Users.objects.filter(username=request.GET.get('username')).first()
                 if not user:
@@ -96,8 +89,8 @@ class ResetPasswordView(View):
         return render(request, self.template_name, {"initial_form": initial_form})
 
     def post(self, request, *args, **kwargs):
-        initial_form = InitialResetForm(data=request.GET)
-        form = ResetPasswordForm(data=request.POST)
+        initial_form = InitialForgetForm(data=request.GET)
+        form = ForgetPasswordForm(data=request.POST)
         user = Users.objects.filter(username=request.GET.get('username')).first()
         security = SecurityAnswers.objects.get(user=user)
         if form.is_valid():
@@ -109,6 +102,61 @@ class ResetPasswordView(View):
             user.save()
             return redirect('/login/')
         return render(request, self.template_name, {"security": security, "form": form, "initial_form": initial_form})
+
+
+class CheckUsername(View):
+    def get(self, request, *args, **kwargs):
+        username = request.GET.get('username', None)
+        check = {
+            'flag': Users.objects.filter(username__iexact=username).exists()
+        }
+        return JsonResponse(check)
+
+
+class ChangeNameView(View):
+    template_name = "change_name.html"
+
+    def get(self, request, *args, **kwargs):
+        form = ChangeNameForm()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        form = ChangeNameForm(data=request.POST)
+        if form.is_valid():
+            user = Users.objects.get(id=request.session["info"]["id"])
+            user.username = form.cleaned_data["username"]
+            user.save()
+            request.session["info"] = {'id': user.id, 'username': user.username}
+            return redirect("/main/")
+        return render(request, self.template_name, {"form": form})
+
+
+class ChangePasswordView(View):
+    template_name = "change_password.html"
+
+    def get(self, request, *args, **kwargs):
+        initial_form = InitialChangePasswordForm()
+        return render(request, self.template_name, {"initial_form": initial_form})
+
+    def post(self, request, *args, **kwargs):
+        initial_form = InitialChangePasswordForm(data=request.POST)
+        if request.POST.get('old_password', False):
+            if initial_form.is_valid():
+                user = Users.objects.get(id=request.session["info"]["id"])
+                if initial_form.cleaned_data['old_password'] != user.password:
+                    initial_form.add_error("old_password", "The possword is wrong")
+                    return render(request, self.template_name, {"initial_form": initial_form})
+                form = ChangePasswordForm()
+                return render(request, self.template_name, {"form": form})
+            return render(request, self.template_name, {"initial_form": initial_form})
+
+        form = ChangePasswordForm(data=request.POST)
+        if form.is_valid():
+            user = Users.objects.get(id=request.session["info"]["id"])
+            user.password = form.cleaned_data['new_password']
+            user.save()
+            return redirect("/main/")
+        return render(request, self.template_name, {"form": form})
 
 
 class LogOutView(View):
@@ -131,30 +179,3 @@ class AboutUsView(View):
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
-
-
-class ChangeNameView(View):
-    template_name = "change_name.html"
-
-    def get(self, request, *args, **kwargs):
-        form = ChangeNameForm()
-        return render(request, self.template_name, {"form": form})
-
-    def post(self, request, *args, **kwargs):
-        form = ChangeNameForm(data=request.POST)
-        if form.is_valid():
-            user = Users.objects.get(id=request.session["info"]["id"])
-            user.username = form.cleaned_data["username"]
-            user.save()
-            return redirect("/main/")
-        return render(request, self.template_name, {"form": form})
-
-
-class ChangePassword(View):
-    template_name = "change_password.html"
-
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
-
-    def post(self, request, *args, **kwargs):
-        pass
