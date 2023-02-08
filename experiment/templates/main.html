@@ -1,237 +1,336 @@
-{% extends 'layout.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>odex</title>
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1/css/bootstrap.min.css' %}">
 
-{% block content %}
+    <style>
+        .navbar {
+            border-radius: 0;
+        }
+
+        .configuration {
+            width: 1000px;
+            border: 1px solid #dddddd;
+            border-radius: 10px;
+            box-shadow: 10px 10px 40px #aaa;
+
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 100px;
+            padding: 100px 100px;
+        }
+
+        .configuration h2 {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .detail {
+            width: 1000px;
+            border: 1px solid #dddddd;
+            border-radius: 10px;
+            box-shadow: 10px 10px 40px #aaa;
+
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 100px;
+            padding: 100px 100px;
+        }
+
+        .detail h2 {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+    </style>
+    {% block css %}{% endblock %}
+</head>
+<body>
+
+<nav class="navbar navbar-default">
     <div class="container">
-        <div style="margin-bottom: 10px">
-            <input id="btnAdd" type="button" value="New Run" class="btn btn-primary">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand"> odex </a>
         </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">{{ request.session.info.username }}<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/aboutus/">About us</a></li>
+                        <li><a href="/user/delete/">Delete Accout</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="/logout/">log out</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
-        <div style="float: right;width: 300px;">
-            <form method="get">
-                <div class="input-group">
-                    <input type="text" name="q" class="form-control" placeholder="Search for..."
-                           value="{{ search_data }}">
-                    <span class="input-group-btn">
+<div>
+    {% block content %}{% endblock %}
+</div>
+
+
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-3.4.1/js/bootstrap.min.js' %}"></script>
+{% block js %}{% endblock %}
+<div class="container">
+    <div style="margin-bottom: 10px">
+        <input id="btnAdd" type="button" value="New Run" class="btn btn-primary">
+    </div>
+
+    <div style="float: right;width: 300px;">
+        <form method="get">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Search for..."
+                       value="{{ search_data }}">
+                <span class="input-group-btn">
                         <button class="btn btn-default" type="submit">
                             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                         </button>
                       </span>
-                </div>
-            </form>
-        </div>
-
-
-        <!-- 订单列表 -->
-        <div class="panel panel-default">
-            <!-- Default panel contents -->
-            <div class="panel-heading">
-                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-                Experiments
             </div>
-
-            <!-- Table -->
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th>Created Time</th>
-                    <th>State</th>
-                    <th>Run name</th>
-                    <th>Database file</th>
-                    <th>Subspaces</th>
-                    <th>Start time</th>
-                    <th>ODM</th>
-                    <th>Duration</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for obj in queryset %}
-                    <tr id="{{ obj.id }}">
-                        <td>{{ obj.created_time }}</td>
-                        <td>{{ obj.state }}</td>
-                        <td>{{ obj.run_name }}</td>
-                        <td>{{ obj.file_name }}</td>
-                        <td>{{ obj.columns }}</td>
-                        <td>{{ obj.start_time }}</td>
-                        <td>{{ obj.odm }}</td>
-                        <td>{{ obj.duration }}</td>
-                        <td>
-                            <input id="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button"
-                                   value="Delete">
-                            <input id="{{ obj.id }}" class="btn btn-primary btn-xs btn-details" type="button"
-                                   value="Show details">
-                        </td>
-                    </tr>
-                {% endfor %}
-
-                </tbody>
-            </table>
-        </div>
-
-        <!-- 分页列表 -->
-        <ul class="pagination">
-            {{ page_string }}
-        </ul>
+        </form>
     </div>
 
 
-    <!-- 新建/编辑 订单（对话框） -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">New Run</h4>
-                </div>
-                <div class="modal-body">
-                    <form id="formAdd" enctype="multipart/form-data">
-                        <div class="clearfix">
-                            <div class="col-xs-6">
+    <!-- 订单列表 -->
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+            Experiments
+        </div>
+
+        <!-- Table -->
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Created Time</th>
+                <th>State</th>
+                <th>Run name</th>
+                <th>Database file</th>
+                <th>Subspaces</th>
+                <th>Start time</th>
+                <th>ODM</th>
+                <th>Duration</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for obj in queryset %}
+                <tr id="{{ obj.id }}">
+                    <td>{{ obj.created_time }}</td>
+                    <td>{{ obj.state }}</td>
+                    <td>{{ obj.run_name }}</td>
+                    <td>{{ obj.file_name }}</td>
+                    <td>{{ obj.columns }}</td>
+                    <td>{{ obj.start_time }}</td>
+                    <td>{{ obj.odm }}</td>
+                    <td>{{ obj.duration }}</td>
+                    <td>
+                        <input id="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button"
+                               value="Delete">
+                        <input id="{{ obj.id }}" class="btn btn-primary btn-xs btn-details" type="button"
+                               value="Show details">
+                    </td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 分页列表 -->
+    <ul class="pagination">
+        {{ page_string }}
+    </ul>
+</div>
+
+
+<!-- 新建/编辑 订单（对话框） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">New Run</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formAdd" enctype="multipart/form-data">
+                    <div class="clearfix">
+                        <div class="col-xs-6">
+                            <div class="form-group" style="position: relative;margin-bottom: 25px;">
+                                <label>Run Name</label>
+                                {{ form.run_name }}
+                                <small>{{ form.run_name.help_text }}</small>
+                                <div style="color: red;">{{ form.run_name.errors.0 }}</div>
                                 <div class="form-group" style="position: relative;margin-bottom: 25px;">
                                     <label>Run Name</label>
-                                    {{ form.run_name }}
-                                    <small>{{ form.run_name.help_text }}</small>
-                                    <div style="color: red;">{{ form.run_name.errors.0 }}</div>
-                                    <div class="form-group" style="position: relative;margin-bottom: 25px;">
-                                        <label>Run Name</label>
-                                        {{ form.main_file }}
-                                        <small>{{ form.main_file.help_text }}</small>
-                                        <div style="color: red;">{{ form.main_file.errors.0 }}</div>
-                                    </div>
+                                    {{ form.main_file }}
+                                    <small>{{ form.main_file.help_text }}</small>
+                                    <div style="color: red;">{{ form.main_file.errors.0 }}</div>
                                 </div>
                             </div>
                         </div>
-                    </form>
+                    </div>
+                </form>
 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button id="btnSave" type="button" class="btn btn-primary">Browse</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button id="btnSave" type="button" class="btn btn-primary">Browse</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- 删除（对话框） -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
+<!-- 删除（对话框） -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
 
-            <div class="alert alert-danger alert-dismissible fade in" role="alert">
-                <h4>Are you sure to delete?</h4>
-                <p style="text-align: right;">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button id="btnConfirmDelete" type="button" class="btn btn-danger">Delete</button>
-                </p>
-            </div>
-
+        <div class="alert alert-danger alert-dismissible fade in" role="alert">
+            <h4>Are you sure to delete?</h4>
+            <p style="text-align: right;">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button id="btnConfirmDelete" type="button" class="btn btn-danger">Delete</button>
+            </p>
         </div>
+
     </div>
+</div>
+
+<script type="text/javascript">
 
 
-{% endblock %}
+    setTimeout(function () {
+            Push();
+        },
+        {#== 10s#}
+        10000);
+    setInterval(function () {
+            Push();
+        },
+        10000);
+
+    function Push() {
+        location.reload()
+    }
 
 
-{% block js %}
-    <script type="text/javascript">
-        var DELETE_ID;
+    var DELETE_ID;
 
-        $(function () {
-            bindBtnAddEvent();
-            bindBtnSaveEvent();
-            bindBtnDeleteEvent();
-            bindBtnConfirmDeleteEvent();
-            bindBtnDetailsEvent();
-        })
+    $(function () {
+        bindBtnAddEvent();
+        bindBtnSaveEvent();
+        bindBtnDeleteEvent();
+        bindBtnConfirmDeleteEvent();
+        bindBtnDetailsEvent();
+    })
 
-        function bindBtnAddEvent() {
-            $("#btnAdd").click(function () {
-                // 点击New Run按钮，显示对话框。
-                $('#myModal').modal('show');
-            });
-        }
+    function bindBtnAddEvent() {
+        $("#btnAdd").click(function () {
+            // 点击New Run按钮，显示对话框。
+            $('#myModal').modal('show');
+        });
+    }
 
-        function bindBtnSaveEvent() {
-            $("#btnSave").click(function () {
-                // 清除错误信息
-                $(".error-msg").empty();
+    function bindBtnSaveEvent() {
+        $("#btnSave").click(function () {
+            // 清除错误信息
+            $(".error-msg").empty();
 
-                $.ajax({
-                    url: "/main/",//  -> /order/edit/?uid=12
-                    type: "post",
-                    data: new FormData($("#formAdd")[0]),//获取表单中用户填写的数据
-                    processData: false,
-                    contentType: false,
-                    dataType: "JSON",
-                    success: function (res) {
-                        if (res.status) {
-                            //location.reload()
-                            window.location.href = "/configuration/?id=" + res.id;
-                        } else {
-                            // 把错误信息显示在对话框中。
-                            $.each(res.error, function (name, errorList) {
-                                $("#id_" + name).next().text(errorList[0]);
-                            })
-                        }
+            $.ajax({
+                url: "/main/",//  -> /order/edit/?uid=12
+                type: "post",
+                data: new FormData($("#formAdd")[0]),//获取表单中用户填写的数据
+                processData: false,
+                contentType: false,
+                dataType: "JSON",
+                success: function (res) {
+                    if (res.status) {
+                        //location.reload()
+                        window.location.href = "/configuration/?id=" + res.id;
+                    } else {
+                        // 把错误信息显示在对话框中。
+                        $.each(res.error, function (name, errorList) {
+                            $("#id_" + name).next().text(errorList[0]);
+                        })
                     }
-                })
-            });
-        }
+                }
+            })
+        });
+    }
 
 
-        function bindBtnDeleteEvent() {
-            $(".btn-delete").click(function () {
-                // 显示删除对话框
-                $("#deleteModal").modal('show');
+    function bindBtnDeleteEvent() {
+        $(".btn-delete").click(function () {
+            // 显示删除对话框
+            $("#deleteModal").modal('show');
 
-                // 获取当前行的ID并赋值给全部变量。
-                DELETE_ID = $(this).attr("id");
+            // 获取当前行的ID并赋值给全部变量。
+            DELETE_ID = $(this).attr("id");
 
-            });
-        }
+        });
+    }
 
-        function bindBtnConfirmDeleteEvent() {
-            $("#btnConfirmDelete").click(function () {
-                $.ajax({
-                    url: "/delete/",  //    => /order/delete/?uid=123
-                    type: "GET",
-                    data: {
-                        id: DELETE_ID
-                    },
-                    dataType: "JSON",
-                    success: function (res) {
-                        if (res.status) {
-                            location.reload();
-                        } else {
-                            alert(res.error);
-                        }
+    function bindBtnConfirmDeleteEvent() {
+        $("#btnConfirmDelete").click(function () {
+            $.ajax({
+                url: "/delete/",  //    => /order/delete/?uid=123
+                type: "GET",
+                data: {
+                    id: DELETE_ID
+                },
+                dataType: "JSON",
+                success: function (res) {
+                    if (res.status) {
+                        location.reload();
+                    } else {
+                        alert(res.error);
                     }
-                })
-            });
-        }
+                }
+            })
+        });
+    }
 
-        function bindBtnDetailsEvent() {
-            $(".btn-details").click(function () {
-                Details_ID = $(this).attr("id");
-                $.ajax({
-                    url: "/result/",  //    => /order/delete/?uid=123
-                    type: "GET",
-                    data: {
-                        id: Details_ID
-                    },
-                    dataType: "JSON",
-                    success: function (res) {
-                        if (res.status) {
-                            window.location.href = "/result/?id=" + res.id;
-                        } else {
-                            alert(res.error);
-                        }
+    function bindBtnDetailsEvent() {
+        $(".btn-details").click(function () {
+            Details_ID = $(this).attr("id");
+            $.ajax({
+                url: "/result/",  //    => /order/delete/?uid=123
+                type: "GET",
+                data: {
+                    id: Details_ID
+                },
+                dataType: "JSON",
+                success: function (res) {
+                    if (res.status) {
+                        window.location.href = "/result/?id=" + res.id;
+                    } else {
+                        alert(res.error);
                     }
-                })
+                }
+            })
 
 
-            });
-        }
-    </script>
-{% endblock %}
+        });
+    }
+</script>
+</body>
 
 
