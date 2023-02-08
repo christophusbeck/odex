@@ -138,7 +138,6 @@ class Configuration(View):
         return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms})
 
 
-
     def post(self, request, *args, **kwargs):
         form = ConfigForm(data=request.POST, files=request.FILES)
         odms = tools.odm_handling.static_odms_dic()

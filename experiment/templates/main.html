@@ -57,8 +57,15 @@
                         <td>
                             <input id="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button"
                                    value="Delete">
-                            <input id="{{ obj.id }}" class="btn btn-primary btn-xs btn-details" type="button"
-                                   value="Show details">
+                            {% if obj.state == "pending" or obj.state == "finished"  %}
+                                <input id="{{ obj.id }}" class="btn btn-primary btn-xs btn-details" type="button"
+                                       value="Show details">
+                            {% else %}
+                                <a href="/configuration/?id={{ obj.id }}" >
+                                <input id="{{ obj.id }}" class="btn btn-success btn-xs btn-edit" type="button"
+                                       value="Edit configuration">
+                                </a>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
@@ -106,7 +113,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button id="btnSave" type="button" class="btn btn-primary">Browse</button>
+                    <button id="btnSave" type="button" class="btn btn-primary">Submit</button>
                 </div>
             </div>
         </div>
@@ -155,6 +162,7 @@
             bindBtnDeleteEvent();
             bindBtnConfirmDeleteEvent();
             bindBtnDetailsEvent();
+            {#bindBtnEditEvent();#}
         })
 
         function bindBtnAddEvent() {
@@ -241,10 +249,29 @@
                         }
                     }
                 })
-
-
             });
         }
+
+        {#function bindBtnEditEvent() {#}
+        {#    $(".btn-edit").click(function () {#}
+        {#        Edit_ID = $(this).attr("id");#}
+        {#        $.ajax({#}
+        {#            url: "/configuration/",  //    => /order/delete/?uid=123#}
+        {#            type: "GET",#}
+        {#            data: {#}
+        {#                id: Edit_ID#}
+        {#            },#}
+        {#            dataType: "JSON",#}
+        {#            success: function (res) {#}
+        {#                if (res.status) {#}
+        {#                    window.location.href = "/configuration/?id=" + res.id;#}
+        {#                } else {#}
+        {#                    alert(res.error);#}
+        {#                }#}
+        {#            }#}
+        {#        })#}
+        {#    });#}
+        {##}
     </script>
 {% endblock %}
 
