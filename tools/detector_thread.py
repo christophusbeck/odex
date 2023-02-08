@@ -11,18 +11,22 @@ class DetectorThread(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        try:
+        # try:
             print("detector thread starts")
             print(self.id)
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
             exp_odm = odm_handling.match_odm_by_name(exp.odm)
             exp_para = exp.get_para()
+            exp_op = exp.operation
+
+            print("exp_odm: ", exp_odm)
+            print("exp_parameters: ", exp_para)
+            print("exp_operation: ", exp_op)
 
             user_csv = odm_handling.get_data_from_csv(exp.main_file)
             user_data = odm_handling.get_array_from_csv_data(user_csv[1:])
 
-            print("exp_odm: ", exp_odm)
-            print("exp_para: ", exp_para)
+            print("open file successfully")
 
             clf = exp_odm(**exp_para)
             clf.fit(self, user_data)
@@ -69,12 +73,14 @@ class DetectorThread(threading.Thread):
             print(metrics)
 
             f_exp = models.FinishedExperiments(exp, metrics, result_csv_path, duration)
+            print("detector finished")
 
 
 
 
-        except Exception as e:
-            print(e)
+        # except Exception as e:
+        #     print("Error occur")
+        #     print(e)
 
 
 

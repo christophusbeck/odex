@@ -43,7 +43,9 @@ def write_data_to_csv(path: str, data):
 def get_data_from_csv(path: str) -> list[list[str]]:
     results = []
     with open(path) as csvfile:
+        print(" is reading file now 11")
         reader = csv.reader(csvfile)
+        print(" is reading file now 22")
         for row in reader:
             results.append(row)
 
@@ -88,7 +90,7 @@ def subspace_combination_check(user_choice: str, max_col):
 
 
 def subspace_selection_parser(user_choice: str):
-    pass
+    return True
 
 
 def get_head_indexing(data: list[list[str]]):

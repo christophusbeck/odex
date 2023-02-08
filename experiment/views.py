@@ -19,7 +19,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 
-from user.models import Users
 
 
 # Create your views here.
@@ -93,69 +92,9 @@ class MainView(View):
     template_name = "main.html"
 
     def get(self, request, *args, **kwargs):
-
-        page = int(request.GET.get('page', 1))
-        page_size = 10
-        start = (page - 1) * page_size
-        end = page * page_size
-
-
-        total_count = models.Experiments.objects.filter(user_id=request.session["info"]["id"]).count()
-        total_page_count, div = divmod(total_count, page_size)
-        if div:
-            total_page_count += 1
-        # according to current page show the pages before that and after that
-        plus = 5
-
-        if total_page_count <= 2 * plus + 1:
-            # to check if there's more than 11 pages, than only show that page
-            start_page = 1
-            end_page = total_page_count
-        else:
-            # current page < 5
-            if page <= plus:
-                start_page = 1
-                end_page = 2 * plus + 1
-            else:
-                if (page + plus) > total_page_count:
-                    start_page = total_page_count - 2 * plus
-                    end_page = total_page_count
-                else:
-                    start_page = page - plus
-                    end_page = page + plus
-
-
-        page_str_list = []
-
-        # prev page
-        if page > 1:
-            prev = '<li><a href ="?page={}">prev page</a></li>'.format(page - 1)
-        else:
-            prev = '<li><a href ="?page={}">prev page</a></li>'.format(1)
-        page_str_list.append(prev)
-
-        for i in range(start_page,end_page + 1):
-            if i == page:
-                ele = '<li><a href ="?page={}">{}</a></li>'.format(i,i)
-            else:
-                ele = '<li><a href ="?page={}">{}</a></li>'.format(i, i)
-            page_str_list.append(ele)
-
-
-        # next page
-        if page < total_page_count:
-            next = '<li><a href ="?page={}">next page</a></li>'.format(page + 1)
-        else:
-            next = '<li><a href ="?page={}">next page</a></li>'.format(total_page_count)
-        page_str_list.append(next)
-
-        page_string = mark_safe("".join(page_str_list))
-
-        queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"])[start:end]
-
-
+        queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"])
         form = CreateForm()
-        return render(request, self.template_name, {"queryset": queryset, "form": form, "page_string":page_string})
+        return render(request, self.template_name, {"queryset": queryset, "form": form})
 
     def post(self, request, *args, **kwargs):
         form = CreateForm(data=request.POST, files=request.FILES)
@@ -286,13 +225,3 @@ class PendingDetailView(View):
             form.save()
             return redirect('/main/')
         return render(request, self.template_name, {"form": form})
-
-
-# class refreshView(View):
-#     def get(self, request, *args, **kwargs):
-#         exps = models.Experiments.objects.filter(user_id=request.session["info"]["id"]).last()
-#
-#         print(exps.run_name)
-#         json.dumps(exps)
-#
-#         return JsonResponse(exps)
