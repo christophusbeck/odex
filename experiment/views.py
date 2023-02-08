@@ -115,7 +115,6 @@ class MainView(View):
         return JsonResponse({"status": False, 'error': form.errors})
 
 
-
 @method_decorator(csrf_exempt, name='dispatch')
 class DeleteView(View):
     def get(self, request, *args, **kwargs):

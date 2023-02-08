@@ -12,5 +12,5 @@ urlpatterns = [
     path('login/',user.views.LoginView.as_view()),
     path('finishedDetail/',views.FinishedDetailView.as_view()),
     path('pendingDetail/', views.PendingDetailView.as_view()),
-    path('result/', views.ResultView.as_view())
+    path('result/', views.ResultView.as_view()),
 ]
