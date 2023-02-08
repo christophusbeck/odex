@@ -124,7 +124,7 @@ class DeleteView(View):
 
 
 class Configuration(View):
-    template_name = "Configuration.html"
+    template_name = "configuration.html"
 
     def get(self, request, *args, **kwargs):
 
