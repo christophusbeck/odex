@@ -128,7 +128,7 @@ class PendingExperiments(Experiments):
 
 
 class FinishedExperiments(Experiments):
-    result_path = models.CharField(verbose_name="result path", max_length=128)
+    result_path = user_result_path,
     duration = models.IntegerField(verbose_name="run duration")
     metrics = {}
 
