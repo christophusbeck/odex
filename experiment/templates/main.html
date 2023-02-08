@@ -21,7 +21,7 @@
         </div>
 
 
-        <!-- 订单列表 -->
+        <!-- Experiments List -->
         <div class="panel panel-default">
             <!-- Default panel contents -->
             <div class="panel-heading">
@@ -41,6 +41,7 @@
                     <th>Start time</th>
                     <th>ODM</th>
                     <th>Duration</th>
+                    <th>Options</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -74,14 +75,14 @@
             </table>
         </div>
 
-        <!-- 分页列表 -->
+        <!-- page -->
         <ul class="pagination">
             {{ page_string }}
         </ul>
     </div>
 
 
-    <!-- 新建/编辑 订单（对话框） -->
+    <!-- new run -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -119,7 +120,7 @@
         </div>
     </div>
 
-    <!-- 删除（对话框） -->
+    <!-- delete -->
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
 
@@ -167,20 +168,19 @@
 
         function bindBtnAddEvent() {
             $("#btnAdd").click(function () {
-                // 点击New Run按钮，显示对话框。
                 $('#myModal').modal('show');
             });
         }
 
         function bindBtnSaveEvent() {
             $("#btnSave").click(function () {
-                // 清除错误信息
+                // clear error message
                 $(".error-msg").empty();
 
                 $.ajax({
                     url: "/main/",//  -> /order/edit/?uid=12
                     type: "post",
-                    data: new FormData($("#formAdd")[0]),//获取表单中用户填写的数据
+                    data: new FormData($("#formAdd")[0]),//Get the data filled in by the user in the form
                     processData: false,
                     contentType: false,
                     dataType: "JSON",
@@ -189,7 +189,7 @@
                             //location.reload()
                             window.location.href = "/configuration/?id=" + res.id;
                         } else {
-                            // 把错误信息显示在对话框中。
+                            // Display error messages in a dialog.
                             $.each(res.error, function (name, errorList) {
                                 $("#id_" + name).next().text(errorList[0]);
                             })
@@ -202,10 +202,10 @@
 
         function bindBtnDeleteEvent() {
             $(".btn-delete").click(function () {
-                // 显示删除对话框
+                // Show delete dialog
                 $("#deleteModal").modal('show');
 
-                // 获取当前行的ID并赋值给全部变量。
+                // Get the ID of the current row and assign it to all variables.
                 DELETE_ID = $(this).attr("id");
 
             });

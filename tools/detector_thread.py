@@ -1,4 +1,3 @@
-import os.path
 import threading
 from django.utils import timezone
 
@@ -71,11 +70,13 @@ class DetectorThread(threading.Thread):
             print(metrics)
 
             f_exp = models.FinishedExperiments(exp, metrics, result_csv_path, duration)
+            print("detector finished")
 
 
 
 
         except Exception as e:
+            print("Error occured")
             print(e)
 
 
