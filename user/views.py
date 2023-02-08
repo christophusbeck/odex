@@ -4,7 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from user.models import Users, SecurityQuestions, TANs, SecurityAnswers
 from django.shortcuts import render, redirect
 from django.views import View
-from user.forms import LoginForm, RegisterForm, QuestionForm
+from user.forms import LoginForm, RegisterForm, ResetPasswordForm, InitialResetForm
 from tools.encrypt import md5
 
 
@@ -29,7 +29,6 @@ class LoginView(View):
 
 class RegistrationView(View):
     template_name = "register.html"
-    queryset = SecurityQuestions.objects.all()
 
     def get(self, request, *args, **kwargs, ):
         form = RegisterForm()
@@ -78,13 +77,35 @@ class CheckUsername(View):
 
 
 class ResetPasswordView(View):
-    template_name = "resetpassword"  # waiting for html file
+    template_name = "reset_password.html"  # waiting for html file
 
     def get(self, request, *args, **kwargs):
-        pass
+        initial_form = InitialResetForm(data=request.GET)
+        form = ResetPasswordForm()
+        if request.GET.get('username', False):
+            if initial_form.is_valid():
+                user = Users.objects.filter(username=request.GET.get('username')).first()
+                if not user:
+                    initial_form.add_error("username", "This user does not exist")
+                    return render(request, self.template_name, {"initial_form": initial_form})
+                security = SecurityAnswers.objects.get(user=user)
+                return render(request, self.template_name, {"security": security, "form": form, "initial_form": initial_form})
+            return render(request, self.template_name, {"initial_form": initial_form})
+        return render(request, self.template_name, {"initial_form": initial_form})
 
     def post(self, request, *args, **kwargs):
-        pass
+        initial_form = InitialResetForm(data=request.GET)
+        form = ResetPasswordForm(data=request.POST)
+        user = Users.objects.filter(username=request.GET.get('username')).first()
+        security = SecurityAnswers.objects.get(user=user)
+        if form.is_valid():
+            if security.answer != form.cleaned_data["answer"]:
+                form.add_error("answer", "Your answer is wrong")
+                return render(request, self.template_name, {"security": security, "form": form, "initial_form": initial_form})
+            user.password = form.cleaned_data['password']
+            user.save()
+            return redirect('/login/')
+        return render(request, self.template_name, {"security": security, "form": form, "initial_form": initial_form})
 
 
 class LogOutView(View):

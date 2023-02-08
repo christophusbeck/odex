@@ -15,9 +15,11 @@ class DetectorThread(threading.Thread):
             print(self.id)
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
             exp_odm = exp.odm
-            exp_para = exp.parameters
+            exp_para = exp.get_para()
+            main_file = exp.main_file
             print("exp_odm: ", exp_odm)
             print("exp_para: ", exp_para)
+            print("exp.main_file: ", exp.main_file)
         except Exception as e:
             print(e)
 
