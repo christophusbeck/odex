@@ -126,12 +126,15 @@ class PendingExperiments(Experiments):
 class FinishedExperiments(Experiments):
     result_path = models.CharField(verbose_name="result path", max_length=128)
     duration = models.IntegerField(verbose_name="run duration")
+    metrics = {}
 
-    # def get_metrics(self): #dummy method to test display
-    #     results = {Accuracy: 1,
-    #                Precision: 1,
-    #                othermetric: 10}
-    #     return results
+    def __init__(self, pending:PendingExperiments, metrics, result_path, duration):
+        self.result_path = result_path
+        self.duration = duration
+        self.metrics = metrics
+
+    def get_metrics(self): #Not a dummy anymore
+         return self.metrics
 
 
 
