@@ -1,6 +1,7 @@
 import csv
 import inspect
 import numpy as np
+import re
 
 from pyod.models.abod import ABOD
 #from pyod.models.auto_encoder import AutoEncoder
@@ -57,6 +58,21 @@ def get_array_from_csv_data(data: list[list[str]]):
             floatrow.append(float(item))
         results.append(floatrow)
     return np.array(results)
+
+def subspace_combination_check(user_choice: str, max_col):
+    user_choice = user_choice.replace(" ", "")
+    combination_regex = '((\\{)((([0-9]+)\\,)*)([0-9]+)\\})([&|](\\{)((([0-9]+)\\,)*)([0-9]+)\\})*'
+    if re.match(combination_regex, user_choice):
+        user_choice = user_choice.replace("&", ",")
+        user_choice = user_choice.replace("|", ",")
+        user_choice = user_choice.replace("{", "")
+        user_choice = user_choice.replace("}", "")
+        picks = user_choice.split(",")
+        for pick in picks:
+            if int(pick) > max_col:
+                return False
+        return True
+    return False
 
 
 def subspace_selection_parser(user_choice: str):
