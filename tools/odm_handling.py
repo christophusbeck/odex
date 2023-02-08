@@ -59,6 +59,18 @@ def get_array_from_csv_data(data: list[list[str]]):
         results.append(floatrow)
     return np.array(results)
 
+
+def subspace_exclusion_check(user_choice: str, max_col):
+    user_choice = user_choice.replace(" ", "")
+    combination_regex = '([0-9]+)(\\,[0-9]+)*'
+    if re.match(combination_regex, user_choice):
+        picks = user_choice.split(",")
+        if len(picks) - 1 > max_col:
+            return False
+        return True
+    return False
+
+
 def subspace_combination_check(user_choice: str, max_col):
     user_choice = user_choice.replace(" ", "")
     combination_regex = '((\\{)((([0-9]+)\\,)*)([0-9]+)\\})([&|](\\{)((([0-9]+)\\,)*)([0-9]+)\\})*'
