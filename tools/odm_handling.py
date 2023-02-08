@@ -123,6 +123,22 @@ def match_odm_by_name(name:str):
         return odm_dict[name]
     return ABOD  # arbitrary default option
 
+def calculate_confusion_matrix(prediction, actual):
+    tp = 0
+    fp = 0
+    tn = 0
+    fn = 0
+    for (datapoint, i) in prediction:
+        if prediction[i] and actual[i]:
+            tp += 1
+        elif prediction[i] and (not actual[i]):
+            fp += 1
+        elif (not prediction[i]) and (not actual[i]):
+            tn +=1
+        elif (not prediction[i]) and actual[i]:
+            fn += 1
+    return tp, fn, fp, tn
+
 
 def static_odms_dic():
     odms = {}
