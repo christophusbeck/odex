@@ -80,9 +80,10 @@ class ResetPasswordView(View):
     template_name = "reset_password.html"  # waiting for html file
 
     def get(self, request, *args, **kwargs):
-        initial_form = InitialResetForm(data=request.GET)
+        initial_form = InitialResetForm()
         form = ResetPasswordForm()
         if request.GET.get('username', False):
+            initial_form = InitialResetForm(data=request.GET)
             if initial_form.is_valid():
                 user = Users.objects.filter(username=request.GET.get('username')).first()
                 if not user:
