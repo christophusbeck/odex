@@ -76,14 +76,14 @@ class RegisterForm(BootStrapForm):
         return md5(password)
 
 
-class InitialForgetForm(BootStrapForm):
+class InitialResetForm(BootStrapForm):
     username = forms.CharField(
         label="username",
         max_length=64,
         help_text="Please enter within 16 letters"
     )
 
-class ForgetPasswordForm(BootStrapForm):
+class ResetPasswordForm(BootStrapForm):
     password = forms.CharField(
         label="password",
         max_length=64,

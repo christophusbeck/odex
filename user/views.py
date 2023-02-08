@@ -4,8 +4,8 @@ from django.http import HttpResponse, JsonResponse
 from user.models import Users, SecurityQuestions, TANs, SecurityAnswers
 from django.shortcuts import render, redirect
 from django.views import View
-from user.forms import LoginForm, RegisterForm, ChangeNameForm, ForgetPasswordForm, \
-    InitialForgetForm, InitialChangePasswordForm, ChangePasswordForm
+from user.forms import LoginForm, RegisterForm, ChangeNameForm, ResetPasswordForm, \
+    InitialResetForm, InitialChangePasswordForm, ChangePasswordForm
 from tools.encrypt import md5
 
 
@@ -68,15 +68,15 @@ class RegistrationView(View):
         return render(request, self.template_name, {"form": form})
 
 
-class ForgetPasswordView(View):
-    template_name = "forget_password.html"  # waiting for html file
+class ResetPasswordView(View):
+    template_name = "reset_password.html"  # waiting for html file
 
     def get(self, request, *args, **kwargs):
         print("here")
-        initial_form = InitialForgetForm()
-        form = ForgetPasswordForm()
+        initial_form = InitialResetForm()
+        form = ResetPasswordForm()
         if request.GET.get('username', False):
-            initial_form = InitialForgetForm(data=request.GET)
+            initial_form = InitialResetForm(data=request.GET)
             if initial_form.is_valid():
                 user = Users.objects.filter(username=request.GET.get('username')).first()
                 if not user:
@@ -89,8 +89,8 @@ class ForgetPasswordView(View):
         return render(request, self.template_name, {"initial_form": initial_form})
 
     def post(self, request, *args, **kwargs):
-        initial_form = InitialForgetForm(data=request.GET)
-        form = ForgetPasswordForm(data=request.POST)
+        initial_form = InitialResetForm(data=request.GET)
+        form = ResetPasswordForm(data=request.POST)
         user = Users.objects.filter(username=request.GET.get('username')).first()
         security = SecurityAnswers.objects.get(user=user)
         if form.is_valid():
