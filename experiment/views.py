@@ -104,7 +104,11 @@ class MainView(View):
             pending.file_name = form.files['main_file'].name
             pending.state = "editing"
             pending.main_file = form.files['main_file']
-            data = pd.read_csv(pending.main_file)
+            try:
+                data = pd.read_csv(pending.main_file)
+            except Exception as e:
+                form.add_error('main_file', "Unsupported file, this .csv file has errors")
+                return JsonResponse({"status": False, 'error': form.errors})
             pending.set_columns(list(data))
             pending.created_time = timezone.now()
             pending.save()
@@ -225,12 +229,16 @@ class ResultView(View):
     template_name = "result.html"
 
     def get(self, request, *args, **kwargs):
-        exp = models.Experiments.objects.filter(id=request.GET['id']).first()
+        exp = models.FinishedExperiments.objects.filter(id=request.GET['id']).first()
         columns = exp.get_columns()
         paras = exp.get_para()
-        print(paras)
-
-        return render(request, self.template_name, {"exp": exp, "columns": columns, "paras": paras})
+        if exp.state == "pending":
+            detected_num = None
+        else:
+            exp = models.FinishedExperiments.objects.filter(id=request.GET['id']).first()
+            detected_num = exp.get_metrics()['Detected Outliers']
+        return render(request, self.template_name,
+                      {"exp": exp, "columns": columns, "outliers": detected_num, "paras": paras})
 
     def post(self, request, *args, **kwargs):
         return render(request, self.template_name)
