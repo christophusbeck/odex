@@ -205,3 +205,27 @@ def col_subset(original: list[list[any]], cols: list[int]):
             new_row.append(row[col])
         result.append(new_row)
     return result
+
+
+def operate_and_on_arrays(array_1, array_2):
+    result = []
+    i = 0
+    for p in array_1:
+        if array_1[i] == 1 and array_2[i] == 1:
+            result.append(1)
+        else:
+            result.append(0)
+        i += 1
+    return result
+
+
+def operate_or_on_arrays(array_1, array_2):
+    result = []
+    i = 0
+    for p in array_1:
+        if array_1[i] == 1 or array_2[i] == 1:
+            result.append(1)
+        else:
+            result.append(0)
+        i += 1
+    return result
