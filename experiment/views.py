@@ -151,6 +151,45 @@ class Configuration(View):
             print("form.cleaned_data: ", form.cleaned_data)
             print("form.files: ", form.files)
             selected_odm = list(odms.keys())[int(request.POST['odms']) - 1]
+            operation = ""
+
+            if form.cleaned_data['operation_model_options'] == '1':
+                operation = "all"
+
+            elif form.cleaned_data['operation_model_options'] == '2':
+                if not form.cleaned_data['operation_except']:
+                    form.add_error('operation_except', "Please enter your excluded subspaces")
+                    return render(request, self.template_name,
+                                  {"exp": exp, "columns": columns, "form": form, "odms": odms})
+                # here parser the subspaces input
+                elif not tools.odm_handling.subspace_exclusion_check(form.cleaned_data['operation_except'],
+                                                                     len(columns)):
+                    print("Please enter correct excluded subspaces")
+                    form.add_error('operation_except', "Please enter your excluded subspaces in correct format")
+                    return render(request, self.template_name,
+                                  {"exp": exp, "columns": columns, "form": form, "odms": odms})
+                operation = form.cleaned_data['operation_except']
+
+            elif form.cleaned_data['operation_model_options'] == '3':
+                if not form.cleaned_data['operation_written']:
+                    form.add_error('operation_written', "Please enter your subspace combination")
+                    return render(request, self.template_name,
+                                  {"exp": exp, "columns": columns, "form": form, "odms": odms})
+                # here parser the subspaces input
+                elif not tools.odm_handling.subspace_combination_check(form.cleaned_data['operation_written'],
+                                                                       len(columns)):
+                    print("Please enter your subspaces")
+                    form.add_error('operation_written', "Please enter your subspace combination in correct format")
+                    return render(request, self.template_name,
+                                  {"exp": exp, "columns": columns, "form": form, "odms": odms})
+                operation = form.cleaned_data['operation_written']
+
+            else:
+                return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms})
+
+            print("form.cleaned_data: ", form.cleaned_data)
+            print("form.files: ", form.files)
+            selected_odm = list(odms.keys())[int(request.POST['odms']) - 1]
 
             # this is specified parameters by user
             parameters = odms[selected_odm].copy()
@@ -161,6 +200,7 @@ class Configuration(View):
 
             exp.odm = form.cleaned_data['odm'] = selected_odm
             exp.set_para(parameters)
+            exp.operation = operation
 
             if 'generated_file' in form.files:
                 exp.generated_file = form.files['generated_file']

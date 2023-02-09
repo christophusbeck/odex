@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+    <div class="detail">
+        <h1 align="center">Statistics: {{ queryset.run_name }}</h1>
+        <h1 align="center"><b>{{ queryset.state }}</b></h1>
+
+        <br>
+        <h3>Selected Database: {{ queryset.file_name }} </h3>
+        <h3>Detected subspaces: {{ queryset.columns }} </h3>
+        <br>
+
+        <table class="table table-bordered" align="center" border="1">
+            <thead>
+            <tr>
+                <th>Subspaces on *.csv</th>
+                <th>Indexing</th>
+            </tr>
+            </thead>
+            <tbody>
+            <br>
+            {% for column in queryset.columns %}
+                <tr>
+                    <td>{{ column }}</td>
+                    <td>{{ forloop.counter }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <br>
+
+       <h3>Configuration:</h3>
+       <h4> Selected subspaces: {{ queryset.odm }}</h4>
+        <table class="table table-bordered" border="1">
+            <thead>
+            <tr>
+                <th>parameter</th>
+                <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <br>
+            {% for obj in queryset.parameters %}
+                <tr>
+                    <td>{{ obj.parameter_name }}</td>
+                    <td>{{ obj.value }}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        <br>
+        <a href="/main/" style="margin-right: 500px">
+            <button type="button" value="cancel" style="float: right">Return</button>
+        </a>
+
+    </div>
+{% endblock %}
