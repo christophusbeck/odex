@@ -92,8 +92,23 @@ class MainView(View):
 
     def get(self, request, *args, **kwargs):
         queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"])
+        order = "asc"
+        tag = "id"
+        if request.GET.get('order', False) == "des" and request.GET.get('tag', False) == "id":
+            print("herr")
+            queryset = models.Experiments.objects.order_by('-id')
+            order = "des"
+            tag = "id"
+        elif request.GET.get('order', False) == "asc" and request.GET.get('tag', False) == "file":
+            queryset = models.Experiments.objects.order_by('file_name')
+            order = "asc"
+            tag = "file"
+        elif request.GET.get('order', False) == "des" and request.GET.get('tag', False) == "file":
+            queryset = models.Experiments.objects.order_by('-file_name')
+            order = "des"
+            tag = "file"
         form = CreateForm()
-        return render(request, self.template_name, {"queryset": queryset, "form": form})
+        return render(request, self.template_name, {"queryset": queryset, "form": form, "order": order, "tag": tag})
 
     def post(self, request, *args, **kwargs):
         form = CreateForm(data=request.POST, files=request.FILES)

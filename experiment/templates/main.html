@@ -27,6 +27,36 @@
             <div class="panel-heading">
                 <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
                 Experiments
+                {% if order == "asc" and tag == "id" %}
+                    <a href="/main/?order=des&tag=id">
+                    <button type="button" value="Order" class="btn btn-primary btn-sm">Time Order</button>
+                    </a>
+                    <a href="/main/?order=asc&tag=file">
+                    <button type="button" value="Order" class="btn btn-primary btn-sm">File Order</button>
+                    </a>
+                {% elif order == "des" and tag == "id" %}
+                    <a href="/main/">
+                    <button type="button" value="Order" class="btn btn-primary btn-sm">Time Order</button>
+                    </a>
+                    <a href="/main/?order=asc&tag=file">
+                    <button type="button" value="Order" class="btn btn-primary btn-sm">File Order</button>
+                    </a>
+                {% endif %}
+                {% if order == "asc" and tag == "file" %}
+                    <a href="/main/">
+                    <button type="button" value="Order" class="btn btn-primary btn-sm">Time Order</button>
+                    </a>
+                    <a href="/main/?order=des&tag=file">
+                    <button type="button" value="Order" class="btn btn-primary btn-sm">File Order</button>
+                    </a>
+                {% elif order == "des" and tag == "file" %}
+                    <a href="/main/">
+                    <button type="button" value="Order" class="btn btn-primary btn-sm">Time Order</button>
+                    </a>
+                    <a href="/main/?order=asc&tag=file">
+                    <button type="button" value="Order" class="btn btn-primary btn-sm">File Order</button>
+                    </a>
+                {% endif %}
             </div>
 
             <!-- Table -->
