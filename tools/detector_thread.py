@@ -20,11 +20,32 @@ class DetectorThread(threading.Thread):
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
             exp_odm = odm_handling.match_odm_by_name(exp.odm)
             exp_para = exp.get_para()
+
             user_csv = odm_handling.get_data_from_csv(exp.main_file.path)
             user_data = odm_handling.get_array_from_csv_data(user_csv[1:])
 
             print("exp_odm: ", exp_odm)
             print("exp_para: ", exp_para)
+
+            exp_operation = exp.operation
+            exp_operation_option = exp.operation_option
+
+            if exp_operation_option == 1:
+                assert(exp_operation, "")
+                # TODO: run main file with all subspace, by this time the exp_operation = ""
+
+            elif exp_operation_option == 2:
+                # TODO: run main file with all, except, by this time the exp_operation is like 1,2,3...,
+                #  that is the excluded columns
+                pass
+
+            elif exp_operation_option == 3:
+                # TODO: run main file with conbination, by this time the exp_operation is like {1,2}&{1,3}...
+                pass
+
+            # TODO: by the way, the checking of" "all,except" is not perfect.
+            #  If the file has only 2 column, I enter like 123, It can also run.
+
 
             clf = exp_odm(**exp_para)
             clf.fit(user_data)
@@ -90,7 +111,6 @@ class DetectorThread(threading.Thread):
                 result_csv.append(row)
                 i += 1
             odm_handling.write_data_to_csv(result_csv_path, result_csv)
-            print(metrics)
 
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
             user = exp.user

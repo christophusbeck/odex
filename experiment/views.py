@@ -151,7 +151,6 @@ class MainView(View):
         order = "asc"
         tag = "id"
         if request.GET.get('order', False) == "des" and request.GET.get('tag', False) == "id":
-            print("herr")
             queryset = models.Experiments.objects.order_by('-id')
             order = "des"
             tag = "id"
@@ -224,11 +223,10 @@ class Configuration(View):
         if form.is_valid():
             print("form.cleaned_data: ", form.cleaned_data)
             print("form.files: ", form.files)
-            selected_odm = list(odms.keys())[int(request.POST['odms']) - 1]
             operation = ""
 
             if form.cleaned_data['operation_model_options'] == '1':
-                operation = ""
+                pass
 
             elif form.cleaned_data['operation_model_options'] == '2':
                 if not form.cleaned_data['operation_except']:

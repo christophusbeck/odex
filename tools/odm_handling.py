@@ -63,6 +63,7 @@ def get_array_from_csv_data(data: list[list[str]]):
 
 
 def subspace_exclusion_check(user_choice: str, max_col):
+    # TODO: Here is not perfect for a large entering without "," .
     user_choice = user_choice.replace(" ", "")
     combination_regex = '([0-9]+)(\\,[0-9]+)*'
     if re.match(combination_regex, user_choice):
