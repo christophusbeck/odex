@@ -3,12 +3,12 @@
 
 {% block content %}
     <div class="detail">
-        <h1 align="center">Statistics: {{ queryset.run_name }}</h1>
-        <h1 align="center"><b>{{ queryset.state }}</b></h1>
+        <h1 align="center">Statistics: {{ exp.run_name }}</h1>
+        <h1 align="center"><b>{{ exp.state }}</b></h1>
 
         <br>
-        <h3>Selected Database: {{ queryset.file_name }} </h3>
-        <h3>Detected subspaces: {{ queryset.columns }} </h3>
+        <h3>Selected Database: {{ exp.file_name }} </h3>
+        <h3>Detected subspaces: {{ exp.columns }} </h3>
         <br>
 
         <table class="table table-bordered" align="center" border="1">
@@ -20,7 +20,7 @@
             </thead>
             <tbody>
             <br>
-            {% for column in queryset.columns %}
+            {% for column in exp.columns %}
                 <tr>
                     <td>{{ column }}</td>
                     <td>{{ forloop.counter }}</td>
@@ -31,7 +31,7 @@
         <br>
 
        <h3>Configuration:</h3>
-       <h4> Selected subspaces: {{ queryset.odm }}</h4>
+       <h4> Selected subspaces: {{ exp.odm }}</h4>
         <table class="table table-bordered" border="1">
             <thead>
             <tr>
@@ -41,7 +41,7 @@
             </thead>
             <tbody>
             <br>
-            {% for obj in queryset.parameters %}
+            {% for obj in exp.parameters %}
                 <tr>
                     <td>{{ obj.parameter_name }}</td>
                     <td>{{ obj.value }}
