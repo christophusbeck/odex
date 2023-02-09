@@ -196,3 +196,12 @@ def static_odms_dic():
         odm_para = get_def_value_dict(match_odm_by_name(d))
         odms[d] = odm_para
     return odms
+
+def col_subset(original: list[list[any]], cols: list[int]):
+    result = []
+    for row in original:
+        new_row = []
+        for col in cols:
+            new_row.append(row[col])
+        result.append(new_row)
+    return result
