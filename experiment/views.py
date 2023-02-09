@@ -154,7 +154,6 @@ class MainView(View):
         order = "asc"
         tag = "id"
         if request.GET.get('order', False) == "des" and request.GET.get('tag', False) == "id":
-            print("herr")
             queryset = models.Experiments.objects.order_by('-id')[start:end]
             order = "des"
             tag = "id"
@@ -244,7 +243,10 @@ class Configuration(View):
                     form.add_error('operation_except', "Please enter your excluded subspaces in correct format")
                     return render(request, self.template_name,
                                   {"exp": exp, "columns": columns, "form": form, "odms": odms})
-                operation = form.cleaned_data['operation_except']
+
+                picks = tools.odm_handling.subspace_exclusion_check(form.cleaned_data['operation_except'],
+                                                            len(columns))
+                operation = json.dumps(picks).replace("\"", "").replace("[", "").replace("]", "")
 
             elif form.cleaned_data['operation_model_options'] == '3':
                 if not form.cleaned_data['operation_written']:
