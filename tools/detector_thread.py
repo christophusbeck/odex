@@ -14,7 +14,7 @@ class DetectorThread(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        try:
+        #try:
             print("detector thread starts")
             print("exp id:", self.id)
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
@@ -44,9 +44,10 @@ class DetectorThread(threading.Thread):
                 metrics["True positives"] = tp
                 metrics["False positives"] = fp
                 metrics["True negatives"] = tn
-                metrics["False positives"] = fn
+                metrics["False negatives"] = fn
 
                 metrics["Precision"] = tp / (tp + fp)
+                metrics["Accuracy"] = (tp + tn) / (tp + tn + fp + fn)
                 metrics["Recall"] = tp / (tp + fn)
 
             if exp.generated_file != "":
@@ -57,6 +58,20 @@ class DetectorThread(threading.Thread):
                 clf_merge.fit(merged_data)
                 outlier_classification_after_merge = clf_merge.predict(merged_data)
                 metrics["Detected Outliers after merging with generated data"] = sum(outlier_classification_after_merge)
+
+                if exp.ground_truth != "":
+                    ground_truth_gen_array = np.concatenate((ground_truth_array, [[1]] * len(user_gen_data)))
+                    (tp_gen, fp_gen, fn_gen, tn_gen) = odm_handling.calculate_confusion_matrix(
+                        outlier_classification_after_merge,
+                        ground_truth_gen_array)
+                    metrics["True positives after merging"] = tp_gen
+                    metrics["False positives after merging"] = fp_gen
+                    metrics["True negatives after merging"] = tn_gen
+                    metrics["False negatives after merging"] = fn_gen
+
+                    metrics["Precision"] = tp_gen / (tp_gen + fp_gen)
+                    metrics["Accuracy"] = (tp_gen + tn_gen) / (tp_gen + tn_gen + fp_gen + fn_gen)
+                    metrics["Recall"] = tp_gen / (tp_gen + fn_gen)
 
             result_csv_path = "media/" + models.user_result_path(exp, exp.file_name)
             result_csv = []
@@ -75,6 +90,7 @@ class DetectorThread(threading.Thread):
                 result_csv.append(row)
                 i += 1
             odm_handling.write_data_to_csv(result_csv_path, result_csv)
+            print(metrics)
 
 
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
@@ -107,13 +123,13 @@ class DetectorThread(threading.Thread):
             if exp.has_generated_file:
                 os.remove(exp.generated_file.path)
 
-        except Exception as e:
-            print("Error occured")
-            print(e)
-            print("exp id:", self.id)
-            exp = models.PendingExperiments.objects.filter(id=self.id).first()
-            exp.state = 'failed'
-            exp.save()
+        #except Exception as e:
+            #print("Error occured")
+            #print(e)
+            #print("exp id:", self.id)
+            #exp = models.PendingExperiments.objects.filter(id=self.id).first()
+            #exp.state = 'failed'
+            #exp.save()
 
 
 
