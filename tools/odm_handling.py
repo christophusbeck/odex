@@ -90,7 +90,20 @@ def subspace_combination_check(user_choice: str, max_col):
 
 
 def subspace_selection_parser(user_choice: str):
-    return True
+    result = []
+    or_split = user_choice.split("|")
+    for and_combo in or_split:
+        and_split = and_combo.split("&")
+        con = []
+        for tuple in and_split:
+            tuple = tuple.replace("{", "")
+            tuple = tuple.replace("}", "")
+            nums = []
+            for i in tuple.split(","):
+                nums.append(int(i))
+            con.append(nums)
+        result.append(con)
+    return result
 
 
 def get_head_indexing(data: list[list[str]]):
