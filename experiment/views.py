@@ -205,7 +205,7 @@ class Configuration(View):
 
     def get(self, request, *args, **kwargs):
 
-        exp = models.Experiments.objects.filter(id=request.GET['id']).first()
+        exp = models.PendingExperiments.objects.filter(id=request.GET['id']).first()
         columns = exp.get_columns()
         form = ConfigForm()
         odms = tools.odm_handling.static_odms_dic()
@@ -305,19 +305,28 @@ class ResultView(View):
     template_name = "result.html"
 
     def get(self, request, *args, **kwargs):
-        exp = models.FinishedExperiments.objects.filter(id=request.GET['id']).first()
+        exp = models.Experiments.objects.filter(id=request.GET['id']).first()
         columns = exp.get_columns()
         paras = exp.get_para()
         if exp.state == "pending":
-            detected_num = None
+            exp = models.PendingExperiments.objects.filter(id=request.GET['id']).first()
+            return render(request, self.template_name, {"exp": exp, "columns": columns, "paras": paras})
         else:
             exp = models.FinishedExperiments.objects.filter(id=request.GET['id']).first()
-            detected_num = exp.get_metrics()['Detected Outliers']
+            metrics = exp.get_metrics()
+            detected_num = metrics['Detected Outliers']
+            performance = dict((key, value) for key, value in metrics.items() if key != "Detected Outliers"
+                               and key != "Detected Outliers after merging with generated data")
 
-        print("exp.has_ground_truth: ",exp.has_ground_truth)
-        print("exp.has_generated_file: ", exp.has_generated_file)
-        return render(request, self.template_name,
-                      {"exp": exp, "columns": columns, "outliers": detected_num, "paras": paras})
+            if exp.has_generated_file:
+                detected_additional_num = metrics['Detected Outliers after merging with generated data']
+                return render(request, self.template_name,
+                              {"exp": exp, "columns": columns, "paras": paras,
+                               "outliers": detected_num, "performance": performance,
+                               "outliers_generated": detected_additional_num})
+
+            return render(request, self.template_name, {"exp": exp, "columns": columns, "paras": paras,
+                                                        "outliers": detected_num, "performance": performance})
 
     def post(self, request, *args, **kwargs):
         return render(request, self.template_name)
