@@ -233,11 +233,11 @@ class ResultView(View):
     def get(self, request, *args, **kwargs):
 
         exp = models.Experiments.objects.filter(id=request.GET['id']).first()
-        # columns = exp.get_columns()
-        # form = ConfigForm()
-        # odms = tools.odm_handling.static_odms_dic()
+        columns = exp.get_columns()
+        paras = exp.get_para()
+        print(paras)
 
-        return render(request, self.template_name, {"exp": exp})
+        return render(request, self.template_name, {"exp": exp, "columns": columns, "paras": paras})
 
     def post(self, request, *args, **kwargs):
         return render(request, self.template_name)
