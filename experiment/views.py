@@ -155,15 +155,15 @@ class MainView(View):
         tag = "id"
         if request.GET.get('order', False) == "des" and request.GET.get('tag', False) == "id":
             print("herr")
-            queryset = models.Experiments.objects.order_by('-id')
+            queryset = models.Experiments.objects.order_by('-id')[start:end]
             order = "des"
             tag = "id"
         elif request.GET.get('order', False) == "asc" and request.GET.get('tag', False) == "file":
-            queryset = models.Experiments.objects.order_by('file_name')
+            queryset = models.Experiments.objects.order_by('file_name')[start:end]
             order = "asc"
             tag = "file"
         elif request.GET.get('order', False) == "des" and request.GET.get('tag', False) == "file":
-            queryset = models.Experiments.objects.order_by('-file_name')
+            queryset = models.Experiments.objects.order_by('-file_name')[start:end]
             order = "des"
             tag = "file"
         form = CreateForm()
