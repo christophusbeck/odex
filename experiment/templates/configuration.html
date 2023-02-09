@@ -14,13 +14,10 @@
         Detected subspaces: {{ columns|length }}
 
 
-        <table class="table table-bordered" align="center" border="1">
-            <thead>
-            <tr>
-                <th>Subspaces on *.csv</th>
-                <th>Indexing</th>
-            </tr>
-            </thead>
+        <table class="table table-bordered" align="center" border="1" id="table_subspace"
+               data-pagination="true"
+               data-side-pagination="client"
+               data-page-size="8">
             <tbody>
 
             {% for column in columns %}
@@ -129,7 +126,7 @@
                      {% else %}style="display: none"
                      {% endif %}>
                     <table class="table table-bordered" align="center" border="1" id="table_page{{ forloop.counter }}"
-                    data-pagination="true"
+                           data-pagination="true"
                            data-side-pagination="client"
                            data-page-size="3">
 
@@ -167,19 +164,33 @@
 
 
 
-    <script >
-        $(document).ready(function() {
+    <script>
+        $(document).ready(function () {
+                $('#table_subspace').bootstrapTable({
+                    columns: [
+                        {
+                            field: 'Subspaces on *.csv',
+                            title: "Subspaces on *.csv"
+                        }, {
+                            field: "Indexing",
+                            title: "Indexing"
+                        },]
+                })
+        })
 
+
+        $(document).ready(function () {
             {% for key, para in odms.items %}
                 $('#table_page{{ forloop.counter }}').bootstrapTable({
                     columns: [
-                        {field: 'parameters',
+                        {
+                            field: 'parameters',
                             title: "parameters"
                         }, {
-                        field: "value",
+                            field: "value",
                             title: "value"
                         },]
-                    })
+                })
             {% endfor %}
         })
 
