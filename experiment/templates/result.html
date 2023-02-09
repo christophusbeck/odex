@@ -48,7 +48,7 @@
 
         {% if exp.state == "finished" %}
             <h3>Detected outliers: {{ outliers }}</h3>
-            <button type="button">Download detected outliers as *.csv</button>
+            <a href={{ path }} class="DownloadButton">Download detected outliers as *.csv file</a>
             {% if exp.ground_truth != None %}
                 <h3>Performance based on ground truth file: </h3>
                 <table class="table table-bordered">
@@ -70,7 +70,7 @@
 
             {% if exp.generated_file != None %}
                 <h3>Detected outliers after merging with generated data:{{ outliers_generated }} </h3>
-                <button type="button">Download detected outliers as *.csv</button>
+                <a href={{ path }} class="DownloadButton">Download detected outliers as *.csv file</a>
                 <h3>ROC curve: {{ roc }}</h3>
             {% endif %}
 
