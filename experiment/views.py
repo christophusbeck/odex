@@ -205,7 +205,7 @@ class Configuration(View):
 
     def get(self, request, *args, **kwargs):
 
-        exp = models.Experiments.objects.filter(id=request.GET['id']).first()
+        exp = models.PendingExperiments.objects.filter(id=request.GET['id']).first()
         columns = exp.get_columns()
         form = ConfigForm()
         odms = tools.odm_handling.static_odms_dic()

@@ -105,22 +105,22 @@ class Experiments(models.Model):
 
 
 def user_main_file_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/main_<filename>
     return 'user_{0}/{1}/main_{2}'.format(instance.user_id, instance.id, filename)
 
 
 def user_generated_file_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/additional_<filename>
     return 'user_{0}/{1}/additional_{2}'.format(instance.user_id, instance.id, filename)
 
 
 def user_ground_truth_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/ground_truth_<filename>
     return 'user_{0}/{1}/ground_truth_{2}'.format(instance.user_id, instance.id, filename)
 
 
 def user_result_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/result_<filename>
     return 'user_{0}/{1}/result_{2}'.format(instance.user_id, instance.id, filename)
 
 
@@ -158,6 +158,7 @@ class PendingExperiments(Experiments):
         blank=True,
         null=True
     )
+    error = models.TextField(blank=True, null=True)
 
 
 class NpEncoder(json.JSONEncoder):

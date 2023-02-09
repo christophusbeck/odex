@@ -149,7 +149,9 @@ class DetectorThread(threading.Thread):
             print("exp id:", self.id)
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
             exp.state = 'failed'
+            exp.error = str(e)
             exp.save()
+            print(exp.error)
 
 
 
