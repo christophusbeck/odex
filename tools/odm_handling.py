@@ -158,7 +158,8 @@ def calculate_confusion_matrix(prediction, actual):
     fp = 0
     tn = 0
     fn = 0
-    for (datapoint, i) in prediction:
+    i = 0
+    for datapoint in prediction:
         if prediction[i] and actual[i]:
             tp += 1
         elif prediction[i] and (not actual[i]):
@@ -167,6 +168,7 @@ def calculate_confusion_matrix(prediction, actual):
             tn +=1
         elif (not prediction[i]) and actual[i]:
             fn += 1
+        i += 1
     return tp, fn, fp, tn
 
 

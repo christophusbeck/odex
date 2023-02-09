@@ -46,7 +46,7 @@ class DetectorThread(threading.Thread):
             odm_handling.write_data_to_csv(result_csv_path, result_csv)
 
             if exp.ground_truth != "":
-                ground_truth_csv = odm_handling.get_data_from_csv(exp.ground_truth)
+                ground_truth_csv = odm_handling.get_data_from_csv(exp.ground_truth.path)
                 ground_truth_array = odm_handling.get_array_from_csv_data(ground_truth_csv)
 
                 (tp, fp, fn, tn) = odm_handling.calculate_confusion_matrix(outlier_classification, ground_truth_array)
@@ -59,7 +59,7 @@ class DetectorThread(threading.Thread):
                 metrics["Recall"] = tp / (tp + fn)
 
             if exp.generated_file != "":
-                user_gen_csv = odm_handling.get_data_from_csv(exp.generated_file)
+                user_gen_csv = odm_handling.get_data_from_csv(exp.generated_file.path)
                 user_gen_data = odm_handling.get_array_from_csv_data(user_gen_csv[1:])
                 merged_data = user_data + user_gen_data
                 clf_merge = exp_odm(**exp_para)
