@@ -55,25 +55,6 @@
     }
   },
   {
-    "model": "experiment.finishedexperiments",
-    "pk": 1,
-    "fields": {
-        "experiments_ptr_id": 1,
-        "result_path": "./test.csv",
-        "duration": 100
-    }
-  },
-  {
-    "model": "experiment.pendingexperiments",
-    "pk": 1,
-    "fields": {
-        "experiments_ptr_id": 1,
-        "main_file": "./testmain.csv",
-        "generated_file": "./testgenerated.csv",
-        "ground_truth": "./testgt.csv"
-    }
-  },
-  {
     "model": "user.SecurityQuestions",
     "pk": 1,
     "fields": {

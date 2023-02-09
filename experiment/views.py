@@ -228,10 +228,16 @@ class Configuration(View):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ResultView(View):
-    template_name = "Result.html"
+    template_name = "result.html"
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
+
+        exp = models.Experiments.objects.filter(id=request.GET['id']).first()
+        # columns = exp.get_columns()
+        # form = ConfigForm()
+        # odms = tools.odm_handling.static_odms_dic()
+
+        return render(request, self.template_name, {"exp": exp})
 
     def post(self, request, *args, **kwargs):
         return render(request, self.template_name)
