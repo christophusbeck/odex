@@ -29,8 +29,8 @@ class DetectorThread(threading.Thread):
         clf = exp_odm(**exp_para)
         clf.fit(user_data)
 
-            outlier_classification = clf.predict(user_data)
-            outlier_probability = clf.predict_proba(user_data)
+        outlier_classification = clf.predict(user_data)
+        outlier_probability = clf.predict_proba(user_data)
 
         metrics = {}
         metrics["Detected Outliers"] = sum(outlier_classification)
@@ -59,26 +59,26 @@ class DetectorThread(threading.Thread):
             outlier_classification_after_merge = clf_merge.predict(merged_data)
             metrics["Detected Outliers after merging with generated data"] = sum(outlier_classification_after_merge)
 
-            result_csv_path = "media/" + models.user_result_path(exp, exp.file_name)
-            result_csv = []
-            i = 0
-            res_headline = user_csv[0]
-            res_headline.append("Probability")
-            res_headline.append("Classification")
+        result_csv_path = "media/" + models.user_result_path(exp, exp.file_name)
+        result_csv = []
+        i = 0
+        res_headline = user_csv[0]
+        res_headline.append("Probability")
+        res_headline.append("Classification")
+        if exp.ground_truth != "":
+            res_headline.append("Ground truth")
+        result_csv.append(res_headline)
+        for row in user_csv[1:]:
+            row.append(outlier_probability[i])
+            row.append(outlier_classification[i])
             if exp.ground_truth != "":
-                res_headline.append("Ground truth")
-            result_csv.append(res_headline)
-            for row in user_csv[1:]:
-                row.append(outlier_probability[i])
-                row.append(outlier_classification[i])
-                if exp.ground_truth != "":
-                    row.append(int(ground_truth_array[i][0]))
-                result_csv.append(row)
-                i += 1
-            odm_handling.write_data_to_csv(result_csv_path, result_csv)
+                row.append(int(ground_truth_array[i][0]))
+            result_csv.append(row)
+            i += 1
+        odm_handling.write_data_to_csv(result_csv_path, result_csv)
 
-            duration = exp.start_time - timezone.now()
-            print(metrics)
+        duration = timezone.now() - exp.start_time
+        #print(duration)
 
         exp = models.Experiments.objects.filter(id=self.id).first()
         user = exp.user
@@ -99,10 +99,6 @@ class DetectorThread(threading.Thread):
         finished_exp.set_metrics(metrics)
         finished_exp.duration = duration
         finished_exp.save()
-
-        print("f_exp:", finished_exp)
-        print("f_exp.id:", finished_exp.id)
-        print("detector finished")
 
         # except Exception as e:
         #     print("Error occured")

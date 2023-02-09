@@ -55,11 +55,27 @@ class Experiments(models.Model):
         blank=True,
         null=True
     )
-    auxiliary_file_name = models.CharField(verbose_name="file", max_length=128, blank=True, null=True)
+    auxiliary_file_name = models.CharField(
+        verbose_name="file",
+        max_length=128,
+        blank=True,
+        null=True
+    )
     columns = models.TextField(blank=True, null=True)
     parameters = models.TextField(blank=True, null=True)
-    created_time = models.DateTimeField(verbose_name="created time", blank=True, null=True)
-    start_time = models.DateTimeField(verbose_name="start time", blank=True, null=True)
+    created_time = models.DateTimeField(
+        verbose_name="created time",
+        blank=True,
+        null=True)
+    start_time = models.DateTimeField(
+        verbose_name="start time",
+        blank=True,
+        null=True)
+    duration = models.DurationField(
+        verbose_name="duration of run",
+        blank=True,
+        null=True
+    )
 
     def set_columns(self, x):
         self.columns = json.dumps(x)
@@ -147,11 +163,6 @@ class FinishedExperiments(Experiments):
         upload_to=user_result_path,
         help_text="please upload a ground truth file",
         validators=[validate_file_extension],
-        blank=True,
-        null=True
-    )
-    duration = models.DurationField(
-        verbose_name="duration of run",
         blank=True,
         null=True
     )
