@@ -67,8 +67,12 @@ def subspace_exclusion_check(user_choice: str, max_col):
     combination_regex = '([0-9]+)(\\,[0-9]+)*'
     if re.match(combination_regex, user_choice):
         picks = user_choice.split(",")
-        if len(picks) - 1 > max_col:
+        picks = list(dict.fromkeys(picks))
+        if not max_col - len(picks) >= 0:
             return False
+        for pick in picks:
+            if int(pick) > max_col:
+                return False
         return True
     return False
 
