@@ -4,7 +4,7 @@
 {% block content %}
     <div class="detail">
         <h1 align="center">Statistics: {{ exp.run_name }}</h1>
-        <h1 align="center">{{ exp.state }}a</h1>
+        <h1 align="center">{{ exp.state }}</h1>
 
         <h3>Selected Database: {{ exp.file_name }} </h3>
         <h3>Detected Subspaces: </h3>
@@ -31,7 +31,7 @@
         <table class="table table-bordered" border="1">
             <thead>
             <tr>
-                <th>parameter</th>
+                <th>Parameter</th>
                 <th>Value</th>
             </tr>
             </thead>
@@ -46,17 +46,32 @@
             </tbody>
         </table>
 
-        {% if queryset.state == "finished" %}
-            <h3>Detected outliers: </h3>
+        {% if exp.state == "finished" %}
+            <h3>Detected outliers: {{ outliers }}</h3>
             <button type="button">Download detected outliers as *.csv</button>
-            {% if queryset.ground_truth != None %}
+            {% if exp.ground_truth != None %}
                 <h3>Performance based on ground truth file: </h3>
+                <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Result</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for key,value in performance %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
             {% endif %}
 
-            {% if queryset.generated_file != None %}
-                <h3>Detected outliers after merging with generated data: </h3>
+            {% if exp.generated_file != None %}
+                <h3>Detected outliers after merging with generated data:{{ outliers_generated }} </h3>
                 <button type="button">Download detected outliers as *.csv</button>
-                <h3>ROC curve: </h3>
+                <h3>ROC curve: {{ roc }}</h3>
             {% endif %}
 
         {% endif %}
