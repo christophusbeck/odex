@@ -3,10 +3,10 @@
 
 {% block content %}
     <div class="detail">
-        <h1 align="center">Statistics: {{ queryset.run_name }}</h1>
-        <h1 align="center"><b>{{ queryset.state }}</b></h1>
+        <h1 align="center">Statistics: {{ exp.run_name }}</h1>
+        <h1 align="center">{{ exp.state }}a</h1>
 
-        <h3>Selected Database: {{ queryset.file_name }} </h3>
+        <h3>Selected Database: {{ exp.file_name }} </h3>
         <h3>Detected Subspaces: </h3>
         <table class="table table-bordered" align="center" border="1">
             <thead>
@@ -17,7 +17,7 @@
             </thead>
             <tbody>
             <br>
-            {% for column in queryset.columns %}
+            {% for column in columns %}
                 <tr>
                     <td>{{ column }}</td>
                     <td>{{ forloop.counter }}</td>
@@ -26,8 +26,8 @@
             </tbody>
         </table>
 
-        <h3>Selected Subspaces: {{ queryset.operation }} </h3>
-        <h3>Selected ODM: {{ queryset.odm }}</h3>
+        <h3>Selected Subspaces: {{ exp.operation }} </h3>
+        <h3>Selected ODM: {{ exp.odm }}</h3>
         <table class="table table-bordered" border="1">
             <thead>
             <tr>
@@ -37,10 +37,10 @@
             </thead>
             <tbody>
             <br>
-            {% for obj in parameters %}
+            {% for key,value in paras.items %}
                 <tr>
-                    <td>{{ obj.parameter_name }}</td>
-                    <td>{{ obj.value }}
+                    <td>{{ key }}</td>
+                    <td>{{ value }}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -54,9 +54,9 @@
             {% endif %}
 
             {% if queryset.generated_file != None %}
-                    <h3>Detected outliers after merging with generated data:  </h3>
-                    <button type="button">Download detected outliers as *.csv</button>
-                    <h3>ROC curve:   </h3>
+                <h3>Detected outliers after merging with generated data: </h3>
+                <button type="button">Download detected outliers as *.csv</button>
+                <h3>ROC curve: </h3>
             {% endif %}
 
         {% endif %}
