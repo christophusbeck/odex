@@ -40,6 +40,8 @@
                     {% for radio in form.operation_model_options %}
                         <label for="{{ radio.id_for_label }}">
                             <span class="radio">{{ radio.tag }}</span>
+                            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                            &nbsp
                             {{ radio.choice_label }}
                         </label>
                     {% endfor %}
@@ -65,6 +67,9 @@
                     <span style="color: red;">{{ form.operation_written.errors.0 }}</span>
                 </div>
             </div>
+        <br>
+        <br>
+        <br>
             {#            form way#}
             {#                {% for choice in form.ground_truth_options %}#}
             {#                    <div class="form-group">#}
@@ -77,6 +82,8 @@
                 {% for radio in form.ground_truth_options %}
                         <label for="{{ radio.id_for_label }}">
                             <span class="radio">{{ radio.tag }}</span>
+                            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                            &nbsp
                             {{ radio.choice_label }}
                         </label>
                 {% endfor %}
@@ -91,6 +98,9 @@
                     {{ form.ground_truth }}
                     <span style="color: red;">{{ field.errors.0 }}</span>
                 </button>
+        <br>
+        <br>
+        <br>
 
 
 
@@ -106,9 +116,11 @@
                 </button>
                 <br>
             </div>
+        <br>
+        <br>
+        <br>
 
 
-            <br>
             Select Outlier Detection Method and input parameters:
             <label>
                 <select name="odms" id="odms" onchange="displaySelected(this)">

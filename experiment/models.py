@@ -85,6 +85,10 @@ def user_ground_truth_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     return 'user_{0}/{1}/ground_truth_{2}'.format(instance.user_id, instance.id, filename)
 
+def user_result_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'user_{0}/{1}/result_{2}'.format(instance.user_id, instance.id, filename)
+
 
 
 def validate_file_extension(value):
@@ -124,7 +128,7 @@ class PendingExperiments(Experiments):
 
 
 class FinishedExperiments(Experiments):
-    result_path = models.CharField(verbose_name="result path", max_length=128)
+    result_path = user_result_path,
     duration = models.IntegerField(verbose_name="run duration")
     metrics = {}
 
