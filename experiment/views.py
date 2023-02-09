@@ -97,6 +97,7 @@ class MainView(View):
         start = (page - 1) * page_size
         end = page * page_size
 
+
         total_count = models.Experiments.objects.filter(user_id=request.session["info"]["id"]).count()
         total_page_count, div = divmod(total_count, page_size)
         if div:
@@ -121,6 +122,7 @@ class MainView(View):
                     start_page = page - plus
                     end_page = page + plus
 
+
         page_str_list = []
 
         # prev page
@@ -130,12 +132,13 @@ class MainView(View):
             prev = '<li><a href ="?page={}">last page</a></li>'.format(1)
         page_str_list.append(prev)
 
-        for i in range(start_page, end_page + 1):
+        for i in range(start_page,end_page + 1):
             if i == page:
-                ele = '<li><a href ="?page={}">{}</a></li>'.format(i, i)
+                ele = '<li class="active"><a href ="?page={}">{}</a></li>'.format(i,i)
             else:
                 ele = '<li><a href ="?page={}">{}</a></li>'.format(i, i)
             page_str_list.append(ele)
+
 
         # next page
         if page < total_page_count:
@@ -151,20 +154,20 @@ class MainView(View):
         order = "asc"
         tag = "id"
         if request.GET.get('order', False) == "des" and request.GET.get('tag', False) == "id":
-            queryset = models.Experiments.objects.order_by('-id')
+            print("herr")
+            queryset = models.Experiments.objects.order_by('-id')[start:end]
             order = "des"
             tag = "id"
         elif request.GET.get('order', False) == "asc" and request.GET.get('tag', False) == "file":
-            queryset = models.Experiments.objects.order_by('file_name')
+            queryset = models.Experiments.objects.order_by('file_name')[start:end]
             order = "asc"
             tag = "file"
         elif request.GET.get('order', False) == "des" and request.GET.get('tag', False) == "file":
-            queryset = models.Experiments.objects.order_by('-file_name')
+            queryset = models.Experiments.objects.order_by('-file_name')[start:end]
             order = "des"
             tag = "file"
         form = CreateForm()
-        return render(request, self.template_name,
-                      {"queryset": queryset, "form": form, "order": order, "tag": tag, "page_string": page_string})
+        return render(request, self.template_name, {"queryset": queryset, "form": form, "order": order, "tag": tag, "page_string":page_string})
 
     def post(self, request, *args, **kwargs):
         form = CreateForm(data=request.POST, files=request.FILES)
@@ -223,10 +226,11 @@ class Configuration(View):
         if form.is_valid():
             print("form.cleaned_data: ", form.cleaned_data)
             print("form.files: ", form.files)
+            selected_odm = list(odms.keys())[int(request.POST['odms']) - 1]
             operation = ""
 
             if form.cleaned_data['operation_model_options'] == '1':
-                pass
+                operation = ""
 
             elif form.cleaned_data['operation_model_options'] == '2':
                 if not form.cleaned_data['operation_except']:
@@ -299,28 +303,19 @@ class ResultView(View):
     template_name = "result.html"
 
     def get(self, request, *args, **kwargs):
-        exp = models.Experiments.objects.filter(id=request.GET['id']).first()
+        exp = models.FinishedExperiments.objects.filter(id=request.GET['id']).first()
         columns = exp.get_columns()
         paras = exp.get_para()
         if exp.state == "pending":
-            exp = models.PendingExperiments.objects.filter(id=request.GET['id']).first()
-            return render(request, self.template_name, {"exp": exp, "columns": columns, "paras": paras})
+            detected_num = None
         else:
             exp = models.FinishedExperiments.objects.filter(id=request.GET['id']).first()
-            metrics = exp.get_metrics()
-            detected_num = metrics['Detected Outliers']
-            performance = dict((key, value) for key, value in metrics.items() if key != "Detected Outliers"
-                               and key != "Detected Outliers after merging with generated data")
+            detected_num = exp.get_metrics()['Detected Outliers']
 
-            if exp.has_generated_file:
-                detected_additional_num = metrics['Detected Outliers after merging with generated data']
-                return render(request, self.template_name,
-                              {"exp": exp, "columns": columns, "paras": paras,
-                               "outliers": detected_num, "performance": performance,
-                               "outliers_generated": detected_additional_num})
-
-            return render(request, self.template_name, {"exp": exp, "columns": columns, "paras": paras,
-                                                        "outliers": detected_num, "performance": performance})
+        print("exp.has_ground_truth: ",exp.has_ground_truth)
+        print("exp.has_generated_file: ", exp.has_generated_file)
+        return render(request, self.template_name,
+                      {"exp": exp, "columns": columns, "outliers": detected_num, "paras": paras})
 
     def post(self, request, *args, **kwargs):
         return render(request, self.template_name)
