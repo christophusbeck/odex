@@ -20,7 +20,6 @@ from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 
 
-
 # Create your views here.
 # To render the pages of configuration and details: we need following parameters
 #
@@ -137,7 +136,6 @@ class Configuration(View):
 
         return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms})
 
-
     def post(self, request, *args, **kwargs):
         form = ConfigForm(data=request.POST, files=request.FILES)
         odms = tools.odm_handling.static_odms_dic()
@@ -201,26 +199,22 @@ class Configuration(View):
             exp.odm = form.cleaned_data['odm'] = selected_odm
             exp.set_para(parameters)
             exp.operation = operation
+            exp.state = "pending"
+            exp.operation_option = form.cleaned_data['operation_model_options']
+            exp.has_ground_truth = 'ground_truth' in form.files
+            exp.has_generated_file = 'generated_file' in form.files
 
-            if 'generated_file' in form.files:
-                exp.generated_file = form.files['generated_file']
             if 'ground_truth' in form.files:
                 exp.ground_truth = form.files['ground_truth']
+            if 'generated_file' in form.files:
+                exp.generated_file = form.files['generated_file']
 
             exp.start_time = timezone.now()
-            exp.state = "pending"
+
             exp.save()
 
             DetectorThread(exp.id).start()
 
-            # return HttpResponse(
-            #     [json.dumps(selected_odm),
-            #      ":     ",
-            #      json.dumps(odms[selected_odm]),
-            #      '          specified para:',
-            #      json.dumps(parameters)
-            #      ]
-            # )
             return redirect("/main/")
 
         return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms})
@@ -231,7 +225,6 @@ class ResultView(View):
     template_name = "result.html"
 
     def get(self, request, *args, **kwargs):
-
         exp = models.Experiments.objects.filter(id=request.GET['id']).first()
         columns = exp.get_columns()
         paras = exp.get_para()

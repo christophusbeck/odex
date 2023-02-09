@@ -76,6 +76,20 @@ class Experiments(models.Model):
         blank=True,
         null=True
     )
+    operation_option = models.CharField(
+        max_length=2,
+        choices=[("1", "All subspaces"), ("2", "All, except"), ("3", "Combination")],
+        blank=True,
+        null=True
+    )
+    has_ground_truth = models.BooleanField(
+        blank=True,
+        null=True
+    )
+    has_generated_file = models.BooleanField(
+        blank=True,
+        null=True
+    )
 
     def set_columns(self, x):
         self.columns = json.dumps(x)

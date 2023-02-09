@@ -25,13 +25,6 @@ class ConfigForm(BootStrapModelForm):
             'ground_truth': 'upload a ground truth file'
         }
 
-    # operation = forms.CharField(
-    #     label="Subspace Combination",
-    #     max_length=64,
-    #     help_text="enter the subspace",
-    #     required=False
-    # )
-
     operation_except = forms.CharField(
         label="All subspaces, except",
         max_length=64,
@@ -71,13 +64,5 @@ class ConfigForm(BootStrapModelForm):
         initial=1
     )
 
-
-# class UpForm(BootStrapForm):
-#     operation = forms.CharField(label="detected subspaces")
-#     ground_truth = forms.FileField(label= "upload a ground truth file")
-#     # still need to check if this is a valid file or not
-#     add_data = forms.FileField(label= "upload an addtional data file")
-#     # upload all the informations in a table! only for test
-#     # parameter = forms.CharField(label="parameters")
 
 
