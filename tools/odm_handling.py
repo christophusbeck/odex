@@ -100,11 +100,11 @@ def subspace_selection_parser(user_choice: str):
     for and_combo in or_split:
         and_split = and_combo.split("&")
         con = []
-        for tuple in and_split:
-            tuple = tuple.replace("{", "")
-            tuple = tuple.replace("}", "")
+        for tpl in and_split:
+            tpl = tpl.replace("{", "")
+            tpl = tpl.replace("}", "")
             nums = []
-            for i in tuple.split(","):
+            for i in tpl.split(","):
                 nums.append(int(i))
             con.append(nums)
         result.append(con)
