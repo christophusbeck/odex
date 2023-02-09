@@ -1,5 +1,7 @@
 import os
 import threading
+
+import numpy as np
 from django.utils import timezone
 
 from experiment import models
@@ -61,10 +63,10 @@ class DetectorThread(threading.Thread):
             if exp.generated_file != "":
                 user_gen_csv = odm_handling.get_data_from_csv(exp.generated_file.path)
                 user_gen_data = odm_handling.get_array_from_csv_data(user_gen_csv[1:])
-                merged_data = user_data + user_gen_data
+                merged_data = np.concatenate((user_data, user_gen_data))
                 clf_merge = exp_odm(**exp_para)
-                clf_merge.fit(self, merged_data)
-                outlier_classification_after_merge = clf_merge.predict(self, merged_data)
+                clf_merge.fit(merged_data)
+                outlier_classification_after_merge = clf_merge.predict(merged_data)
                 metrics["Detected Outliers after merging with generated data"] = sum(outlier_classification_after_merge)
 
             duration = exp.start_time - timezone.now()
