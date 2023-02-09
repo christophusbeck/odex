@@ -22,6 +22,7 @@
             margin-top: 10px;
             text-align: center;
         }
+
     </style>
 </head>
 <body>
@@ -39,17 +40,14 @@
             <label>Password</label>
             {{ form.password }}
             <small>{{ form.password.help_text }}</small>
-            <div  style="color: red;">{{ form.password.errors.0 }}</div>
+            <div style="color: red;">{{ form.password.errors.0 }}</div>
         </div>
 
-        <a href="/register/">
-            <button type="button" value="Creat Account">Creat Account</button>
-        </a>
-        <a href="/resetpassword/">
-            <button type="button" value="Forget password">Forget password</button>
-        </a>
-
-        <div><input id="btnLogin" type="submit" value="Log in" class="btn btn-primary"></div>
+        <div>
+            <input id="btnLogin" type="submit" value="Log in" class="btn btn-primary">
+            <a href="/register/" type="button" class="btn btn-link">Creat Account</a>
+            <a href="/resetpassword/" type="button" class="btn btn-link">Forget password</a>
+        </div>
 
     </form>
 </div>
