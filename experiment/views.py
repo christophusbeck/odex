@@ -92,8 +92,12 @@ class MainView(View):
 
     def get(self, request, *args, **kwargs):
         queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"])
+        order = "asc"
+        if request.GET.get('order', False) == "des":
+            queryset = models.Experiments.objects.order_by('-id')
+            order = "des"
         form = CreateForm()
-        return render(request, self.template_name, {"queryset": queryset, "form": form})
+        return render(request, self.template_name, {"queryset": queryset, "form": form, "order": order})
 
     def post(self, request, *args, **kwargs):
         form = CreateForm(data=request.POST, files=request.FILES)
