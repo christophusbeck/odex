@@ -134,7 +134,7 @@ class MainView(View):
 
         for i in range(start_page,end_page + 1):
             if i == page:
-                ele = '<li><a href ="?page={}">{}</a></li>'.format(i,i)
+                ele = '<li class="active"><a href ="?page={}">{}</a></li>'.format(i,i)
             else:
                 ele = '<li><a href ="?page={}">{}</a></li>'.format(i, i)
             page_str_list.append(ele)

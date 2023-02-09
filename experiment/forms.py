@@ -59,7 +59,7 @@ class ConfigForm(BootStrapModelForm):
         choices=[("1", "All subspaces"), ("2", "All, except"), ("3", "Combination")],  # （value, label）
         widget=widgets.RadioSelect(attrs={
             'id': 'operation_model',
-            'style': 'width:100px; height:20px'
+            'style': 'width:100px; height:20px',
         }),
         initial=1
     )
