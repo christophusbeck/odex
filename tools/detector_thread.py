@@ -12,7 +12,7 @@ class DetectorThread(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        try:
+        #try:
             print("detector thread starts")
             print(self.id)
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
@@ -37,10 +37,11 @@ class DetectorThread(threading.Thread):
             i = 0
             for row in user_data:
                 if outlier_classification[i]:
-                    result_csv.append(row[0])
+                    result_csv.append(list(row))
                 i = i + 1
 
-            result_csv_path = models.user_result_path(exp, exp.file_name)
+            result_csv_path = "media/" + models.user_result_path(exp, exp.file_name)
+
 
             odm_handling.write_data_to_csv(result_csv_path, result_csv)
 
@@ -75,9 +76,9 @@ class DetectorThread(threading.Thread):
 
 
 
-        except Exception as e:
-            print("Error occured")
-            print(e)
+        #except Exception as e:
+            #print("Error occured")
+            #print(e)
 
 
 
