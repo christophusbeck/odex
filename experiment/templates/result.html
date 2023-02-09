@@ -26,7 +26,7 @@
             </tbody>
         </table>
 
-        <h3>Selected Subspaces: {{ exp.operation }} </h3>
+        <h3>Selected Subspaces: {{ exp.get_operation_option_display }} {{ exp.operation }} </h3>
         <h3>Selected ODM: {{ exp.odm }}</h3>
         <table class="table table-bordered" border="1">
             <thead>
@@ -70,7 +70,7 @@
                         </tr>
                     {% endfor %}
                     </tbody>
-                </table>>
+                </table>
             {% endif %}
 
             {% if exp.has_generated_file %}
@@ -89,5 +89,7 @@
         <a href="/main/" style="margin-right: 500px">
             <button type="button" value="cancel" style="float: right">Return</button>
         </a>
+        <br>
+        <br>
     </div>
 {% endblock %}

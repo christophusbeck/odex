@@ -1,6 +1,11 @@
 {% extends 'layout.html' %}
 
 {% block content %}
+    {% if exp.state == "failed" %}
+
+        <label id="msg" style="color:red;font-size:12pt;"> Error: {{ exp.error }}</label>
+
+    {% endif %}
     <div class="configuration">
         <h1 align="center">New Run:</h1>
         <br>

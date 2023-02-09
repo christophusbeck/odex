@@ -63,6 +63,7 @@ def get_array_from_csv_data(data: list[list[str]]):
 
 
 def subspace_exclusion_check(user_choice: str, max_col):
+    print("user_choice:", user_choice)
     user_choice = user_choice.replace(" ", "")
     combination_regex = '([0-9]+)(\\,[0-9]+)*'
     if re.match(combination_regex, user_choice):
@@ -73,7 +74,7 @@ def subspace_exclusion_check(user_choice: str, max_col):
         for pick in picks:
             if int(pick) > max_col:
                 return False
-        return True
+        return picks
     return False
 
 
@@ -99,11 +100,11 @@ def subspace_selection_parser(user_choice: str):
     for and_combo in or_split:
         and_split = and_combo.split("&")
         con = []
-        for tuple in and_split:
-            tuple = tuple.replace("{", "")
-            tuple = tuple.replace("}", "")
+        for tpl in and_split:
+            tpl = tpl.replace("{", "")
+            tpl = tpl.replace("}", "")
             nums = []
-            for i in tuple.split(","):
+            for i in tpl.split(","):
                 nums.append(int(i))
             con.append(nums)
         result.append(con)
@@ -195,3 +196,36 @@ def static_odms_dic():
         odm_para = get_def_value_dict(match_odm_by_name(d))
         odms[d] = odm_para
     return odms
+
+def col_subset(original: list[list[any]], cols: list[int]):
+    result = []
+    for row in original:
+        new_row = []
+        for col in cols:
+            new_row.append(row[col])
+        result.append(new_row)
+    return result
+
+
+def operate_and_on_arrays(array_1, array_2):
+    result = []
+    i = 0
+    for p in array_1:
+        if array_1[i] == 1 and array_2[i] == 1:
+            result.append(1)
+        else:
+            result.append(0)
+        i += 1
+    return result
+
+
+def operate_or_on_arrays(array_1, array_2):
+    result = []
+    i = 0
+    for p in array_1:
+        if array_1[i] == 1 or array_2[i] == 1:
+            result.append(1)
+        else:
+            result.append(0)
+        i += 1
+    return result

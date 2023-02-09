@@ -8,49 +8,57 @@
     <style>
         .account {
             width: 400px;
-            border: 1px solid #dddddd;
             border-radius: 5px;
-            box-shadow: 5px 5px 20px #aaa;
-
             margin-left: auto;
             margin-right: auto;
-            margin-top: 100px;
+            margin-top: 150px;
             padding: 20px 40px;
         }
 
         .account h2 {
-            margin-top: 10px;
+            margin-top: 15px;
             text-align: center;
         }
+
+        .img {
+            background-image: url("/static/img/login_background.png"), url("/static/img/login_logo.png");
+        }
+
 
     </style>
 </head>
 <body>
 <div class="account">
-    <h2>Odex</h2>
-    <form method="post" novalidate>
-        {% csrf_token %}
-        <div class="form-group">
-            <label>Username</label>
-            {{ form.username }}
-            <small>{{ form.username.help_text }}</small>
-            <div style="color: red;">{{ form.username.errors.0 }}</div>
-        </div>
-        <div class="form-group">
-            <label>Password</label>
-            {{ form.password }}
-            <small>{{ form.password.help_text }}</small>
-            <div style="color: red;">{{ form.password.errors.0 }}</div>
-        </div>
+    <style>
+        body{
+             background-image:url("/static/img/login_logo.png"),url("/static/img/login_background.png");
+             background-size: 95%,cover;
+             background-repeat: no-repeat,no-repeat;
+        }
+    </style>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Username</label>
+                {{ form.username }}
+                <small>{{ form.username.help_text }}</small>
+                <div style="color: red;">{{ form.username.errors.0 }}</div>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                {{ form.password }}
+                <small>{{ form.password.help_text }}</small>
+                <div style="color: red;">{{ form.password.errors.0 }}</div>
+            </div>
 
-        <div>
-            <input id="btnLogin" type="submit" value="Log in" class="btn btn-primary">
-            <a href="/register/" type="button" class="btn btn-link">Creat Account</a>
-            <a href="/resetpassword/" type="button" class="btn btn-link">Forget password</a>
-        </div>
+            <div>
+                <input id="btnLogin" type="submit" value="Log in" class="btn btn-primary">
+                <a href="/register/" type="button" class="btn btn-link">Creat Account</a>
+                <a href="/resetpassword/" type="button" class="btn btn-link">Forget password</a>
+            </div>
 
-    </form>
-</div>
+        </form>
+    </div>
 
 <script type="text/javascript">
     $(function () {
