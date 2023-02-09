@@ -230,7 +230,7 @@ class Configuration(View):
             operation = ""
 
             if form.cleaned_data['operation_model_options'] == '1':
-                operation = "all"
+                operation = ""
 
             elif form.cleaned_data['operation_model_options'] == '2':
                 if not form.cleaned_data['operation_except']:
@@ -311,6 +311,9 @@ class ResultView(View):
         else:
             exp = models.FinishedExperiments.objects.filter(id=request.GET['id']).first()
             detected_num = exp.get_metrics()['Detected Outliers']
+
+        print("exp.has_ground_truth: ",exp.has_ground_truth)
+        print("exp.has_generated_file: ", exp.has_generated_file)
         return render(request, self.template_name,
                       {"exp": exp, "columns": columns, "outliers": detected_num, "paras": paras})
 
