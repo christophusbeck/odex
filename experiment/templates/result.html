@@ -2,7 +2,7 @@
 
 
 {% block content %}
-    <div class="detail">
+    <div class="container">
         <h1 align="center">Statistics: {{ exp.run_name }}</h1>
         <h1 align="center">{{ exp.state }}</h1>
 
@@ -48,37 +48,46 @@
 
         {% if exp.state == "finished" %}
             <h3>Detected outliers: {{ outliers }}</h3>
-            <a href={{ path }} class="DownloadButton">Download detected outliers as *.csv file</a>
+            <a href={{ path }}>
+                <div class="btn btn-primary" class="DownloadButton">
+                    Download detected outliers as *.csv file
+                </div>
+            </a>
             {% if exp.has_ground_truth %}
                 <h3>Performance based on ground truth file: </h3>
                 <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th>Metric</th>
-                    <th>Result</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for key, value in performance.items %}
+                    <thead>
                     <tr>
-                        <td>{{ key }}</td>
-                        <td>{{ value }}</td>
+                        <th>Metric</th>
+                        <th>Result</th>
                     </tr>
-                {% endfor %}
-                </tbody>
+                    </thead>
+                    <tbody>
+                    {% for key, value in performance.items %}
+                        <tr>
+                            <td>{{ key }}</td>
+                            <td>{{ value }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>>
             {% endif %}
 
             {% if exp.has_generated_file %}
                 <h3>Detected outliers after merging with generated data:{{ outliers_generated }} </h3>
-                <a href={{ path }} class="DownloadButton">Download detected outliers as *.csv file</a>
-                <h3>ROC curve: {{ roc }}</h3>
+                <a href={{ path }}>
+                    <div class="btn btn-primary" class="DownloadButton">
+                        Download detected outliers as *.csv file
+                    </div>
+                </a>
+                <h3>ROC curve: {{ roc }} </h3>
             {% endif %}
 
         {% endif %}
 
+
         <a href="/main/" style="margin-right: 500px">
             <button type="button" value="cancel" style="float: right">Return</button>
         </a>
-        </table>>
     </div>
 {% endblock %}
