@@ -30,16 +30,12 @@ class DetectorThread(threading.Thread):
             clf.fit(user_data)
 
             outlier_classification = clf.predict(user_data)
+            outlier_probability = clf.predict_proba(user_data)
 
             metrics = {}
             metrics["Detected Outliers"] = sum(outlier_classification)
 
-            result_csv_path = "media/" + models.user_result_path(exp, exp.file_name)
-            result_csv = []
-            for p in outlier_classification:
-                result_csv.append([p])
 
-            odm_handling.write_data_to_csv(result_csv_path, result_csv)
 
             if exp.ground_truth != "":
                 ground_truth_csv = odm_handling.get_data_from_csv(exp.ground_truth.path)
@@ -62,6 +58,24 @@ class DetectorThread(threading.Thread):
                 clf_merge.fit(merged_data)
                 outlier_classification_after_merge = clf_merge.predict(merged_data)
                 metrics["Detected Outliers after merging with generated data"] = sum(outlier_classification_after_merge)
+
+            result_csv_path = "media/" + models.user_result_path(exp, exp.file_name)
+            result_csv = []
+            i = 0
+            res_headline = user_csv[0]
+            res_headline.append("Probability")
+            res_headline.append("Classification")
+            if exp.ground_truth != "":
+                res_headline.append("Ground truth")
+            result_csv.append(res_headline)
+            for row in user_csv[1:]:
+                row.append(outlier_probability[i])
+                row.append(outlier_classification[i])
+                if exp.ground_truth != "":
+                    row.append(int(ground_truth_array[i][0]))
+                result_csv.append(row)
+                i += 1
+            odm_handling.write_data_to_csv(result_csv_path, result_csv)
 
             duration = exp.start_time - timezone.now()
             print(metrics)
