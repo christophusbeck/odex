@@ -20,7 +20,7 @@
             </thead>
             <tbody>
             <br>
-            {% for column in exp.columns %}
+            {% for column in columns %}
                 <tr>
                     <td>{{ column }}</td>
                     <td>{{ forloop.counter }}</td>
@@ -41,10 +41,10 @@
             </thead>
             <tbody>
             <br>
-            {% for obj in exp.parameters %}
+            {% for name, value in paras.items %}
                 <tr>
-                    <td>{{ obj.parameter_name }}</td>
-                    <td>{{ obj.value }}
+                    <td>{{ name }}</td>
+                    <td>{{ value }}
                 </tr>
             {% endfor %}
             </tbody>
