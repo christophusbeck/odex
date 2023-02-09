@@ -232,9 +232,13 @@ class ResultView(View):
         exp = models.FinishedExperiments.objects.filter(id=request.GET['id']).first()
         columns = exp.get_columns()
         paras = exp.get_para()
-        print(paras)
-
-        return render(request, self.template_name, {"exp": exp, "columns": columns, "paras": paras})
+        if exp.state == "pending":
+            detected_num = None
+        else:
+            exp = models.FinishedExperiments.objects.filter(id=request.GET['id']).first()
+            detected_num = exp.get_metrics()['Detected Outliers']
+        return render(request, self.template_name,
+                      {"exp": exp, "columns": columns, "outliers": detected_num, "paras": paras})
 
     def post(self, request, *args, **kwargs):
         return render(request, self.template_name)
