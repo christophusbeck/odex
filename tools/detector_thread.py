@@ -77,7 +77,6 @@ class DetectorThread(threading.Thread):
                 i += 1
             odm_handling.write_data_to_csv(result_csv_path, result_csv)
 
-            duration = timezone.now() - exp.start_time
 
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
             user = exp.user
