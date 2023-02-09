@@ -37,22 +37,45 @@
             <div class="operation">
                 <fieldset>
                     <legend>Select Subspaces</legend>
+
+                    {#                    <div>#}
+                    {#                        <label>#}
+                    {#                            <input type="radio" name="operation_model" style="width:100px; height:20px" id="operation_model_0" value="0">#}
+                    {#                            <br>#}
+                    {#                            <label for="operation_model_0">All subspaces</label>#}
+                    {#                        </label>#}
+                    {#                        <label>#}
+                    {#                            <input type="radio" name="operation_model" style="width:100px; height:20px" id="operation_model_1" value="1">#}
+                    {#                            <br>#}
+                    {#                            <label for="operation_model_1"> &nbsp&nbsp All, except</label>#}
+                    {#                        </label>#}
+                    {#                        <label>#}
+                    {#                            <input type="radio" name="operation_model" style="width:100px; height:20px" id="operation_model_2" value="2">#}
+                    {#                            <br>#}
+                    {#                            <label for="operation_model_2">Combination</label>#}
+                    {#                        </label>#}
+                    {#                    </div>#}
+
                     {% for radio in form.operation_model_options %}
                         <label for="{{ radio.id_for_label }}">
-                            <span class="radio">{{ radio.tag }}</span>
+                                                <span class="radio">
+                                                    {{ radio.tag }}
+                                                </span>
                             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
                             &nbsp
                             {{ radio.choice_label }}
                         </label>
                     {% endfor %}
+
+
                 </fieldset>
 
-{#                <input type="radio" id="sub" name="sub" onclick="hideLogAndCombo()" value="all">#}
-{#                <label>All subspaces:</label><br>#}
-{#                <input type="radio" id="sub" name="sub" onclick="showExcept()" value="except">#}
-{#                <label>All, except:</label><br>#}
-{#                <input type="radio" id="sub" name="sub" onclick="showCombo()" value="combo">#}
-{#                <label>Combination:</label>#}
+                {#                <input type="radio" id="sub" name="sub" onclick="hideLogAndCombo()" value="all">#}
+                {#                <label>All subspaces:</label><br>#}
+                {#                <input type="radio" id="sub" name="sub" onclick="showExcept()" value="except">#}
+                {#                <label>All, except:</label><br>#}
+                {#                <input type="radio" id="sub" name="sub" onclick="showCombo()" value="combo">#}
+                {#                <label>Combination:</label>#}
                 <div class="form-group" id="except" style="display: none">
                     <label> All subspaces, except: </label> <br>
                     {{ form.operation_except }}
@@ -67,9 +90,9 @@
                     <span style="color: red;">{{ form.operation_written.errors.0 }}</span>
                 </div>
             </div>
-        <br>
-        <br>
-        <br>
+            <br>
+            <br>
+            <br>
             {#            form way#}
             {#                {% for choice in form.ground_truth_options %}#}
             {#                    <div class="form-group">#}
@@ -78,30 +101,29 @@
             {#                {% endfor %}#}
 
             <fieldset>
-                    <legend>If use ground truth file</legend>
+                <legend>If use ground truth file</legend>
                 {% for radio in form.ground_truth_options %}
-                        <label for="{{ radio.id_for_label }}">
-                            <span class="radio">{{ radio.tag }}</span>
-                            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-                            &nbsp
-                            {{ radio.choice_label }}
-                        </label>
+                    <label for="{{ radio.id_for_label }}">
+                        <span class="radio">{{ radio.tag }}</span>
+                        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                        &nbsp
+                        {{ radio.choice_label }}
+                    </label>
                 {% endfor %}
             </fieldset>
 
-{#                <input type="radio" name="gt" onclick="hideGT()" value="False"> Detection only <br>#}
-{#                <input type="radio" name="gt" onclick="showGT()" value="True"> Compare with a grund truth file#}
-{#                <br>#}
+            {#                <input type="radio" name="gt" onclick="hideGT()" value="False"> Detection only <br>#}
+            {#                <input type="radio" name="gt" onclick="showGT()" value="True"> Compare with a grund truth file#}
+            {#                <br>#}
 
-                <button id="ground_truth_file" style="display: none">
-                    <label>{{ form.ground_truth.label }}: </label>
-                    {{ form.ground_truth }}
-                    <span style="color: red;">{{ field.errors.0 }}</span>
-                </button>
-        <br>
-        <br>
-        <br>
-
+            <button id="ground_truth_file" style="display: none">
+                <label>{{ form.ground_truth.label }}: </label>
+                {{ form.ground_truth }}
+                <span style="color: red;">{{ field.errors.0 }}</span>
+            </button>
+            <br>
+            <br>
+            <br>
 
 
             <div>
@@ -116,9 +138,9 @@
                 </button>
                 <br>
             </div>
-        <br>
-        <br>
-        <br>
+            <br>
+            <br>
+            <br>
 
 
             Select Outlier Detection Method and input parameters:
@@ -132,29 +154,29 @@
 
 
             {% for key, para in odms.items %}
-                <div  id="odm{{ forloop.counter }}"
-                      {% if forloop.first %}style="display: block"
-                      {% else %}style="display: none"
-                      {% endif %}>
-                <table class="table table-bordered" align="center" border="1" >
-                    <thead>
-                    <tr>
-                        <th>parameters</th>
-                        <th>values</th>
-                    </tr>
-                    </thead>
+                <div id="odm{{ forloop.counter }}"
+                     {% if forloop.first %}style="display: block"
+                     {% else %}style="display: none"
+                     {% endif %}>
+                    <table class="table table-bordered" align="center" border="1">
+                        <thead>
+                        <tr>
+                            <th>parameters</th>
+                            <th>values</th>
+                        </tr>
+                        </thead>
 
-                    <tbody id="parameters" >
-                    <div>
-                        {% for name, default in para.items %}
-                            <tr>
-                                <td>{{ name }}</td>
-                                <td><input type="text" placeholder="{{ default }}" name="{{ key }}_{{ name }}"></td>
-                            </tr>
-                        {% endfor %}
-                    </div>
-                    </tbody>
-                </table>
+                        <tbody id="parameters">
+                        <div>
+                            {% for name, default in para.items %}
+                                <tr>
+                                    <td>{{ name }}</td>
+                                    <td><input type="text" placeholder="{{ default }}" name="{{ key }}_{{ name }}"></td>
+                                </tr>
+                            {% endfor %}
+                        </div>
+                        </tbody>
+                    </table>
                 </div>
             {% endfor %}
 
@@ -176,42 +198,59 @@
 {% block js %}
 
     <script>
+        function showSubspace() {
+            var operation_model1 = $("#operation_model_1:checked").val()
+            var operation_model2 = $("#operation_model_2:checked").val()
 
-     $('#operation_model_0').click(function() {
-        var select = $(this);
-        var exc = $('#except');
-        var combo = $('#combo');
-        exc.hide();
-        combo.hide();
-    });
+            if (operation_model1 === "2") {
+                var exc = document.getElementById("except")
+                exc.style.display = 'block'
 
-    $('#operation_model_1').click(function() {
-        var select = $(this);
-        var exc = $('#except');
-        var combo = $('#combo');
-        exc.show();
-        combo.hide();
-    });
+            } else if (operation_model2 === "3") {
+                var combo = document.getElementById("combo")
+                combo.style.display = 'block'
+            }
 
-    $('#operation_model_2').click(function() {
-        var select = $(this);
-        var exc = $('#except');
-        var combo = $('#combo');
-        exc.hide();
-        combo.show();
-    });
 
-    $('#ground_truth_0').click(function() {
-        var select = $(this);
-        var gt = $('#ground_truth_file');
-        gt.hide();
-    });
+        }
 
-    $('#ground_truth_1').click(function() {
-        var select = $(this);
-        var gt = $('#ground_truth_file');
-        gt.show();
-    });
+        window.onload = showSubspace;
+
+        $('#operation_model_0').change(function () {
+            var select = $(this);
+            var exc = $('#except');
+            var combo = $('#combo');
+            exc.hide();
+            combo.hide();
+        });
+
+        $('#operation_model_1').change(function () {
+            var select = $(this);
+            var exc = $('#except');
+            var combo = $('#combo');
+            exc.show();
+            combo.hide();
+        });
+
+        $('#operation_model_2').change(function () {
+            var select = $(this);
+            var exc = $('#except');
+            var combo = $('#combo');
+            exc.hide();
+            combo.show();
+        });
+
+        $('#ground_truth_0').click(function () {
+            var select = $(this);
+            var gt = $('#ground_truth_file');
+            gt.hide();
+        });
+
+        $('#ground_truth_1').click(function () {
+            var select = $(this);
+            var gt = $('#ground_truth_file');
+            gt.show();
+        });
 
         function showGT() {
             var up = document.getElementById("ground_truth_file")
@@ -231,27 +270,6 @@
 
         }
 
-        function showCombo() {
-            var combo = document.getElementById("combo")
-            var exc = document.getElementById("except")
-            combo.style.display = 'block'
-            exc.style.display = 'none'
-
-        }
-
-        function showExcept() {
-            var combo = document.getElementById("combo")
-            var exc = document.getElementById("except")
-            combo.style.display = 'none'
-            exc.style.display = 'block'
-        }
-
-        function hideLogAndCombo() {
-            var combo = document.getElementById("combo")
-            var exc = document.getElementById("except")
-            combo.style.display = 'none'
-            exc.style.display = 'none'
-        }
 
         function displaySelected() {
             var opt = $("#odms").val();
