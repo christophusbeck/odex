@@ -92,7 +92,6 @@ class DetectorThread(threading.Thread):
             odm_handling.write_data_to_csv(result_csv_path, result_csv)
             print(metrics)
 
-
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
             user = exp.user
             models.PendingExperiments.objects.filter(id=self.id).delete()
