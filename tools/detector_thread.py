@@ -93,12 +93,15 @@ class DetectorThread(threading.Thread):
             finished_exp.operation = exp.operation
             finished_exp.odm = exp.odm
             finished_exp.parameters = exp.parameters
-            finished_exp.result = result_csv_path
+            finished_exp.result = models.user_result_path(exp, exp.file_name)
             finished_exp.set_metrics(metrics)
 
             duration = timezone.now() - exp.start_time
             finished_exp.duration = duration
             finished_exp.save()
+            print("exp.main_file.path: ",exp.main_file.path)
+            print("finished_exp.result: ",finished_exp.result)
+            print("finished_exp.result.path: ", finished_exp.result.path)
             os.remove(exp.main_file.path)
             if exp.has_ground_truth:
                 os.remove(exp.ground_truth.path)
