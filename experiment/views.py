@@ -230,7 +230,7 @@ class Configuration(View):
             operation = ""
 
             if form.cleaned_data['operation_model_options'] == '1':
-                operation = "all"
+                operation = ""
 
             elif form.cleaned_data['operation_model_options'] == '2':
                 if not form.cleaned_data['operation_except']:
@@ -279,8 +279,6 @@ class Configuration(View):
             exp.operation = operation
             exp.state = "pending"
             exp.operation_option = form.cleaned_data['operation_model_options']
-            exp.has_ground_truth = 'ground_truth' in form.files
-            exp.has_generated_file = 'generated_file' in form.files
 
             if 'ground_truth' in form.files:
                 exp.ground_truth = form.files['ground_truth']
