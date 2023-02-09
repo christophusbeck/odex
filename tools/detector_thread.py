@@ -14,7 +14,7 @@ class DetectorThread(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        #try:
+        try:
             print("detector thread starts")
             print("exp id:", self.id)
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
@@ -123,13 +123,13 @@ class DetectorThread(threading.Thread):
             if exp.has_generated_file:
                 os.remove(exp.generated_file.path)
 
-        #except Exception as e:
-            #print("Error occured")
-            #print(e)
-            #print("exp id:", self.id)
-            #exp = models.PendingExperiments.objects.filter(id=self.id).first()
-            #exp.state = 'failed'
-            #exp.save()
+        except Exception as e:
+            print("Error occured")
+            print(e)
+            print("exp id:", self.id)
+            exp = models.PendingExperiments.objects.filter(id=self.id).first()
+            exp.state = 'failed'
+            exp.save()
 
 
 
