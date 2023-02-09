@@ -102,9 +102,6 @@ class DetectorThread(threading.Thread):
             duration = timezone.now() - exp.start_time
             finished_exp.duration = duration
             finished_exp.save()
-            print("exp.main_file.path: ",exp.main_file.path)
-            print("finished_exp.result: ",finished_exp.result)
-            print("finished_exp.result.path: ", finished_exp.result.path)
             print("finished_exp.metric: ", finished_exp.metrics)
             os.remove(exp.main_file.path)
             if exp.has_ground_truth:
