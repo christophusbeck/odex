@@ -109,7 +109,6 @@ class MainView(View):
             pending.set_columns(list(data))
             pending.created_time = timezone.now()
             pending.save()
-            print(timezone.now())
             return JsonResponse({"status": True, "id": pending.id})
 
         return JsonResponse({"status": False, 'error': form.errors})
@@ -134,6 +133,7 @@ class Configuration(View):
         columns = exp.get_columns()
         form = ConfigForm()
         odms = tools.odm_handling.static_odms_dic()
+        print(exp.state)
 
         return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms})
 

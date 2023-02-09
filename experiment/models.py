@@ -1,5 +1,6 @@
 import json
 
+import numpy as np
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -77,18 +78,20 @@ def user_main_file_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     return 'user_{0}/{1}/main_{2}'.format(instance.user_id, instance.id, filename)
 
+
 def user_generated_file_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     return 'user_{0}/{1}/additional_{2}'.format(instance.user_id, instance.id, filename)
+
 
 def user_ground_truth_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     return 'user_{0}/{1}/ground_truth_{2}'.format(instance.user_id, instance.id, filename)
 
+
 def user_result_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     return 'user_{0}/{1}/result_{2}'.format(instance.user_id, instance.id, filename)
-
 
 
 def validate_file_extension(value):
@@ -98,6 +101,7 @@ def validate_file_extension(value):
     valid_extensions = ['.csv']
     if not ext.lower() in valid_extensions:
         raise ValidationError('Unsupported file extension.')
+
 
 class PendingExperiments(Experiments):
     main_file = models.FileField(
@@ -126,19 +130,41 @@ class PendingExperiments(Experiments):
     )
 
 
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return super(NpEncoder, self).default(obj)
+
 
 class FinishedExperiments(Experiments):
-    result_path = user_result_path,
-    duration = models.IntegerField(verbose_name="run duration")
-    metrics = {}
+    result = models.FileField(
+        verbose_name="ground truth path",
+        upload_to=user_result_path,
+        help_text="please upload a ground truth file",
+        validators=[validate_file_extension],
+        blank=True,
+        null=True
+    )
+    duration = models.DurationField(
+        verbose_name="duration of run",
+        blank=True,
+        null=True
+    )
+    metrics = models.TextField(
+        blank=True,
+        null=True
+    )
 
-    def __init__(self, pending:PendingExperiments, metrics, result_path, duration):
-        self.result_path = result_path
-        self.duration = duration
-        self.metrics = metrics
+    def set_metrics(self, x):
+        self.metrics = json.dumps(x, cls=NpEncoder)
 
-    def get_metrics(self): #Not a dummy anymore
-        return self.metrics
+    def get_metrics(self):
+        return json.loads(self.metrics)
 
 
 
