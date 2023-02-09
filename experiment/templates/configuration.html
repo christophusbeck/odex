@@ -38,24 +38,6 @@
                 <fieldset>
                     <legend>Select Subspaces</legend>
 
-                    {#                    <div>#}
-                    {#                        <label>#}
-                    {#                            <input type="radio" name="operation_model" style="width:100px; height:20px" id="operation_model_0" value="0">#}
-                    {#                            <br>#}
-                    {#                            <label for="operation_model_0">All subspaces</label>#}
-                    {#                        </label>#}
-                    {#                        <label>#}
-                    {#                            <input type="radio" name="operation_model" style="width:100px; height:20px" id="operation_model_1" value="1">#}
-                    {#                            <br>#}
-                    {#                            <label for="operation_model_1"> &nbsp&nbsp All, except</label>#}
-                    {#                        </label>#}
-                    {#                        <label>#}
-                    {#                            <input type="radio" name="operation_model" style="width:100px; height:20px" id="operation_model_2" value="2">#}
-                    {#                            <br>#}
-                    {#                            <label for="operation_model_2">Combination</label>#}
-                    {#                        </label>#}
-                    {#                    </div>#}
-
                     {% for radio in form.operation_model_options %}
                         <label for="{{ radio.id_for_label }}">
                                                 <span class="radio">
@@ -70,12 +52,6 @@
 
                 </fieldset>
 
-                {#                <input type="radio" id="sub" name="sub" onclick="hideLogAndCombo()" value="all">#}
-                {#                <label>All subspaces:</label><br>#}
-                {#                <input type="radio" id="sub" name="sub" onclick="showExcept()" value="except">#}
-                {#                <label>All, except:</label><br>#}
-                {#                <input type="radio" id="sub" name="sub" onclick="showCombo()" value="combo">#}
-                {#                <label>Combination:</label>#}
                 <div class="form-group" id="except" style="display: none">
                     <label> All subspaces, except: </label> <br>
                     {{ form.operation_except }}
@@ -93,12 +69,6 @@
             <br>
             <br>
             <br>
-            {#            form way#}
-            {#                {% for choice in form.ground_truth_options %}#}
-            {#                    <div class="form-group">#}
-            {#                    <p>{{ choice }}</p>#}
-            {#                    </div>#}
-            {#                {% endfor %}#}
 
             <fieldset>
                 <legend>If use ground truth file</legend>
@@ -112,9 +82,6 @@
                 {% endfor %}
             </fieldset>
 
-            {#                <input type="radio" name="gt" onclick="hideGT()" value="False"> Detection only <br>#}
-            {#                <input type="radio" name="gt" onclick="showGT()" value="True"> Compare with a grund truth file#}
-            {#                <br>#}
 
             <button id="ground_truth_file" style="display: none">
                 <label>{{ form.ground_truth.label }}: </label>
@@ -127,8 +94,6 @@
 
 
             <div>
-                {#            form way#}
-                {#                <div> {{ form.additional_data_option }} <h3>Run again with additional data</h3></div>#}
                 <h3>Run again with additional data:<input type="checkbox" onclick="showAdd(this)"></h3>
 
                 <button id="addtional" style="display: none">
@@ -298,57 +263,10 @@
             document.getElementById("odm" + 23).style.display = 'none'
             document.getElementById("odm" + 24).style.display = 'none'
 
-            {#for (let i = 0; i < {{odms|length}}; i++) {#}
-            {#    document.getElementById("odm" + i).style.display = 'none'#}
-            {##}
 
             document.getElementById("odm" + opt).style.display = 'block'
 
-            {##}
-            {#for (let i = 0; i < {{odms|length}}; i++) {#}
-            {#    if (i !== opt) {#}
-            {#        document.getElementById("odm" + i).style.display = 'none'#}
-            {#    }#}
-            {##}
         }
     </script>
 
 {% endblock %}
-
-{#{% block js %}#}
-{#    <script type="text/javascript">#}
-{#        $(function () {#}
-{#            bindBtnSaveEvent()#}
-{#        })#}
-{##}
-{#        function bindBtnSaveEvent() {#}
-{#            $("#btnSave").click(function () {#}
-{#                var formData = new FormData($("#formAdd")[0])#}
-{#                formData.append('exp_id' , {{ exp.id }})#}
-{##}
-{#                // 清除错误信息#}
-{#                $(".error-msg").empty();#}
-{##}
-{#                $.ajax({#}
-{#                    url: "/configuration/",//  -> /order/edit/?uid=12#}
-{#                    type: "post",#}
-{#                    data: {formData},//获取表单中用户填写的数据#}
-{#                    processData: false,#}
-{#                    contentType: false,#}
-{#                    dataType: "JSON",#}
-{#                    success: function (res) {#}
-{#                        if (res.status) {#}
-{#                            //location.reload()#}
-{#                            window.location.href = "/main/";#}
-{#                        } else {#}
-{#                            // 把错误信息显示在对话框中。#}
-{#                            $.each(res.error, function (name, errorList) {#}
-{#                                $("#id_" + name).next().text(errorList[0]);#}
-{#                            })#}
-{#                        }#}
-{#                    }#}
-{#                })#}
-{#            });#}
-{#        }#}
-{#    </script>#}
-{#{% endblock %}#}
