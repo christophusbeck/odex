@@ -3,14 +3,11 @@
 
 {% block content %}
     <div class="detail">
-        <h1 align="center">Statistics: {{ exp.run_name }}</h1>
-        <h1 align="center"><b>{{ exp.state }}</b></h1>
+        <h1 align="center">Statistics: {{ queryset.run_name }}</h1>
+        <h1 align="center"><b>{{ queryset.state }}</b></h1>
 
-        <br>
-        <h3>Selected Database: {{ exp.file_name }} </h3>
-        <h3>Detected subspaces: {{ exp.columns }} </h3>
-        <br>
-
+        <h3>Selected Database: {{ queryset.file_name }} </h3>
+        <h3>Detected Subspaces: </h3>
         <table class="table table-bordered" align="center" border="1">
             <thead>
             <tr>
@@ -20,7 +17,7 @@
             </thead>
             <tbody>
             <br>
-            {% for column in columns %}
+            {% for column in queryset.columns %}
                 <tr>
                     <td>{{ column }}</td>
                     <td>{{ forloop.counter }}</td>
@@ -28,10 +25,9 @@
             {% endfor %}
             </tbody>
         </table>
-        <br>
 
-       <h3>Configuration:</h3>
-       <h4> Selected subspaces: {{ exp.odm }}</h4>
+        <h3>Selected Subspaces: {{ queryset.operation }} </h3>
+        <h3>Selected ODM: {{ queryset.odm }}</h3>
         <table class="table table-bordered" border="1">
             <thead>
             <tr>
@@ -41,17 +37,30 @@
             </thead>
             <tbody>
             <br>
-            {% for name, value in paras.items %}
+            {% for obj in parameters %}
                 <tr>
-                    <td>{{ name }}</td>
-                    <td>{{ value }}
+                    <td>{{ obj.parameter_name }}</td>
+                    <td>{{ obj.value }}
                 </tr>
             {% endfor %}
             </tbody>
         </table>
 
-        <br>
-        <br>
+        {% if queryset.state == "finished" %}
+            <h3>Detected outliers: </h3>
+            <button type="button">Download detected outliers as *.csv</button>
+            {% if queryset.ground_truth != None %}
+                <h3>Performance based on ground truth file: </h3>
+            {% endif %}
+
+            {% if queryset.generated_file != None %}
+                    <h3>Detected outliers after merging with generated data:  </h3>
+                    <button type="button">Download detected outliers as *.csv</button>
+                    <h3>ROC curve:   </h3>
+            {% endif %}
+
+        {% endif %}
+
         <a href="/main/" style="margin-right: 500px">
             <button type="button" value="cancel" style="float: right">Return</button>
         </a>
