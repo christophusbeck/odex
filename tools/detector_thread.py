@@ -35,8 +35,7 @@ class DetectorThread(threading.Thread):
             metrics = {}
             metrics["Detected Outliers"] = sum(outlier_classification)
 
-
-
+            ground_truth_array = np.ndarray
             if exp.ground_truth != "":
                 ground_truth_csv = odm_handling.get_data_from_csv(exp.ground_truth.path)
                 ground_truth_array = odm_handling.get_array_from_csv_data(ground_truth_csv)
@@ -72,7 +71,7 @@ class DetectorThread(threading.Thread):
                 row.append(outlier_probability[i])
                 row.append(outlier_classification[i])
                 if exp.ground_truth != "":
-                    row.append(int(ground_truth_array[i][0]))
+                    row.append(str(int(ground_truth_array[i][0])))
                 result_csv.append(row)
                 i += 1
             odm_handling.write_data_to_csv(result_csv_path, result_csv)
