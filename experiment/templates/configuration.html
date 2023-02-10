@@ -6,7 +6,7 @@
         <label id="msg" style="color:red;font-size:12pt;"> Error: {{ exp.error }}</label>
 
     {% endif %}
-    <div class="configuration">
+    <fieldset class="configuration">
         <a href="/main/">
             <img border="0" src="/static/img/odex_logo.png" style="position:absolute;top:25px; left:50px; " height=""
                  width="150"/>
@@ -60,9 +60,8 @@
                             {{ radio.choice_label }}
                         </label>
                     {% endfor %}
-
-
                 </fieldset>
+            <br>
 
                 <div class="form-group" id="except" style="display: none">
                     <label> All subspaces, except: </label> <br>
@@ -93,6 +92,7 @@
                     </label>
                 {% endfor %}
             </fieldset>
+        <br>
 
 
             <button id="ground_truth_file" style="display: none">
@@ -105,8 +105,9 @@
             <br>
 
 
-            <div>
-                <h3>Run again with additional data:<input type="checkbox" onclick="showAdd(this)"></h3>
+            <fieldset>
+                <legend>Run again with additional data:&nbsp&nbsp
+                    <input type="checkbox" onclick="showAdd(this)"></legend>
 
                 <button id="addtional" style="display: none">
                     <label>{{ form.generated_file.label }}: </label>
@@ -114,7 +115,7 @@
                     <span style="color: red;">{{ field.errors.0 }}</span>
                 </button>
                 <br>
-            </div>
+            </>
             <br>
             <br>
             <br>
