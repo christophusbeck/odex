@@ -96,15 +96,15 @@ class MainView(View):
         order = "asc"
         tag = "id"
         if request.GET.get('order', False) == "des" and request.GET.get('tag', False) == "id":
-            queryset = models.Experiments.objects.order_by('-id')
+            queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"]).order_by('-id')
             order = "des"
             tag = "id"
         elif request.GET.get('order', False) == "asc" and request.GET.get('tag', False) == "file":
-            queryset = models.Experiments.objects.order_by('file_name')
+            queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"]).order_by('file_name')
             order = "asc"
             tag = "file"
         elif request.GET.get('order', False) == "des" and request.GET.get('tag', False) == "file":
-            queryset = models.Experiments.objects.order_by('-file_name')
+            queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"]).order_by('-file_name')
             order = "des"
             tag = "file"
         form = CreateForm()
@@ -119,6 +119,7 @@ class MainView(View):
             pending.file_name = form.files['main_file'].name
             pending.state = "editing"
             pending.main_file = form.files['main_file']
+            print("form.files['main_file']: ", form.files['main_file'])
             try:
                 data = pd.read_csv(pending.main_file)
             except Exception as e:
@@ -244,8 +245,10 @@ class Configuration(View):
 
             if 'ground_truth' in form.files:
                 exp.ground_truth = form.files['ground_truth']
+                print("form.files['ground_truth']: ", form.files['ground_truth'])
             if 'generated_file' in form.files:
                 exp.generated_file = form.files['generated_file']
+                print("form.files['generated_file']: ",form.files['generated_file'])
 
             exp.start_time = timezone.now()
 
