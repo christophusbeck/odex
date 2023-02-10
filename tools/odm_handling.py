@@ -218,32 +218,46 @@ def col_subset(original: list[list[any]], cols: list[int]):
     return result
 
 
-def operate_and_on_arrays(array_1, array_2):
+def operate_and_on_arrays(array_1, proba_1, array_2, proba_2):
     result = []
+    new_probability = []
     i = 0
     for p in array_1:
         if array_1[i] == 1 and array_2[i] == 1:
             result.append(1)
+            new_probability.append([max(proba_1[i][0], proba_2[i][0]), min(proba_1[i][1], proba_2[i][1])])
+            print([max(proba_1[i][0], proba_2[i][0]), min(proba_1[i][1], proba_2[i][1])])
         else:
             result.append(0)
+            new_probability.append([max(proba_1[i][0], proba_2[i][0]), min(proba_1[i][1], proba_2[i][1])])
+            print([max(proba_1[i][0], proba_2[i][0]), min(proba_1[i][1], proba_2[i][1])])
         i += 1
-    return result
+    return result, new_probability
 
 
-def operate_or_on_arrays(array_1, array_2):
+def operate_or_on_arrays(array_1, proba_1, array_2, proba_2):
     result = []
+    new_probability = []
     i = 0
     for p in array_1:
         if array_1[i] == 1 or array_2[i] == 1:
             result.append(1)
+            new_probability.append([min(proba_1[i][0], proba_2[i][0]), max(proba_1[i][1], proba_2[i][1])])
         else:
             result.append(0)
+            new_probability.append([min(proba_1[i][0], proba_2[i][0]), max(proba_1[i][1], proba_2[i][1])])
         i += 1
-    return result
+    return result, new_probability
+
 
 def picture_ROC_curve(ground_truth, probability, roc_path):
     # TODO ROC curve plotting
-    pos = probability[:, 1]
+    print("probability: ", probability)
+    pos = [x[1] for x in probability]
+    print("pos: ", pos)
+    print(len(pos))
+    print("ground_truth: ", ground_truth)
+    print("ground_truth: ", len(ground_truth))
     fpr, tpr, thresholds = roc_curve(ground_truth, pos, pos_label=1)
 
     # for i, value in enumerate(thresholds):
