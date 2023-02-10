@@ -61,7 +61,7 @@
 
         {% if exp.state == "finished" %}
             <h3>Detected outliers: {{ outliers }}</h3>
-            <a href="{{ exp.result.url}}" class="btn btn-primary" class="DownloadButton" download>
+            <a href="{{ exp.result.url }}" class="btn btn-primary" class="DownloadButton" download>
                 Download detected outliers as *.csv file
             </a>
             {% if exp.has_ground_truth %}
@@ -95,14 +95,16 @@
                     <img src="/media/{{ exp.roc_after_merge_path }}" style="width:50%;"/>
                 </div>
             {% endif %}
-
         {% endif %}
 
-
-        <a href="/main/" style="margin-right: 500px">
-            <button type="button" value="cancel" style="float: right">Return</button>
-        </a>
-        <br>
-        <br>
+        <div>
+            <br>
+            <br>
+            <br>
+            <a href="/main/" style="margin-right: 500px">
+                <img src="/static/img/button/return.png">
+            </a>
+        </div>
     </div>
+
 {% endblock %}
