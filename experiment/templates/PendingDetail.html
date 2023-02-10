@@ -11,13 +11,11 @@
         <h3>Detected subspaces: {# {% queryset.amount_subspaces %}#} </h3>
         <br>
 
-        <table class="table table-bordered" align="center" border="1">
-            <thead>
-            <tr>
-                <th>Subspaces on *.csv</th>
-                <th>Indexing</th>
-            </tr>
-            </thead>
+        <table class="table table-bordered" align="center" border="1"
+               id="table_subspace"
+               data-pagination="true"
+               data-side-pagination="client"
+               data-page-size="10">
             <tbody>
             <br>
             {% for obj in queryset %}
@@ -32,13 +30,11 @@
         <br>
 
         <h3>Configuration:</h3>
-        <table class="table table-bordered" border="1">
-            <thead>
-            <tr>
-                <th>parameter</th>
-                <th>Value</th>
-            </tr>
-            </thead>
+        <table class="table table-bordered" border="1"
+               id="table_page"
+               data-pagination="true"
+               data-side-pagination="client"
+               data-page-size="3">
             <tbody>
             <br>
             {% for obj in queryset %}
@@ -58,4 +54,36 @@
         </a>
 
     </div>
+{% endblock %}
+
+
+{% block js %}
+    <script>
+        $(document).ready(function () {
+                $('#table_page').bootstrapTable({
+                    columns: [
+                        {
+                            field: 'parameters',
+                            title: "parameters"
+                        }, {
+                            field: "value",
+                            title: "value"
+                        },]
+                })
+        })
+
+        $(document).ready(function () {
+            $('#table_subspace').bootstrapTable({
+                columns: [
+                    {
+                        field: 'Subspaces on *.csv',
+                        title: "Subspaces on *.csv"
+                    }, {
+                        field: "Indexing",
+                        title: "Indexing"
+                    },]
+            })
+        })
+
+    </script>
 {% endblock %}
