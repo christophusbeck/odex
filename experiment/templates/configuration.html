@@ -14,13 +14,10 @@
         Detected subspaces: {{ columns|length }}
 
 
-        <table class="table table-bordered" align="center" border="1">
-            <thead>
-            <tr>
-                <th>Subspaces on *.csv</th>
-                <th>Indexing</th>
-            </tr>
-            </thead>
+        <table class="table table-bordered" align="center" border="1" id="table_subspace"
+               data-pagination="true"
+               data-side-pagination="client"
+               data-page-size="10">
             <tbody>
 
             {% for column in columns %}
@@ -128,13 +125,10 @@
                      {% if forloop.first %}style="display: block"
                      {% else %}style="display: none"
                      {% endif %}>
-                    <table class="table table-bordered" align="center" border="1">
-                        <thead>
-                        <tr>
-                            <th>parameters</th>
-                            <th>values</th>
-                        </tr>
-                        </thead>
+                    <table class="table table-bordered" align="center" border="1" id="table_page{{ forloop.counter }}"
+                           data-pagination="true"
+                           data-side-pagination="client"
+                           data-page-size="3">
 
                         <tbody id="parameters">
                         <div>
@@ -167,7 +161,39 @@
 
 {% block js %}
 
+
+
+
     <script>
+        $(document).ready(function () {
+                $('#table_subspace').bootstrapTable({
+                    columns: [
+                        {
+                            field: 'Subspaces on *.csv',
+                            title: "Subspaces on *.csv"
+                        }, {
+                            field: "Indexing",
+                            title: "Indexing"
+                        },]
+                })
+        })
+
+
+        $(document).ready(function () {
+            {% for key, para in odms.items %}
+                $('#table_page{{ forloop.counter }}').bootstrapTable({
+                    columns: [
+                        {
+                            field: 'parameters',
+                            title: "parameters"
+                        }, {
+                            field: "value",
+                            title: "value"
+                        },]
+                })
+            {% endfor %}
+        })
+
         function showSubspace() {
             var operation_model1 = $("#operation_model_1:checked").val()
             var operation_model2 = $("#operation_model_2:checked").val()
