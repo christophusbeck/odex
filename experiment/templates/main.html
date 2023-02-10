@@ -90,17 +90,20 @@
                         <td>{{ obj.duration }}</td>
 
                         <td>
-                            <input id="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button"
+                            <input id="{{ obj.id }}" class=" btn-delete" type="image"
+                                   src="/static/img/button/delete.png" width="50"
                                    value="Delete">
                             {% if obj.state == "pending" or obj.state == "finished" %}
                                 <a href="/result/?id={{ obj.id }}">
-                                    <input id="{{ obj.id }}" class="btn btn-primary btn-xs btn-details" type="button"
+                                    <input id="{{ obj.id }}" class="btn-details" type="image"
+                                   src="/static/img/button/show%20details.png" width="90"
                                            value="Show Details">
                                 </a>
                             {% else %}
                                 <a href="/configuration/?id={{ obj.id }}">
-                                    <input id="{{ obj.id }}" class="btn btn-success btn-xs btn-edit" type="button"
-                                           value="Edit Again">
+                                    <input id="{{ obj.id }}" class="btn-edit" type="image"
+                                   src="/static/img/button/edit.png" width="75"
+                                           value="Edit again">
                                 </a>
                             {% endif %}
                         </td>
