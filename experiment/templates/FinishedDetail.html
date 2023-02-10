@@ -11,13 +11,12 @@
         <h3>Detected subspaces:{# {% queryset.amount_subspaces %}#}  </h3>
         <br>
 
-        <table class="table table-bordered" align="center" border="1">
-            <thead>
-            <tr>
-                <th>Subspaces on *.csv</th>
-                <th>Indexing</th>
-            </tr>
-            </thead>
+        <table class="table table-bordered" align="center" border="1"
+               id="table_subspace"
+               data-pagination="true"
+               data-side-pagination="client"
+               data-page-size="10">
+            <tbody>
             <tbody>
             <br>
             {% for obj in queryset %}
@@ -33,13 +32,11 @@
         <br>
 
         <h3>Configuration:</h3>
-        <table class="table table-bordered" border="1">
-            <thead>
-            <tr>
-                <th>parameter</th>
-                <th>Value</th>
-            </tr>
-            </thead>
+        <table class="table table-bordered" border="1"
+               id="table_page"
+               data-pagination="true"
+               data-side-pagination="client"
+               data-page-size="3">
             <tbody>
             <br>
             {% for obj in queryset %}
@@ -57,19 +54,17 @@
 
         <h3>Detected outliers: {{ queryset.amount_outlier }}</h3>
 
-        <a href="" class ="DownloadButton">Download detected outliers as *.csv file</a>
+        <a href="" class="DownloadButton">Download detected outliers as *.csv file</a>
 
-{#        <button type="button" name="download"> Download detected outliers as *.csv file</button>#}
+        {#        <button type="button" name="download"> Download detected outliers as *.csv file</button>#}
 
         {% if form.withGrundTruthFile == true %}
             <h3>Performance based on ground truth file:</h3>
-            <table class="table table-bordered" border="1">
-                <thead>
-                <tr>
-                    <th>metric</th>
-                    <th>result</th>
-                </tr>
-                </thead>
+            <table class="table table-bordered" border="1"
+                   id="gt_page"
+                   data-pagination="true"
+                   data-side-pagination="client"
+                   data-page-size="10">
                 <tbody>
                 <br>
                 {% for obj in queryset %}
@@ -81,7 +76,7 @@
                 </tbody>
             </table>
 
-            <a href="" class ="DownloadButton">Download detected outliers as *.csv file</a>
+            <a href="" class="DownloadButton">Download detected outliers as *.csv file</a>
 
             <br>
 
@@ -104,4 +99,48 @@
         </a>
 
     </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(document).ready(function () {
+            $('#table_page').bootstrapTable({
+                columns: [
+                    {
+                        field: 'parameters',
+                        title: "parameters"
+                    }, {
+                        field: "value",
+                        title: "value"
+                    },]
+            })
+        })
+
+        $(document).ready(function () {
+            $('#gt_page').bootstrapTable({
+                columns: [
+                    {
+                        field: 'metric',
+                        title: "metric"
+                    }, {
+                        field: "result",
+                        title: "result"
+                    },]
+            })
+        })
+
+        $(document).ready(function () {
+            $('#table_subspace').bootstrapTable({
+                columns: [
+                    {
+                        field: 'Subspaces on *.csv',
+                        title: "Subspaces on *.csv"
+                    }, {
+                        field: "Indexing",
+                        title: "Indexing"
+                    },]
+            })
+        })
+
+    </script>
 {% endblock %}
