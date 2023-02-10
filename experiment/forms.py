@@ -28,14 +28,16 @@ class ConfigForm(BootStrapModelForm):
     operation_except = forms.CharField(
         label="All subspaces, except",
         max_length=64,
-        help_text="enter the column indexing above",
+        help_text="enter the column indexing above, you can use ',' to to separate your selected columns, like 1,2,3",
         required=False
     )
 
     operation_written = forms.CharField(
         label="Subspace Combination",
         max_length=64,
-        help_text="enter the subspace combination with column indexing above",
+        help_text="enter the subspace combination with column indexing above," \
+                  " You can use '{}' to denote columns that are executed together, " \
+                  "and use '&' and '|' to denote logical operations AND and OR to the result, like {1,2}&{1,3}",
         required=False
     )
 
