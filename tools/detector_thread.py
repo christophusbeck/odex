@@ -14,7 +14,7 @@ class DetectorThread(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        #try:
+        try:
             print("detector thread starts")
             print("exp id:", self.id)
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
@@ -30,7 +30,6 @@ class DetectorThread(threading.Thread):
             included_cols = list(range(0, len(user_csv[0])))
             subspace_combination = []
 
-            print("exp_operation_option:  ", exp_operation_option)
 
             if exp_operation_option == 1:
                 pass
@@ -172,22 +171,22 @@ class DetectorThread(threading.Thread):
             duration = timezone.now() - exp.start_time
             finished_exp.duration = duration
             finished_exp.save()
-            print("finished_exp.metric: ", finished_exp.metrics)
+
             os.remove(exp.main_file.path)
             if exp.has_ground_truth:
                 os.remove(exp.ground_truth.path)
             if exp.has_generated_file:
                 os.remove(exp.generated_file.path)
 
-        #except Exception as e:
-            #print("Error occured")
-            #print(e)
-            #print("exp id:", self.id)
-            #exp = models.PendingExperiments.objects.filter(id=self.id).first()
-            #exp.state = 'failed'
-            #exp.error = str(e)
-            #exp.save()
-            #print(exp.error)
+        except Exception as e:
+            print("Error occured")
+            print(e)
+            print("exp id:", self.id)
+            exp = models.PendingExperiments.objects.filter(id=self.id).first()
+            exp.state = 'failed'
+            exp.error = str(e)
+            exp.save()
+            print(exp.error)
 
 
 
