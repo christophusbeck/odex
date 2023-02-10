@@ -10,6 +10,8 @@ class AuthMiddleware(MiddlewareMixin):
             return
         elif request.path_info == '/resetpassword/':
             return
+        elif request.path_info == '/checkusername/':
+            return
 
         info_dict = request.session.get("info")
         if info_dict:
