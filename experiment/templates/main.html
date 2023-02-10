@@ -18,20 +18,6 @@
             <input id="btnAdd" type="image" src="/static/img/button/newrun2.png" width="120">
         </div>
 
-        <div style="float: right;width: 300px;">
-            <form method="get">
-                <div class="input-group">
-                    <input type="text" name="q" class="form-control" placeholder="Search for..."
-                           value="{{ search_data }}">
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="submit">
-                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                        </button>
-                      </span>
-                </div>
-            </form>
-        </div>
-
 
         <!-- Experiments List -->
         <div class="panel panel-default">
@@ -96,13 +82,13 @@
                             {% if obj.state == "pending" or obj.state == "finished" %}
                                 <a href="/result/?id={{ obj.id }}">
                                     <input id="{{ obj.id }}" class="btn-details" type="image"
-                                   src="/static/img/button/show%20details.png" width="90"
+                                           src="/static/img/button/show%20details.png" width="90"
                                            value="Show Details">
                                 </a>
                             {% else %}
                                 <a href="/configuration/?id={{ obj.id }}">
                                     <input id="{{ obj.id }}" class="btn-edit" type="image"
-                                   src="/static/img/button/edit.png" width="75"
+                                           src="/static/img/button/edit.png" width="75"
                                            value="Edit again">
                                 </a>
                             {% endif %}

@@ -25,13 +25,13 @@
 <body>
 <div class="account">
     <style>
-        body{
-             background-image:url("/static/img/login_logo.png"),url("/static/img/login_background.png");
-             background-size: 100%,cover;
-             background-repeat: no-repeat,no-repeat;
+        body {
+            background-image: url("/static/img/login_logo.png"), url("/static/img/login_background.png");
+            background-size: 100%, cover;
+            background-repeat: no-repeat, no-repeat;
         }
     </style>
-    <form method="post" novalidate autocomplete="off" >
+    <form method="post" novalidate autocomplete="off">
         {% csrf_token %}
         <div class="form-group" id="username_form">
             <label class="control-label">Username</label>
@@ -42,7 +42,7 @@
         <div class="form-group">
             <label>Password</label>
             {{ form.password }}
-          <small>{{ form.password.help_text }}</small>
+            <small>{{ form.password.help_text }}</small>
             <div style="color: red;">{{ form.password.errors.0 }}</div>
         </div>
         <div class="form-group">
@@ -54,7 +54,7 @@
         <div class="form-group">
             <label>Security Question</label>
             <select class="form-control" id="id_question" name="question">
-            <option selected="">Select your security question</option>
+                <option selected="">Select your security question</option>
                 {% for obj in form.question.field.queryset %}
                     <option value={{ obj.id }}>{{ obj.question }}</option>
                 {% endfor %}
@@ -76,12 +76,13 @@
         </div>
 
         <div>
-            <input type="submit" id="create" value="Create Account" class="btn btn-primary">
-
+            <input id="create" type="image"
+                   src="/static/img/button/create_account.png" width="120" align="top">
             <a href="/login/">
-                <button type="button" value="Cancel" class="btn btn-primary">Cancel</button>
+                <img src="/static/img/button/cancel.png" width="80">
             </a>
         </div>
+
 
     </form>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

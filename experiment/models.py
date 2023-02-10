@@ -123,9 +123,9 @@ def user_result_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/result_<filename>
     return 'user_{0}/{1}/result_{2}'.format(instance.user_id, instance.id, filename)
 
-def user_roc_path(instance, filename):
+def user_roc_path(filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/<filename>_roc.jpg
-    return 'user_{0}/{1}/{2}_roc.jpg'.format(instance.user_id, instance.id, filename.removesuffix('.csv'))
+    return '{0}_roc.jpg'.format(filename.removesuffix('.csv'))
 
 
 def validate_file_extension(value):

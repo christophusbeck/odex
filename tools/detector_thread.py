@@ -100,7 +100,7 @@ class DetectorThread(threading.Thread):
                 metrics["Accuracy"] = (tp + tn) / (tp + tn + fp + fn)
                 metrics["Recall"] = '{:.5%}'.format(tp / (tp + fn))
 
-                roc_path = "media/" + models.user_roc_path(exp, exp.file_name)
+                roc_path = "media/" + models.user_roc_path(exp.main_file.name)
                 odm_handling.picture_ROC_curve(ground_truth_array, outlier_probability, roc_path)
 
             if exp.generated_file != "":
@@ -158,7 +158,7 @@ class DetectorThread(threading.Thread):
                     metrics["Accuracy after merging"] = '{:.5%}'.format(metrics["Accuracy after merging"])
 
                     merge_probability = clf_merge.predict_proba(merged_data)
-                    roc_after_merge_path = "media/" + exp.generated_file.name.removesuffix('.csv') + "_roc.jpg"
+                    roc_after_merge_path = "media/" + models.user_roc_path(exp.generated_file.name)
                     odm_handling.picture_ROC_curve(ground_truth_gen_array, merge_probability,
                                                    roc_after_merge_path)
 
@@ -207,9 +207,13 @@ class DetectorThread(threading.Thread):
             finished_exp.set_metrics(metrics)
 
             if exp.has_ground_truth:
-                finished_exp.roc_path = models.user_roc_path(exp, exp.file_name)
+                print("models.user_roc_path(exp, exp.main_file): ", models.user_roc_path(exp.main_file.name) )
+                finished_exp.roc_path = models.user_roc_path(exp.main_file.name)
+
                 if finished_exp.has_generated_file:
-                    finished_exp.roc_after_merge_path = models.user_roc_path(exp, exp.generated_file.name)
+                    print("models.user_roc_path(exp, exp.generated_file.name): ", models.user_roc_path(exp.generated_file.name))
+                    finished_exp.roc_after_merge_path = models.user_roc_path(exp.generated_file.name)
+
 
             duration = timezone.now() - exp.start_time
             finished_exp.duration = duration
