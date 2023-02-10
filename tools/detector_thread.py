@@ -1,3 +1,4 @@
+import csv
 import os
 import threading
 
@@ -28,9 +29,7 @@ class DetectorThread(threading.Thread):
             exp_operation = exp.operation
             exp_operation_option = exp.operation_option
 
-            print("user_csv: ", user_csv)
-            # in order to be consistent with user side
-            included_cols = list(range(0, len(user_csv[0])))
+            included_cols = self.included_columns(exp)
             subspace_combination = []
 
             if exp_operation_option == "1":
@@ -45,7 +44,7 @@ class DetectorThread(threading.Thread):
 
             elif exp_operation_option == "3":
                 subspace_combination = odm_handling.subspace_selection_parser(exp_operation)
-                print("subspace_combination : ",subspace_combination)
+                print("subspace_combination : ", subspace_combination)
 
             clf = exp_odm(**exp_para)
             outlier_classification = []
@@ -64,14 +63,17 @@ class DetectorThread(threading.Thread):
                         clf.fit(subspace)
                         subspace_pred = clf.predict(subspace)
                         subspace_proba = clf.predict_proba(subspace)
-                        and_prediction, and_probability = odm_handling.operate_and_on_arrays(and_prediction, and_probability, subspace_pred, subspace_proba)
-                    or_prediction, or_probability = odm_handling.operate_or_on_arrays(or_prediction, or_probability, and_prediction, and_probability)
+                        and_prediction, and_probability = odm_handling.operate_and_on_arrays(and_prediction,
+                                                                                             and_probability, subspace_pred,
+                                                                                             subspace_proba)
+                    or_prediction, or_probability = odm_handling.operate_or_on_arrays(or_prediction, or_probability,
+                                                                                      and_prediction, and_probability)
                 outlier_classification = or_prediction
                 outlier_probability = or_probability
 
             else:
 
-                print("included_cols 3: ", included_cols)
+                print("included_cols 1: ", included_cols)
                 user_data = odm_handling.get_array_from_csv_data(odm_handling.col_subset(user_csv[1:], included_cols))
 
                 clf.fit(user_data)
@@ -81,14 +83,13 @@ class DetectorThread(threading.Thread):
 
             metrics = {}
             metrics["Detected Outliers"] = sum(outlier_classification)
-            print("Detected Outliers", sum(outlier_classification))
 
             ground_truth_array = np.ndarray
             if exp.ground_truth != "":
                 ground_truth_csv = odm_handling.get_data_from_csv(exp.ground_truth.path)
                 ground_truth_array = odm_handling.get_array_from_csv_data(ground_truth_csv)
 
-                tp, fn, fp, tn= odm_handling.calculate_confusion_matrix(outlier_classification, ground_truth_array)
+                tp, fn, fp, tn = odm_handling.calculate_confusion_matrix(outlier_classification, ground_truth_array)
                 print("tp, fn, fp, tn:", tp, fn, fp, tn)
                 metrics["True positives"] = tp
                 metrics["False positives"] = fp
@@ -100,7 +101,6 @@ class DetectorThread(threading.Thread):
                 metrics["Recall"] = '{:.5%}'.format(tp / (tp + fn))
 
                 roc_path = "media/" + models.user_roc_path(exp, exp.file_name)
-                print("print(outlier_probability): ", outlier_probability)
                 odm_handling.picture_ROC_curve(ground_truth_array, outlier_probability, roc_path)
 
             if exp.generated_file != "":
@@ -153,7 +153,8 @@ class DetectorThread(threading.Thread):
                     metrics["Recall after merging"] = '{:.5%}'.format(tp_gen / (tp_gen + fn_gen))
 
                     metrics["Delta accuracy (merged - original)"] = metrics["Accuracy after merging"] - metrics["Accuracy"]
-                    metrics["Delta accuracy (merged - original)"] = '{:.5%}'.format(metrics["Delta accuracy (merged - original)"])
+                    metrics["Delta accuracy (merged - original)"] = '{:.5%}'.format(
+                        metrics["Delta accuracy (merged - original)"])
                     metrics["Accuracy after merging"] = '{:.5%}'.format(metrics["Accuracy after merging"])
 
                     merge_probability = clf_merge.predict_proba(merged_data)
@@ -167,7 +168,7 @@ class DetectorThread(threading.Thread):
             result_csv_path = "media/" + models.user_result_path(exp, exp.file_name)
             result_csv = []
             i = 0
-            print("outlier_classification[0]", outlier_classification[0])
+
             res_headline = user_csv[0]
             res_headline.append("Probability")
             res_headline.append("Classification")
@@ -175,8 +176,6 @@ class DetectorThread(threading.Thread):
                 res_headline.append("Ground truth")
             result_csv.append(res_headline)
 
-            print("len outlier_probability:", len(outlier_probability))
-            print("len user_csv[1:]: ",  len(user_csv[1:]))
             for row in user_csv[1:]:
                 row.append(outlier_probability[i])
                 row.append(outlier_classification[i])
@@ -222,7 +221,7 @@ class DetectorThread(threading.Thread):
             if exp.has_generated_file:
                 os.remove(exp.generated_file.path)
 
-            print("metrics: ",metrics)
+            print("metrics: ", metrics)
 
         except Exception as e:
             print("Error occured")
@@ -230,6 +229,24 @@ class DetectorThread(threading.Thread):
             print("exp id:", self.id)
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
             exp.state = 'failed'
-            exp.error = str(e)
+            exp.error = "There are some error related to your entered hyperparameters of odm you seleted. The error message is: " + \
+                        str(e) + ". This error message will help you adjust the hyperparameters."
             exp.save()
             print(exp.error)
+
+
+    # maybe there are some columns without value
+    def included_columns(self, exp):
+        included_cols = []
+        with open(exp.main_file.path, 'r') as f:
+            reader = csv.reader(f)
+            result = list(reader)
+            for i in range(len(result[0])):
+                if not result[0][i]:
+                    continue
+                included_cols.append(i)
+                print(included_cols)
+                print(result[0][i])
+                print(i)
+        print("included_cols: ", included_cols)
+        return included_cols
