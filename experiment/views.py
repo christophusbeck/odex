@@ -108,6 +108,11 @@ class MainView(View):
             order = "des"
             tag = "file"
         form = CreateForm()
+        if request.GET.get('q', False):
+            text = request.GET.get('q')
+            print(text)
+            queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"], run_name=text)
+
         return render(request, self.template_name, {"queryset": queryset, "form": form, "order": order, "tag": tag})
 
     def post(self, request, *args, **kwargs):
