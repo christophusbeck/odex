@@ -148,9 +148,11 @@ class DetectorThread(threading.Thread):
                     metrics["True negatives after merging"] = tn_gen
                     metrics["False negatives after merging"] = fn_gen
 
-                    metrics["Precision"] = tp_gen / (tp_gen + fp_gen)
-                    metrics["Accuracy"] = (tp_gen + tn_gen) / (tp_gen + tn_gen + fp_gen + fn_gen)
-                    metrics["Recall"] = tp_gen / (tp_gen + fn_gen)
+                    metrics["Precision after merging"] = tp_gen / (tp_gen + fp_gen)
+                    metrics["Accuracy after merging"] = (tp_gen + tn_gen) / (tp_gen + tn_gen + fp_gen + fn_gen)
+                    metrics["Recall after merging"] = tp_gen / (tp_gen + fn_gen)
+
+                    metrics["Delta accuracy (merged - original)"] = metrics["Accuracy after merging"] - metrics["Accuracy"]
 
                     merge_probability = clf_merge.predict_proba(merged_data)
                     roc_after_merge_path = "media/" + exp.generated_file.name.removesuffix('.csv') + "_roc.jpg"
