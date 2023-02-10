@@ -231,7 +231,7 @@ class Configuration(View):
             parameters = odms[selected_odm].copy()
             for key in parameters.keys():
                 para = eval('selected_odm') + '_' + eval('key')
-                if request.POST[para]:
+                if request.POST.get(para, False):
                     parameters[key] = request.POST[para]
 
             exp.odm = form.cleaned_data['odm'] = selected_odm
