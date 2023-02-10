@@ -123,6 +123,10 @@ def user_result_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/result_<filename>
     return 'user_{0}/{1}/result_{2}'.format(instance.user_id, instance.id, filename)
 
+def user_roc_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/<filename>_roc.jpg
+    return 'user_{0}/{1}/{2}_roc.jpg'.format(instance.user_id, instance.id, filename.removesuffix('.csv'))
+
 
 def validate_file_extension(value):
     import os
@@ -182,6 +186,20 @@ class FinishedExperiments(Experiments):
         null=True
     )
     metrics = models.TextField(
+        blank=True,
+        null=True
+    )
+    roc_path = models.FileField(
+        verbose_name="Roc curve",
+        upload_to=user_result_path,
+        validators=[validate_file_extension],
+        blank=True,
+        null=True
+    )
+    roc_after_merge_path = models.FileField(
+        verbose_name="Roc curve with additional file",
+        upload_to=user_result_path,
+        validators=[validate_file_extension],
         blank=True,
         null=True
     )

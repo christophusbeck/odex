@@ -3,6 +3,8 @@ import inspect
 import numpy as np
 import re
 
+from sklearn.metrics import roc_curve, auc
+import matplotlib.pyplot as plt
 from pyod.models.abod import ABOD
 #from pyod.models.auto_encoder import AutoEncoder
 from pyod.models.cblof import CBLOF
@@ -54,8 +56,17 @@ def get_array_from_csv_data(data: list[list[str]]):
     results = []
     for row in data:
         floatrow = []
+        i=0
         for item in row:
-            floatrow.append(float(item))
+
+            try:
+                floatrow.append(float(item))
+            except Exception as e:
+                print(e)
+                print(item)
+                print(row)
+                print(i)
+            i = i+1
         results.append(floatrow)
     return np.array(results)
 
@@ -228,6 +239,25 @@ def operate_or_on_arrays(array_1, array_2):
         i += 1
     return result
 
-def picture_ROC_curve(ground_truth, probability):
+def picture_ROC_curve(ground_truth, probability, roc_path):
     # TODO ROC curve plotting
-    pass
+    pos = probability[:, 1]
+    fpr, tpr, thresholds = roc_curve(ground_truth, pos, pos_label=1)
+
+    # for i, value in enumerate(thresholds):
+    #     print("fpr[i] %f, tpr[i] %f, value %f" % (fpr[i], tpr[i], value))
+
+    roc_auc = auc(fpr, tpr)
+
+    plt.plot(fpr, tpr, 'k--', label='ROC (area = {0:.2f})'.format(roc_auc), lw=2)
+
+    plt.xlim([-0.05, 1.05])  # 设置x、y轴的上下限，以免和边缘重合，更好的观察图像的整体
+    plt.ylim([-0.05, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')  # 可以使用中文，但需要导入一些库即字体
+    plt.title('ROC Curve')
+    plt.legend(loc="lower right")
+    plt.savefig(roc_path)
+    plt.show()
+
+

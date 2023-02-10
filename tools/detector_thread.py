@@ -14,7 +14,7 @@ class DetectorThread(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        try:
+        #try:
             print("detector thread starts")
             print("exp id:", self.id)
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
@@ -62,6 +62,7 @@ class DetectorThread(threading.Thread):
                 outlier_classification = or_prediction
             else:
 
+                print("included_cols: ",included_cols)
                 user_data = odm_handling.get_array_from_csv_data(odm_handling.col_subset(user_csv[1:], included_cols))
 
                 clf.fit(user_data)
@@ -89,8 +90,8 @@ class DetectorThread(threading.Thread):
                 metrics["Accuracy"] = (tp + tn) / (tp + tn + fp + fn)
                 metrics["Recall"] = tp / (tp + fn)
 
-                # TODO picture_ROC_curve is called here
-                metrics["ROC curve"] = odm_handling.picture_ROC_curve(ground_truth_array, outlier_probability)
+                roc_path = "media/" + models.user_roc_path(exp, exp.file_name)
+                odm_handling.picture_ROC_curve(ground_truth_array, outlier_probability, roc_path)
 
             if exp.generated_file != "":
                 user_gen_csv = odm_handling.get_data_from_csv(exp.generated_file.path)
@@ -132,6 +133,11 @@ class DetectorThread(threading.Thread):
                     metrics["Accuracy"] = (tp_gen + tn_gen) / (tp_gen + tn_gen + fp_gen + fn_gen)
                     metrics["Recall"] = tp_gen / (tp_gen + fn_gen)
 
+                    merge_probability = clf_merge.predict_proba(merged_data)
+                    roc_after_merge_path = "media/" + exp.generated_file.name.removesuffix('.csv') + "_roc.jpg"
+                    odm_handling.picture_ROC_curve(ground_truth_gen_array, merge_probability,
+                                                   roc_after_merge_path)
+
             result_csv_path = "media/" + models.user_result_path(exp, exp.file_name)
             result_csv = []
             i = 0
@@ -171,6 +177,11 @@ class DetectorThread(threading.Thread):
             finished_exp.result = models.user_result_path(exp, exp.file_name)
             finished_exp.set_metrics(metrics)
 
+            if exp.has_ground_truth:
+                finished_exp.roc_path = models.user_roc_path(exp, exp.file_name)
+                if finished_exp.has_generated_file:
+                    finished_exp.roc_after_merge_path = models.user_roc_path(exp, exp.generated_file.name)
+
             duration = timezone.now() - exp.start_time
             finished_exp.duration = duration
             finished_exp.save()
@@ -181,15 +192,15 @@ class DetectorThread(threading.Thread):
             if exp.has_generated_file:
                 os.remove(exp.generated_file.path)
 
-        except Exception as e:
-            print("Error occured")
-            print(e)
-            print("exp id:", self.id)
-            exp = models.PendingExperiments.objects.filter(id=self.id).first()
-            exp.state = 'failed'
-            exp.error = str(e)
-            exp.save()
-            print(exp.error)
+        # except Exception as e:
+        #     print("Error occured")
+        #     print(e)
+        #     print("exp id:", self.id)
+        #     exp = models.PendingExperiments.objects.filter(id=self.id).first()
+        #     exp.state = 'failed'
+        #     exp.error = str(e)
+        #     exp.save()
+        #     print(exp.error)
 
 
 
