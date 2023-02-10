@@ -91,7 +91,7 @@
                             {% if obj.state == "pending" or obj.state == "finished" %}
                                 <a href="/result/?id={{ obj.id }}">
                                     <input id="{{ obj.id }}" class="btn btn-primary btn-xs btn-details" type="button"
-                                           value="Show details">
+                                           value="Show Details">
                                 </a>
                             {% else %}
                                 <a href="/configuration/?id={{ obj.id }}">
