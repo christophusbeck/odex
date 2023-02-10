@@ -15,7 +15,7 @@ class DetectorThread(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        # try:
+        try:
             print("detector thread starts")
             print("exp id:", self.id)
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
@@ -224,12 +224,12 @@ class DetectorThread(threading.Thread):
 
             print("metrics: ",metrics)
 
-        # except Exception as e:
-        #     print("Error occured")
-        #     print(e)
-        #     print("exp id:", self.id)
-        #     exp = models.PendingExperiments.objects.filter(id=self.id).first()
-        #     exp.state = 'failed'
-        #     exp.error = str(e)
-        #     exp.save()
-        #     print(exp.error)
+        except Exception as e:
+            print("Error occured")
+            print(e)
+            print("exp id:", self.id)
+            exp = models.PendingExperiments.objects.filter(id=self.id).first()
+            exp.state = 'failed'
+            exp.error = str(e)
+            exp.save()
+            print(exp.error)
