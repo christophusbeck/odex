@@ -92,81 +92,26 @@ class MainView(View):
 
     def get(self, request, *args, **kwargs):
 
-        page = int(request.GET.get('page', 1))
-        page_size = 10
-        start = (page - 1) * page_size
-        end = page * page_size
 
 
-        total_count = models.Experiments.objects.filter(user_id=request.session["info"]["id"]).count()
-        total_page_count, div = divmod(total_count, page_size)
-        if div:
-            total_page_count += 1
-        # according to current page show the pages before that and after that
-        plus = 5
-
-        if total_page_count <= 2 * plus + 1:
-            # to check if there's more than 11 pages, than only show that page
-            start_page = 1
-            end_page = total_page_count
-        else:
-            # current page < 5
-            if page <= plus:
-                start_page = 1
-                end_page = 2 * plus + 1
-            else:
-                if (page + plus) > total_page_count:
-                    start_page = total_page_count - 2 * plus
-                    end_page = total_page_count
-                else:
-                    start_page = page - plus
-                    end_page = page + plus
-
-
-        page_str_list = []
-
-        # prev page
-        if page > 1:
-            prev = '<li><a href ="?page={}">last page</a></li>'.format(page - 1)
-        else:
-            prev = '<li><a href ="?page={}">last page</a></li>'.format(1)
-        page_str_list.append(prev)
-
-        for i in range(start_page,end_page + 1):
-            if i == page:
-                ele = '<li class="active"><a href ="?page={}">{}</a></li>'.format(i,i)
-            else:
-                ele = '<li><a href ="?page={}">{}</a></li>'.format(i, i)
-            page_str_list.append(ele)
-
-
-        # next page
-        if page < total_page_count:
-            next = '<li><a href ="?page={}">next page</a></li>'.format(page + 1)
-        else:
-            next = '<li><a href ="?page={}">next page</a></li>'.format(total_page_count)
-        page_str_list.append(next)
-
-        page_string = mark_safe("".join(page_str_list))
-
-        queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"])[start:end]
+        queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"])
 
         order = "asc"
         tag = "id"
         if request.GET.get('order', False) == "des" and request.GET.get('tag', False) == "id":
-            queryset = models.Experiments.objects.order_by('-id')[start:end]
+            queryset = models.Experiments.objects.order_by('-id')
             order = "des"
             tag = "id"
         elif request.GET.get('order', False) == "asc" and request.GET.get('tag', False) == "file":
-            queryset = models.Experiments.objects.order_by('file_name')[start:end]
+            queryset = models.Experiments.objects.order_by('file_name')
             order = "asc"
             tag = "file"
         elif request.GET.get('order', False) == "des" and request.GET.get('tag', False) == "file":
-            queryset = models.Experiments.objects.order_by('-file_name')[start:end]
+            queryset = models.Experiments.objects.order_by('-file_name')
             order = "des"
             tag = "file"
         form = CreateForm()
-        return render(request, self.template_name, {"queryset": queryset, "form": form, "order": order, "tag": tag, "page_string":page_string})
+        return render(request, self.template_name, {"queryset": queryset, "form": form, "order": order, "tag": tag})
 
     def post(self, request, *args, **kwargs):
         form = CreateForm(data=request.POST, files=request.FILES)

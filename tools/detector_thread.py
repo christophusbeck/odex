@@ -24,34 +24,52 @@ class DetectorThread(threading.Thread):
             user_csv = odm_handling.get_data_from_csv(exp.main_file.path)
             user_data = odm_handling.get_array_from_csv_data(user_csv[1:])
 
-            print("exp_odm: ", exp_odm)
-            print("exp_para: ", exp_para)
-
             exp_operation = exp.operation
             exp_operation_option = exp.operation_option
+
+            included_cols = []
+            subspace_combination = []
 
             if exp_operation_option == 1:
                 assert(exp_operation, "")
                 # TODO: run main file with all subspace, by this time the exp_operation = ""
+                list(range(0, len(user_csv[1:])))
 
             elif exp_operation_option == 2:
                 # TODO: run main file with all, except, by this time the exp_operation is like 1,2,3...,
                 #  that is the excluded columns
-                pass
+                excluded_cols = exp_operation.split(",")
+                included_cols = list(range(0, len(user_csv[1:])))
+                for excl_col in excluded_cols:
+                    included_cols.remove(excl_col)
 
             elif exp_operation_option == 3:
                 # TODO: run main file with conbination, by this time the exp_operation is like {1,2}&{1,3}...
-                pass
-
-            # TODO: by the way, the checking of" "all,except" is not perfect.
-            #  If the file has only 2 column, I enter like 123, It can also run.
-
+                subspace_combination = odm_handling.subspace_selection_parser(exp_operation)
 
             clf = exp_odm(**exp_para)
-            clf.fit(user_data)
+            outlier_classification = []
+            outlier_probability = []
 
-            outlier_classification = clf.predict(user_data)
-            outlier_probability = clf.predict_proba(user_data)
+            if exp_operation_option == 3:
+                or_prediction = list([0] * len (user_data))
+                for or_selection in subspace_combination:
+                    and_prediction = list([1] * len (user_data))
+                    for and_selection in or_selection:
+                        subspace = odm_handling.col_subset(user_csv, and_selection)
+                        clf.fit(subspace)
+                        subspace_pred = clf.predict(subspace)
+                        and_prediction = odm_handling.operate_and_on_arrays(and_prediction, subspace_pred)
+                    or_prediction = odm_handling.operate_and_on_arrays(or_prediction, and_prediction)
+                outlier_classification = or_prediction
+            else:
+                user_data = odm_handling.col_subset(user_csv, included_cols)
+                clf.fit(user_data)
+
+                outlier_classification = clf.predict(user_data)
+                outlier_probability = clf.predict_proba(user_data)
+
+
 
             metrics = {}
             metrics["Detected Outliers"] = sum(outlier_classification)
@@ -76,9 +94,25 @@ class DetectorThread(threading.Thread):
                 user_gen_data = odm_handling.get_array_from_csv_data(user_gen_csv[1:])
                 merged_data = np.concatenate((user_data, user_gen_data))
                 clf_merge = exp_odm(**exp_para)
-                clf_merge.fit(merged_data)
-                outlier_classification_after_merge = clf_merge.predict(merged_data)
-                metrics["Detected Outliers after merging with generated data"] = sum(outlier_classification_after_merge)
+
+                if exp_operation_option == 3:
+                    or_prediction = list([0] * len(user_data))
+                    for or_selection in subspace_combination:
+                        and_prediction = list([1] * len(user_data))
+                        for and_selection in or_selection:
+                            subspace = odm_handling.col_subset(user_csv, and_selection)
+                            clf_merge.fit(subspace)
+                            subspace_pred = clf.predict(subspace)
+                            and_prediction = odm_handling.operate_and_on_arrays(and_prediction, subspace_pred)
+                        or_prediction = odm_handling.operate_and_on_arrays(or_prediction, and_prediction)
+                    outlier_classification_after_merge = or_prediction
+                else:
+
+                    clf_merge.fit(merged_data)
+                    outlier_classification_after_merge = clf_merge.predict(merged_data)
+
+                metrics["Detected Outliers after merging with generated data"] = sum(
+                    outlier_classification_after_merge)
 
                 if exp.ground_truth != "":
                     ground_truth_gen_array = np.concatenate((ground_truth_array, [[1]] * len(user_gen_data)))
