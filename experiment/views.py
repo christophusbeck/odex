@@ -1,3 +1,4 @@
+import csv
 import json
 import os
 import time
@@ -150,7 +151,25 @@ class Configuration(View):
         columns = exp.get_columns()
         form = ConfigForm()
         odms = tools.odm_handling.static_odms_dic()
-        print(exp.state)
+
+        if isinstance(columns, list):
+
+            with open(exp.main_file.path, 'r') as f:
+                print(columns)
+                reader = csv.reader(f)
+                result = list(reader)
+                # print(result)
+                first_row = result[1]
+                new_columns = {}
+                for i in range(len(columns)):
+                    if not result[0][i]:
+                        continue
+                    new_columns[columns[i]] = first_row[i]
+                exp.set_columns(new_columns)
+                exp.save()
+                columns = new_columns
+
+        print(isinstance(columns, dict))
 
         return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms})
 
@@ -248,6 +267,7 @@ class ResultView(View):
     def get(self, request, *args, **kwargs):
         exp = models.Experiments.objects.filter(id=request.GET['id']).first()
         columns = exp.get_columns()
+        print(columns)
         paras = exp.get_para()
         if exp.state == "pending":
             exp = models.PendingExperiments.objects.filter(id=request.GET['id']).first()

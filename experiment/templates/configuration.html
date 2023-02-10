@@ -30,9 +30,10 @@
                data-page-size="10">
             <tbody>
 
-            {% for column in columns %}
+            {% for column, value in columns.items %}
                 <tr>
                     <td>{{ column }}</td>
+                    <td>{{ value }}</td>
                     <td>{{ forloop.counter }}</td>
                 </tr>
             {% endfor %}
@@ -182,6 +183,9 @@
                     {
                         field: 'Subspaces on *.csv',
                         title: "Subspaces on *.csv"
+                    }, {
+                        field: 'Value in the first row',
+                        title: "Value in the first row"
                     }, {
                         field: "Indexing",
                         title: "Indexing"

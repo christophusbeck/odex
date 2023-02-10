@@ -23,14 +23,16 @@
             <thead>
             <tr>
                 <th>Subspaces on *.csv</th>
+                <th>Value in the first row</th>
                 <th>Indexing</th>
             </tr>
             </thead>
             <tbody>
             <br>
-            {% for column in columns %}
+            {% for column, value in columns.items %}
                 <tr>
                     <td>{{ column }}</td>
+                    <td>{{ value }}</td>
                     <td>{{ forloop.counter }}</td>
                 </tr>
             {% endfor %}

@@ -161,7 +161,8 @@ class DetectorThread(threading.Thread):
                     odm_handling.picture_ROC_curve(ground_truth_gen_array, merge_probability,
                                                    roc_after_merge_path)
 
-            metrics["Accuracy"] = '{:.5%}'.format(metrics["Accuracy"])
+            if "Accuracy" in metrics.keys():
+                metrics["Accuracy"] = '{:.5%}'.format(metrics["Accuracy"])
 
             result_csv_path = "media/" + models.user_result_path(exp, exp.file_name)
             result_csv = []
