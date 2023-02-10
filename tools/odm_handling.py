@@ -43,9 +43,7 @@ def write_data_to_csv(path: str, data):
 def get_data_from_csv(path: str) -> list[list[str]]:
     results = []
     with open(path) as csvfile:
-        print(" is reading file now 11")
         reader = csv.reader(csvfile)
-        print(" is reading file now 22")
         for row in reader:
             results.append(row)
 
@@ -63,7 +61,7 @@ def get_array_from_csv_data(data: list[list[str]]):
 
 
 def subspace_exclusion_check(user_choice: str, max_col):
-    print("user_choice:", user_choice)
+
     user_choice = user_choice.replace(" ", "")
     combination_regex = '([0-9]+)(\\,[0-9]+)*'
     if re.match(combination_regex, user_choice):
