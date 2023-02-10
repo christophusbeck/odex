@@ -1,10 +1,9 @@
 import json
+import os
 import time
 
 import pandas as pd
-from http.client import HTTPResponse
-
-from django.forms import fields, widgets
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.views import View
 from django.utils import timezone
@@ -14,10 +13,9 @@ from tools.detector_thread import DetectorThread
 from experiment.forms import CreateForm, ConfigForm
 from experiment import models
 
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, FileResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from django.utils.safestring import mark_safe
 
 
 # Create your views here.
@@ -91,8 +89,6 @@ class MainView(View):
     template_name = "main.html"
 
     def get(self, request, *args, **kwargs):
-
-
 
         queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"])
 
@@ -190,7 +186,7 @@ class Configuration(View):
                                   {"exp": exp, "columns": columns, "form": form, "odms": odms})
 
                 picks = tools.odm_handling.subspace_exclusion_check(form.cleaned_data['operation_except'],
-                                                            len(columns))
+                                                                    len(columns))
                 operation = json.dumps(picks).replace("\"", "").replace("[", "").replace("]", "")
 
             elif form.cleaned_data['operation_model_options'] == '3':
@@ -256,7 +252,7 @@ class ResultView(View):
         if exp.state == "pending":
             exp = models.PendingExperiments.objects.filter(id=request.GET['id']).first()
             return render(request, self.template_name, {"exp": exp, "columns": columns, "paras": paras})
-        else:
+        elif exp.state == "finished":
             exp = models.FinishedExperiments.objects.filter(id=request.GET['id']).first()
             metrics = exp.get_metrics()
             detected_num = metrics['Detected Outliers']
@@ -273,35 +269,20 @@ class ResultView(View):
             return render(request, self.template_name, {"exp": exp, "columns": columns, "paras": paras,
                                                         "outliers": detected_num, "performance": performance})
 
-    def post(self, request, *args, **kwargs):
-        return render(request, self.template_name)
+        return redirect("/configuration/?id=" + exp.id)
 
 
-class FinishedDetailView(View):
-    template_name = "FinishedDetail.html"
-
-    def get(self, request, *args, **kwargs):
-        form = CreateForm()
-        return render(request, self.template_name, {"form": form})
-
-    def post(self, request, *args, **kwargs):
-        form = CreateForm()
-        if form.is_valid():
-            form.save()
-            return redirect('/main/')
-        return render(request, self.template_name, {"form": form})
-
-
-class PendingDetailView(View):
-    template_name = "PendingDetail.html"
-
-    def get(self, request, *args, **kwargs):
-        form = CreateForm()
-        return render(request, self.template_name, {"form": form})
-
-    def post(self, request, *args, **kwargs):
-        form = CreateForm()
-        if form.is_valid():
-            form.save()
-            return redirect('/main/')
-        return render(request, self.template_name, {"form": form})
+# @method_decorator(csrf_exempt, name='dispatch')
+# class DownloadView(View):
+#     def get(self, request, *args, **kwargs):
+#         exp = models.FinishedExperiments.objects.filter(id=request.GET['id']).first()
+#         print(exp.id)
+#         file_path = exp.result.path
+#         if os.path.exists(file_path):
+#             try:
+#                 response = FileResponse(open(file_path, 'rb'))
+#                 response['content_type'] = "application/octet-stream"
+#                 response['Content-Disposition'] = 'attachment; filename=' + format(filename)
+#                 return response
+#             except Exception:
+#                 raise Http404
