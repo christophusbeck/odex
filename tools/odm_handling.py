@@ -74,7 +74,8 @@ def get_array_from_csv_data(data: list[list[str]]):
 def subspace_exclusion_check(user_choice: str, max_col):
 
     user_choice = user_choice.replace(" ", "")
-    combination_regex = '([0-9]+)(\\,[0-9]+)*'
+    # in order to be consistent with user side
+    combination_regex = '([1-9][0-9]*)(\\,[1-9][0-9]*)*'
     if re.match(combination_regex, user_choice):
         picks = user_choice.split(",")
         picks = list(dict.fromkeys(picks))
@@ -89,7 +90,7 @@ def subspace_exclusion_check(user_choice: str, max_col):
 
 def subspace_combination_check(user_choice: str, max_col):
     user_choice = user_choice.replace(" ", "")
-    combination_regex = '((\\{)((([0-9]+)\\,)*)([0-9]+)\\})([&|](\\{)((([0-9]+)\\,)*)([0-9]+)\\})*'
+    combination_regex = '((\\{)((([1-9][0-9]*)\\,)*)([1-9][0-9]*)\\})([&|](\\{)((([1-9][0-9]*)\\,)*)([1-9][0-9]*)\\})*'
     if re.match(combination_regex, user_choice):
         user_choice = user_choice.replace("&", ",")
         user_choice = user_choice.replace("|", ",")
@@ -114,7 +115,8 @@ def subspace_selection_parser(user_choice: str):
             tpl = tpl.replace("}", "")
             nums = []
             for i in tpl.split(","):
-                nums.append(int(i))
+                # in order to be consistent with user side
+                nums.append(int(i)-1)
             con.append(nums)
         result.append(con)
     return result
