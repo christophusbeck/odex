@@ -2,7 +2,14 @@
 
 
 {% block content %}
-    <div class="container">
+    <div class="result">
+     <style>
+        body{
+             background-image:url("/static/img/result_logo.png"),url("/static/img/result_background.png");
+             background-size: 95%,cover;
+             background-repeat: no-repeat,no-repeat;
+        }
+    </style>
         <h1 align="center">Statistics: {{ exp.run_name }}</h1>
         <h1 align="center">{{ exp.state }}</h1>
 
