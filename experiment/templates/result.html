@@ -61,8 +61,8 @@
 
         {% if exp.state == "finished" %}
             <h3>Detected outliers: {{ outliers }}</h3>
-            <a href="{{ exp.result.url }}" class="btn btn-primary" class="DownloadButton" download>
-                Download detected outliers as *.csv file
+            <a href="{{ exp.result.url }}"  download>
+                <img src="/static/img/button/download.png">
             </a>
             {% if exp.has_ground_truth %}
                 <h3>Performance based on ground truth file: </h3>

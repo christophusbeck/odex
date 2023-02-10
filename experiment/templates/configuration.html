@@ -14,9 +14,9 @@
                 background-repeat: no-repeat, no-repeat;
             }
         </style>
-    {% if exp.state == "failed" %}
-        <div class="alert alert-danger" role="alert">Error: {{ exp.error }}</div>
-    {% endif %}
+        {% if exp.state == "failed" %}
+            <div class="alert alert-danger" role="alert">Error: {{ exp.error }}</div>
+        {% endif %}
         <h2>Run title: {{ exp.run_name }}</h2>
         <h4>Detected subspaces: {{ columns|length }}</h4>
 
@@ -154,11 +154,11 @@
             {% endfor %}
 
             <div>
-                <br>
-                <a href="/main/" style="margin-right: 500px">
-                    <button type="button" value="cancel">Cancel</button>
+                <input id="btnSave" type="image"
+                       src="/static/img/button/add.png" width="200" align="absbottom" value="Add run to queue">
+                <a href="/main/">
+                    <img src="/static/img/button/cancel.png">
                 </a>
-                <button id="btnSave" type="submit" value="Add run to queue">Add run to queue</button>
             </div>
         </form>
 
