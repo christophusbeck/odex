@@ -95,9 +95,9 @@ class DetectorThread(threading.Thread):
                 metrics["True negatives"] = tn
                 metrics["False negatives"] = fn
 
-                metrics["Precision"] = tp / (tp + fp)
+                metrics["Precision"] = '{:.5%}'.format(tp / (tp + fp))
                 metrics["Accuracy"] = (tp + tn) / (tp + tn + fp + fn)
-                metrics["Recall"] = tp / (tp + fn)
+                metrics["Recall"] = '{:.5%}'.format(tp / (tp + fn))
 
                 roc_path = "media/" + models.user_roc_path(exp, exp.file_name)
                 print("print(outlier_probability): ", outlier_probability)
@@ -148,16 +148,20 @@ class DetectorThread(threading.Thread):
                     metrics["True negatives after merging"] = tn_gen
                     metrics["False negatives after merging"] = fn_gen
 
-                    metrics["Precision after merging"] = tp_gen / (tp_gen + fp_gen)
+                    metrics["Precision after merging"] = '{:.5%}'.format(tp_gen / (tp_gen + fp_gen))
                     metrics["Accuracy after merging"] = (tp_gen + tn_gen) / (tp_gen + tn_gen + fp_gen + fn_gen)
-                    metrics["Recall after merging"] = tp_gen / (tp_gen + fn_gen)
+                    metrics["Recall after merging"] = '{:.5%}'.format(tp_gen / (tp_gen + fn_gen))
 
                     metrics["Delta accuracy (merged - original)"] = metrics["Accuracy after merging"] - metrics["Accuracy"]
+                    metrics["Delta accuracy (merged - original)"] = '{:.5%}'.format(metrics["Delta accuracy (merged - original)"])
+                    metrics["Accuracy after merging"] = '{:.5%}'.format(metrics["Accuracy after merging"])
 
                     merge_probability = clf_merge.predict_proba(merged_data)
                     roc_after_merge_path = "media/" + exp.generated_file.name.removesuffix('.csv') + "_roc.jpg"
                     odm_handling.picture_ROC_curve(ground_truth_gen_array, merge_probability,
                                                    roc_after_merge_path)
+
+            metrics["Accuracy"] = '{:.5%}'.format(metrics["Accuracy"])
 
             result_csv_path = "media/" + models.user_result_path(exp, exp.file_name)
             result_csv = []
