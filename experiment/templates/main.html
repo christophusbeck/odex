@@ -80,7 +80,11 @@
                 {% for obj in queryset %}
                     <tr id="{{ obj.id }}">
                         <td>{{ obj.created_time }}</td>
-                        <td>{{ obj.state }}</td>
+                        {% if obj.state == "failed" %}
+                            <td><font color="red">{{ obj.state }}</font></td>
+                        {% else %}
+                            <td>{{ obj.state }}</td>
+                        {% endif %}
                         <td>{{ obj.run_name }}</td>
                         <td>{{ obj.file_name }}</td>
                         <td>{{ obj.get_operation_option_display }} {{ obj.operation }}</td>
