@@ -2,6 +2,10 @@
 
 {% block content %}
     <div class="container">
+        <div>
+            <img src="/static/img/main_logo.png" style="width:100%;">
+        </div>
+
         <style>
             body {
                 background-image: url("/static/img/main_background.png");
@@ -9,9 +13,9 @@
                 background-repeat: no-repeat;
             }
         </style>
-        <img src="/static/img/main_logo.png" style="width:100%; height:100%">
+
         <div style="margin-bottom: 10px">
-            <input id="btnAdd" type="button" value="New Run" class="btn btn-primary">
+            <input id="btnAdd" type="image" src="/static/img/button/new%20run.png" width="120">
         </div>
 
         <div style="float: right;width: 300px;">
@@ -91,12 +95,12 @@
                             {% if obj.state == "pending" or obj.state == "finished" %}
                                 <a href="/result/?id={{ obj.id }}">
                                     <input id="{{ obj.id }}" class="btn btn-primary btn-xs btn-details" type="button"
-                                           value="Show details">
+                                           value="Show Details">
                                 </a>
                             {% else %}
                                 <a href="/configuration/?id={{ obj.id }}">
                                     <input id="{{ obj.id }}" class="btn btn-success btn-xs btn-edit" type="button"
-                                           value="Edit configuration">
+                                           value="Edit Again">
                                 </a>
                             {% endif %}
                         </td>
@@ -184,38 +188,38 @@
         }
 
         $(document).ready(function () {
-                $('#record_table').bootstrapTable({
-                    columns: [
-                        {
-                            field: 'Created Time',
-                            title: "Created Time"
-                        }, {
-                            field: "State",
-                            title: "State"
-                        }, {
-                            field: "Run name",
-                            title: "Run name"
-                        }, {
-                            field: "Database file",
-                            title: "Database file"
-                        }, {
-                            field: "Subspaces",
-                            title: "Subspaces"
-                        }, {
-                            field: "Start time",
-                            title: "Start time"
-                        }, {
-                            field: "ODM",
-                            title: "ODM"
-                        }, {
-                            field: "Duration",
-                            title: "Duration"
-                        }, {
-                            field: "Options",
-                            title: "Options"
-                        }
-                    ]
-                })
+            $('#record_table').bootstrapTable({
+                columns: [
+                    {
+                        field: 'Created Time',
+                        title: "Created Time"
+                    }, {
+                        field: "State",
+                        title: "State"
+                    }, {
+                        field: "Run name",
+                        title: "Run name"
+                    }, {
+                        field: "Database file",
+                        title: "Database file"
+                    }, {
+                        field: "Subspaces",
+                        title: "Subspaces"
+                    }, {
+                        field: "Start time",
+                        title: "Start time"
+                    }, {
+                        field: "ODM",
+                        title: "ODM"
+                    }, {
+                        field: "Duration",
+                        title: "Duration"
+                    }, {
+                        field: "Options",
+                        title: "Options"
+                    }
+                ]
+            })
         })
 
         $(function () {

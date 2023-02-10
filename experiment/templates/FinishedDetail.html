@@ -54,19 +54,17 @@
 
         <h3>Detected outliers: {{ queryset.amount_outlier }}</h3>
 
-        <a href="" class ="DownloadButton">Download detected outliers as *.csv file</a>
+        <a href="" class="DownloadButton">Download detected outliers as *.csv file</a>
 
-{#        <button type="button" name="download"> Download detected outliers as *.csv file</button>#}
+        {#        <button type="button" name="download"> Download detected outliers as *.csv file</button>#}
 
         {% if form.withGrundTruthFile == true %}
             <h3>Performance based on ground truth file:</h3>
-            <table class="table table-bordered" border="1">
-                <thead>
-                <tr>
-                    <th>metric</th>
-                    <th>result</th>
-                </tr>
-                </thead>
+            <table class="table table-bordered" border="1"
+                   id="gt_page"
+                   data-pagination="true"
+                   data-side-pagination="client"
+                   data-page-size="10">
                 <tbody>
                 <br>
                 {% for obj in queryset %}
@@ -78,7 +76,7 @@
                 </tbody>
             </table>
 
-            <a href="" class ="DownloadButton">Download detected outliers as *.csv file</a>
+            <a href="" class="DownloadButton">Download detected outliers as *.csv file</a>
 
             <br>
 
@@ -106,16 +104,29 @@
 {% block js %}
     <script>
         $(document).ready(function () {
-                $('#table_page').bootstrapTable({
-                    columns: [
-                        {
-                            field: 'parameters',
-                            title: "parameters"
-                        }, {
-                            field: "value",
-                            title: "value"
-                        },]
-                })
+            $('#table_page').bootstrapTable({
+                columns: [
+                    {
+                        field: 'parameters',
+                        title: "parameters"
+                    }, {
+                        field: "value",
+                        title: "value"
+                    },]
+            })
+        })
+
+        $(document).ready(function () {
+            $('#gt_page').bootstrapTable({
+                columns: [
+                    {
+                        field: 'metric',
+                        title: "metric"
+                    }, {
+                        field: "result",
+                        title: "result"
+                    },]
+            })
         })
 
         $(document).ready(function () {

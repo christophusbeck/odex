@@ -30,35 +30,35 @@
 <body>
 <div class="account">
     <style>
-        body{
-             background-image:url("/static/img/login_logo.png"),url("/static/img/login_background.png");
-             background-size: 95%,cover;
-             background-repeat: no-repeat,no-repeat;
+        body {
+            background-image: url("/static/img/login_logo.png"), url("/static/img/login_background.png");
+            background-size: 95%, cover;
+            background-repeat: no-repeat, no-repeat;
         }
     </style>
-        <form method="post" novalidate>
-            {% csrf_token %}
-            <div class="form-group">
-                <label>Username</label>
-                {{ form.username }}
-                <small>{{ form.username.help_text }}</small>
-                <div style="color: red;">{{ form.username.errors.0 }}</div>
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                {{ form.password }}
-                <small>{{ form.password.help_text }}</small>
-                <div style="color: red;">{{ form.password.errors.0 }}</div>
-            </div>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Username</label>
+            {{ form.username }}
+            <small>{{ form.username.help_text }}</small>
+            <div style="color: red;">{{ form.username.errors.0 }}</div>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            {{ form.password }}
+            <small>{{ form.password.help_text }}</small>
+            <div style="color: red;">{{ form.password.errors.0 }}</div>
+        </div>
 
-            <div>
-                <input id="btnLogin" type="submit" value="Log in" class="btn btn-primary">
-                <a href="/register/" type="button" class="btn btn-link">Creat Account</a>
-                <a href="/resetpassword/" type="button" class="btn btn-link">Forget password</a>
-            </div>
+        <div>
+            <input id="btnLogin" type="submit" value="Log in" class="btn btn-primary">
+            <a href="/register/" type="button" class="btn btn-link" style="color:white;">Creat Account</a>
+            <a href="/resetpassword/" type="button" class="btn btn-link" style="color:white;">Forget password</a>
+        </div>
 
-        </form>
-    </div>
+    </form>
+</div>
 
 <script type="text/javascript">
     $(function () {

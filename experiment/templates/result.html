@@ -3,13 +3,17 @@
 
 {% block content %}
     <div class="result">
-     <style>
-        body{
-             background-image:url("/static/img/result_logo.png"),url("/static/img/result_background.png");
-             background-size: 95%,cover;
-             background-repeat: no-repeat,no-repeat;
-        }
-    </style>
+        <a href="/main/">
+            <img border="0" src="/static/img/odex_logo.png" style="position:absolute;top:25px; left:50px; " height=""
+                 width="150"/>
+        </a>
+        <style>
+            body {
+                background-image: url("/static/img/result_ohne logo.png"), url("/static/img/result_background.png");
+                background-size: 95%, cover;
+                background-repeat: no-repeat, no-repeat;
+            }
+        </style>
         <h1 align="center">Statistics: {{ exp.run_name }}</h1>
         <h1 align="center">{{ exp.state }}</h1>
 
