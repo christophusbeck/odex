@@ -2,14 +2,14 @@
 
 {% block content %}
     <div class="container">
-     <style>
-        body{
-             background-image:url("/static/img/main_background.png");
-             background-size: 100%;
-             background-repeat: no-repeat;
-        }
-    </style>
-    <img src="/static/img/main_logo.png" style="width:100%; height:100%">
+        <style>
+            body {
+                background-image: url("/static/img/main_background.png");
+                background-size: 100%;
+                background-repeat: no-repeat;
+            }
+        </style>
+        <img src="/static/img/main_logo.png" style="width:100%; height:100%">
         <div style="margin-bottom: 10px">
             <input id="btnAdd" type="button" value="New Run" class="btn btn-primary">
         </div>
@@ -37,51 +37,57 @@
                 Experiments
                 {% if order == "asc" and tag == "id" %}
                     <a href="/main/?order=des&tag=id">
-                    <button type="button" value="Order" class="btn btn-primary btn-sm">Time Order</button>
+                        <button type="button" value="Order" class="btn btn-primary btn-sm">Time Order</button>
                     </a>
                     <a href="/main/?order=asc&tag=file">
-                    <button type="button" value="Order" class="btn btn-primary btn-sm">File Order</button>
+                        <button type="button" value="Order" class="btn btn-primary btn-sm">File Order</button>
                     </a>
                 {% elif order == "des" and tag == "id" %}
                     <a href="/main/">
-                    <button type="button" value="Order" class="btn btn-primary btn-sm">Time Order</button>
+                        <button type="button" value="Order" class="btn btn-primary btn-sm">Time Order</button>
                     </a>
                     <a href="/main/?order=asc&tag=file">
-                    <button type="button" value="Order" class="btn btn-primary btn-sm">File Order</button>
+                        <button type="button" value="Order" class="btn btn-primary btn-sm">File Order</button>
                     </a>
                 {% endif %}
                 {% if order == "asc" and tag == "file" %}
                     <a href="/main/">
-                    <button type="button" value="Order" class="btn btn-primary btn-sm">Time Order</button>
+                        <button type="button" value="Order" class="btn btn-primary btn-sm">Time Order</button>
                     </a>
                     <a href="/main/?order=des&tag=file">
-                    <button type="button" value="Order" class="btn btn-primary btn-sm">File Order</button>
+                        <button type="button" value="Order" class="btn btn-primary btn-sm">File Order</button>
                     </a>
                 {% elif order == "des" and tag == "file" %}
                     <a href="/main/">
-                    <button type="button" value="Order" class="btn btn-primary btn-sm">Time Order</button>
+                        <button type="button" value="Order" class="btn btn-primary btn-sm">Time Order</button>
                     </a>
                     <a href="/main/?order=asc&tag=file">
-                    <button type="button" value="Order" class="btn btn-primary btn-sm">File Order</button>
+                        <button type="button" value="Order" class="btn btn-primary btn-sm">File Order</button>
                     </a>
                 {% endif %}
             </div>
 
             <!-- Table -->
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th>Created Time</th>
-                    <th>State</th>
-                    <th>Run name</th>
-                    <th>Database file</th>
-                    <th>Subspaces</th>
-                    <th>Start time</th>
-                    <th>ODM</th>
-                    <th>Duration</th>
-                    <th>Options</th>
-                </tr>
-                </thead>
+            <table class="table table-bordered" id="record_table"
+                   data-pagination="true"
+                   data-side-pagination="client"
+                   data-page-size="8">
+
+                {#                <thead>#}
+                {#                <tr>#}
+                {#                    <th>Created Time</th>#}
+                {#                    <th>State</th>#}
+                {#                    <th>Run name</th>#}
+                {#                    <th>Database file</th>#}
+                {#                    <th>Subspaces</th>#}
+                {#                    <th>Start time</th>#}
+                {#                    <th>ODM</th>#}
+                {#                    <th>Duration</th>#}
+                {#                    <th>Options</th>#}
+                {#                </tr>#}
+                {#                </thead>#}
+
+
                 <tbody>
                 {% for obj in queryset %}
                     <tr id="{{ obj.id }}">
@@ -96,29 +102,24 @@
                         <td>
                             <input id="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button"
                                    value="Delete">
-                            {% if obj.state == "pending" or obj.state == "finished"  %}
-                                <a  href="/result/?id={{ obj.id }}" >
-                                <input id="{{ obj.id }}" class="btn btn-primary btn-xs btn-details" type="button"
-                                       value="Show details">
+                            {% if obj.state == "pending" or obj.state == "finished" %}
+                                <a href="/result/?id={{ obj.id }}">
+                                    <input id="{{ obj.id }}" class="btn btn-primary btn-xs btn-details" type="button"
+                                           value="Show details">
                                 </a>
                             {% else %}
-                                <a href="/configuration/?id={{ obj.id }}" >
-                                <input id="{{ obj.id }}" class="btn btn-success btn-xs btn-edit" type="button"
-                                       value="Edit configuration">
+                                <a href="/configuration/?id={{ obj.id }}">
+                                    <input id="{{ obj.id }}" class="btn btn-success btn-xs btn-edit" type="button"
+                                           value="Edit configuration">
                                 </a>
                             {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
-
                 </tbody>
             </table>
         </div>
 
-        <!-- page -->
-        <ul class="pagination">
-            {{ page_string }}
-        </ul>
     </div>
 
 
@@ -196,6 +197,40 @@
             location.reload()
         }
 
+        $(document).ready(function () {
+                $('#record_table').bootstrapTable({
+                    columns: [
+                        {
+                            field: 'Created Time',
+                            title: "Created Time"
+                        }, {
+                            field: "State",
+                            title: "State"
+                        }, {
+                            field: "Run name",
+                            title: "Run name"
+                        }, {
+                            field: "Database file",
+                            title: "Database file"
+                        }, {
+                            field: "Subspaces",
+                            title: "Subspaces"
+                        }, {
+                            field: "Start time",
+                            title: "Start time"
+                        }, {
+                            field: "ODM",
+                            title: "ODM"
+                        }, {
+                            field: "Duration",
+                            title: "Duration"
+                        }, {
+                            field: "Options",
+                            title: "Options"
+                        }
+                    ]
+                })
+        })
 
         $(function () {
             bindBtnAddEvent();
