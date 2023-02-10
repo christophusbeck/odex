@@ -155,10 +155,8 @@ class Configuration(View):
         if isinstance(columns, list):
 
             with open(exp.main_file.path, 'r') as f:
-                print(columns)
                 reader = csv.reader(f)
                 result = list(reader)
-                # print(result)
                 first_row = result[1]
                 new_columns = {}
                 for i in range(len(columns)):
