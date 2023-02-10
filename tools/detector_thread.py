@@ -14,7 +14,7 @@ class DetectorThread(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        try:
+        #try:
             print("detector thread starts")
             print("exp id:", self.id)
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
@@ -27,24 +27,22 @@ class DetectorThread(threading.Thread):
             exp_operation = exp.operation
             exp_operation_option = exp.operation_option
 
-            included_cols = []
+            included_cols = list(range(0, len(user_csv[0])))
             subspace_combination = []
 
+            print("exp_operation_option:  ", exp_operation_option)
+
             if exp_operation_option == 1:
-                assert(exp_operation, "")
-                # TODO: run main file with all subspace, by this time the exp_operation = ""
-                list(range(0, len(user_csv[1:])))
+                pass
 
             elif exp_operation_option == 2:
-                # TODO: run main file with all, except, by this time the exp_operation is like 1,2,3...,
-                #  that is the excluded columns
                 excluded_cols = exp_operation.split(",")
                 included_cols = list(range(0, len(user_csv[1:])))
+
                 for excl_col in excluded_cols:
                     included_cols.remove(excl_col)
 
             elif exp_operation_option == 3:
-                # TODO: run main file with conbination, by this time the exp_operation is like {1,2}&{1,3}...
                 subspace_combination = odm_handling.subspace_selection_parser(exp_operation)
 
             clf = exp_odm(**exp_para)
@@ -56,14 +54,17 @@ class DetectorThread(threading.Thread):
                 for or_selection in subspace_combination:
                     and_prediction = list([1] * len (user_data))
                     for and_selection in or_selection:
-                        subspace = odm_handling.col_subset(user_csv, and_selection)
+                        subspace = odm_handling.get_array_from_csv_data(odm_handling.col_subset(user_csv[1:],
+                                                                                                and_selection))
                         clf.fit(subspace)
                         subspace_pred = clf.predict(subspace)
                         and_prediction = odm_handling.operate_and_on_arrays(and_prediction, subspace_pred)
                     or_prediction = odm_handling.operate_and_on_arrays(or_prediction, and_prediction)
                 outlier_classification = or_prediction
             else:
-                user_data = odm_handling.col_subset(user_csv, included_cols)
+
+                user_data = odm_handling.get_array_from_csv_data(odm_handling.col_subset(user_csv[1:], included_cols))
+
                 clf.fit(user_data)
 
                 outlier_classification = clf.predict(user_data)
@@ -100,7 +101,8 @@ class DetectorThread(threading.Thread):
                     for or_selection in subspace_combination:
                         and_prediction = list([1] * len(user_data))
                         for and_selection in or_selection:
-                            subspace = odm_handling.col_subset(user_csv, and_selection)
+                            subspace = odm_handling.get_array_from_csv_data(odm_handling.col_subset(user_csv[1:],
+                                                                                                    and_selection))
                             clf_merge.fit(subspace)
                             subspace_pred = clf.predict(subspace)
                             and_prediction = odm_handling.operate_and_on_arrays(and_prediction, subspace_pred)
@@ -177,15 +179,15 @@ class DetectorThread(threading.Thread):
             if exp.has_generated_file:
                 os.remove(exp.generated_file.path)
 
-        except Exception as e:
-            print("Error occured")
-            print(e)
-            print("exp id:", self.id)
-            exp = models.PendingExperiments.objects.filter(id=self.id).first()
-            exp.state = 'failed'
-            exp.error = str(e)
-            exp.save()
-            print(exp.error)
+        #except Exception as e:
+            #print("Error occured")
+            #print(e)
+            #print("exp id:", self.id)
+            #exp = models.PendingExperiments.objects.filter(id=self.id).first()
+            #exp.state = 'failed'
+            #exp.error = str(e)
+            #exp.save()
+            #print(exp.error)
 
 
 
