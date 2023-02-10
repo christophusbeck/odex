@@ -1,12 +1,8 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    {% if exp.state == "failed" %}
 
-        <label id="msg" style="color:red;font-size:12pt;"> Error: {{ exp.error }}</label>
-
-    {% endif %}
-    <fieldset class="configuration">
+    <div class="configuration">
         <a href="/main/">
             <img border="0" src="/static/img/odex_logo.png" style="position:absolute;top:25px; left:50px; " height=""
                  width="150"/>
@@ -18,10 +14,11 @@
                 background-repeat: no-repeat, no-repeat;
             }
         </style>
-
-        <h1 align="center">Run title: {{ exp.run_name }}</h1>
+    {% if exp.state == "failed" %}
+        <div class="alert alert-danger" role="alert">Error: {{ exp.error }}</div>
+    {% endif %}
+        <h2>Run title: {{ exp.run_name }}</h2>
         <h4>Detected subspaces: {{ columns|length }}</h4>
-
 
 
         <table class="table table-bordered" align="center" border="1" id="table_subspace"
@@ -62,7 +59,7 @@
                         </label>
                     {% endfor %}
                 </fieldset>
-            <br>
+                <br>
 
                 <div class="form-group" id="except" style="display: none">
                     <label> All subspaces, except: </label> <br>
@@ -93,7 +90,7 @@
                     </label>
                 {% endfor %}
             </fieldset>
-        <br>
+            <br>
 
 
             <button id="ground_truth_file" style="display: none">
@@ -116,7 +113,7 @@
                     <span style="color: red;">{{ field.errors.0 }}</span>
                 </button>
                 <br>
-            </>
+            </fieldset>
             <br>
             <br>
             <br>
