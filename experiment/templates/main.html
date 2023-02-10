@@ -73,21 +73,6 @@
                    data-side-pagination="client"
                    data-page-size="8">
 
-                {#                <thead>#}
-                {#                <tr>#}
-                {#                    <th>Created Time</th>#}
-                {#                    <th>State</th>#}
-                {#                    <th>Run name</th>#}
-                {#                    <th>Database file</th>#}
-                {#                    <th>Subspaces</th>#}
-                {#                    <th>Start time</th>#}
-                {#                    <th>ODM</th>#}
-                {#                    <th>Duration</th>#}
-                {#                    <th>Options</th>#}
-                {#                </tr>#}
-                {#                </thead>#}
-
-
                 <tbody>
                 {% for obj in queryset %}
                     <tr id="{{ obj.id }}">
@@ -99,6 +84,7 @@
                         <td>{{ obj.start_time }}</td>
                         <td>{{ obj.odm }}</td>
                         <td>{{ obj.duration }}</td>
+
                         <td>
                             <input id="{{ obj.id }}" class="btn btn-danger btn-xs btn-delete" type="button"
                                    value="Delete">
