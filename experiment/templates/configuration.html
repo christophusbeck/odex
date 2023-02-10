@@ -7,7 +7,17 @@
 
     {% endif %}
     <div class="configuration">
-        <h1 align="center">New Run:</h1>
+        <a href="/main/">
+            <img border="0" src="/static/img/odex_logo.png" style="position:absolute;top:25px; left:50px; " height=""
+                 width="150"/>
+        </a>
+        <style>
+            body {
+                background-image: url("/static/img/newrun_ohnelogo.png"), url("/static/img/result_background.png");
+                background-size: 100%, cover;
+                background-repeat: no-repeat, no-repeat;
+            }
+        </style>
         <br>
         Run title: {{ exp.run_name }}
         <br>
