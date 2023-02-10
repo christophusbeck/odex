@@ -227,3 +227,7 @@ def operate_or_on_arrays(array_1, array_2):
             result.append(0)
         i += 1
     return result
+
+def picture_ROC_curve(ground_truth, probability):
+    # TODO ROC curve plotting
+    pass

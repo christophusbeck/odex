@@ -89,6 +89,9 @@ class DetectorThread(threading.Thread):
                 metrics["Accuracy"] = (tp + tn) / (tp + tn + fp + fn)
                 metrics["Recall"] = tp / (tp + fn)
 
+                # TODO picture_ROC_curve is called here
+                metrics["ROC curve"] = odm_handling.picture_ROC_curve(ground_truth_array, outlier_probability)
+
             if exp.generated_file != "":
                 user_gen_csv = odm_handling.get_data_from_csv(exp.generated_file.path)
                 user_gen_data = odm_handling.get_array_from_csv_data(user_gen_csv[1:])
