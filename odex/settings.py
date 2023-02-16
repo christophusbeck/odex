@@ -95,14 +95,21 @@ WSGI_APPLICATION = 'odex.wsgi.application'
 #         'CONN_MAX_AGE':60,
 #     }
 # }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'odexdb',
+#         'USER': 'root',
+#         'PASSWORD': 'odex123',
+#         'HOST': '127.0.0.1',
+#         'PORT': 3306,
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'odexdb',
-        'USER': 'root',
-        'PASSWORD': 'odex123',
-        'HOST': '127.0.0.1',
-        'PORT': 3306,
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'odexdb',
     }
 }
 
