@@ -1,0 +1,8 @@
+# ignore result files
+/static/
+
+# coverage data
+.coverage
+
+# all migrations folders
+*/migrations
