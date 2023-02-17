@@ -3,6 +3,8 @@
 
 # coverage data
 .coverage
+/Htmlcov/
 
 # all migrations folders
 */migrations
+
