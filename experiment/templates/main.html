@@ -179,19 +179,19 @@
 {% block js %}
     <script type="text/javascript">
         var DELETE_ID;
-        setTimeout(function () {
-                refresh();
-            },
+        {#setTimeout(function () {#}
+        {#        refresh();#}
+        {#    },#}
             {#== 10s#}
-            10000);
-        setInterval(function () {
-                refresh();
-            },
-            10000);
-
-        function refresh() {
-            location.reload()
-        }
+        {#    10000);#}
+        {#setInterval(function () {#}
+        {#        refresh();#}
+        {#    },#}
+        {#    10000);#}
+        {##}
+        {#function refresh() {#}
+        {#    location.reload()#}
+        {##}
 
         $(document).ready(function () {
             $('#record_table').bootstrapTable({
@@ -233,15 +233,9 @@
             bindBtnSaveEvent();
             bindBtnDeleteEvent();
             bindBtnConfirmDeleteEvent();
-            bindBtnDetailsEvent();
             {#bindBtnEditEvent();#}
         })
 
-        function bindBtnAddEvent() {
-            $("#btnAdd").click(function () {
-                $('#myModal').modal('show');
-            });
-        }
 
         function bindBtnSaveEvent() {
             $("#btnSave").click(function () {

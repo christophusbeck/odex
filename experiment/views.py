@@ -92,6 +92,7 @@ class MainView(View):
     def get(self, request, *args, **kwargs):
 
         queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"])
+        print(request.session["info"]["id"])
 
         order = "asc"
         tag = "id"
