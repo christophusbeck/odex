@@ -4,7 +4,6 @@ import numpy as np
 
 class Test_odm_handling(unittest.TestCase):
 
-
     def setup(self):
         pass
 
@@ -17,6 +16,39 @@ class Test_odm_handling(unittest.TestCase):
 
         #for (a, b, c) in (or_array_1, or_array_2, or_array_result):
             #self.assertEqual(c, a or b)
+        pass
+
+    def test_get_array_from_csv_data(self):
+        pass
+
+    def test_subspace_exclusion_check(self):
+        pass
+
+    def test_subspace_combination_check(self):
+        pass
+
+    def test_subspace_selection_parser(self):
+        pass
+
+    def test_get_head_indexing(self):
+        pass
+
+    def test_get_def_value_dict(self):
+        pass
+
+    def test_get_odm_dict(self):
+        pass
+
+    def test_match_odm_by_name(self):
+        pass
+
+    def test_calculate_confusion_matrix(self):
+        pass
+
+    def test_col_subset(self):
+        pass
+
+    def test_operate_and_on_arrays(self):
         pass
 
     def test_csv_write_and_read(self):
