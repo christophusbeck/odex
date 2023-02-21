@@ -7,15 +7,6 @@ from django.utils.translation import gettext_lazy as _
 from user.models import Users
 
 
-# Create your models here.
-
-class CSVFileField(models.FileField):
-    #content_types
-    max_upload_size = 0
-    #super.path
-
-    #def clean():
-
 
 class Experiment_state(models.TextChoices):
     finished = 'finished', _('finished')
@@ -209,17 +200,4 @@ class FinishedExperiments(Experiments):
 
     def get_metrics(self):
         return json.loads(self.metrics)
-
-
-
-class OutlierDetectionMethods:
-    #all_names_of_pyod_method = string
-
-    def __str__(self):
-        return "ab"
-
-
-class Hyperparameters:
-    hyperparameters = list
-    odm_name = OutlierDetectionMethods
 
