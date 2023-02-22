@@ -210,9 +210,6 @@ class DetectorThread(threading.Thread):
             odm_handling.write_data_to_csv(result_csv_path, result_csv)
             odm_handling.write_data_to_csv(result_with_addition_path,  result_with_addition)
 
-            metrics_path = "media/" + models.user_metrics_path(exp, exp.file_name)
-            odm_handling.write_data_to_csv(metrics_path, self.metrics_to_csv(metrics))
-
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
             user = exp.user
             models.PendingExperiments.objects.filter(id=self.id).delete()
@@ -257,6 +254,9 @@ class DetectorThread(threading.Thread):
 
             print("metrics: ", metrics)
 
+            metrics_path = "media/" + models.user_metrics_path(finished_exp, finished_exp.file_name)
+            odm_handling.write_data_to_csv(metrics_path, self.metrics_to_csv(finished_exp, metrics))
+
         except Exception as e:
             print("Error occured")
             print(e)
@@ -288,9 +288,28 @@ class DetectorThread(threading.Thread):
         return included_cols
 
 
-    def metrics_to_csv(self, metrics):
+    def metrics_to_csv(self, exp, metrics):
         headers = []
         values = []
+
+        headers.append("file name")
+        values.append(exp.file_name)
+
+        headers.append("start time")
+        values.append(exp.start_time)
+
+        headers.append("duration")
+        values.append(exp.duration)
+
+        headers.append("selected subspaces")
+        values.append(exp.get_operation_option_display()+ exp.operation)
+
+        headers.append("selected odm")
+        values.append(exp.odm)
+
+        headers.append("hyper parameters")
+        values.append(exp.parameters)
+
         for header, value in metrics.items():#把字典的键取出来
             headers.append(header)
             values.append(value)
