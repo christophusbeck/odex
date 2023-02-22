@@ -121,11 +121,12 @@
 
             <fieldset>
             <legend> Select Outlier Detection Method and input parameters:
-                <select name="odms" id="odms" onchange="displaySelected(this)"></legend>
+                <select name="odms" id="odms" onchange="displaySelected(this)">
                     {% for key in odms %}
-                        <option value="{{ forloop.counter }}" {% if forloop.first %}selected{% endif %}> {{ key }}
+                        <option value="{{ forloop.counter }}" {% if forloop.first %}selected{% endif %}>{{ key }}</option>
                     {% endfor %}
                 </select>
+            </legend>
             </fieldset>
 
 
@@ -134,6 +135,7 @@
                      {% if forloop.first %}style="display: block"
                      {% else %}style="display: none"
                      {% endif %}>
+                <span style="color: red;">{{ form.non_field_errors.0 }}</span>
                     <table class="table table-bordered" align="center" border="1" id="table_page{{ forloop.counter }}"
                            data-pagination="true"
                            data-side-pagination="client"
@@ -143,8 +145,10 @@
                         <div>
                             {% for name, default in para.items %}
                                 <tr>
-                                    <td>{{ name }}</td>
-                                    <td><input type="text" placeholder="{{ default }}" name="{{ key }}_{{ name }}"></td>
+                                    <td>{{ name }} </td>
+                                    <td>
+                                        <input type="text" placeholder="{{ default }}" name="{{ key }}_{{ name }}">
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </div>

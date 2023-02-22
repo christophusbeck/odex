@@ -236,12 +236,19 @@ class Configuration(View):
 
             # this is specified parameters by user
             parameters = odms[selected_odm].copy()
-            for key in parameters.keys():
+            for key, value in parameters.items():
                 para = eval('selected_odm') + '_' + eval('key')
                 if request.POST.get(para, False):
-                    parameters[key] = request.POST[para]
+                    try:
+                        parameters[key] = type(value)(request.POST[para])
+                    except ValueError as e:
+                        form.add_error(None, "Input error by " + para + ": " + str(e))
+                        return render(request, self.template_name,
+                                      {"exp": exp, "columns": columns, "form": form, "odms": odms})
 
             exp.odm = form.cleaned_data['odm'] = selected_odm
+            print("parameters: ", parameters)
+            print("parameters_type: ", " parameters_type: ".join([str(type(value)) for key, value in parameters.items()]))
             exp.set_para(parameters)
             exp.operation = operation
             exp.state = "pending"
