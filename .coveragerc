@@ -7,10 +7,10 @@ omit =
    */migrations/*
    */apps.py
    */admin.py
-   /media/
-   /static/
+   */media/*
+   */static/*
    */tests/*
-   venv/*
+   */venv/*
    */__init__.py
 
 [report]
