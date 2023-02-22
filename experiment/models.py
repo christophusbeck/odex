@@ -116,13 +116,16 @@ def user_result_path(instance, filename):
 
 
 def user_result_with_addition_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/result_<filename>
-    return 'user_{0}/{1}/result_{2}_with_addition'.format(instance.user_id, instance.id, filename)
-
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/result_<filename>_with_addition.csv
+    return 'user_{0}/{1}/result_{2}_with_addition.csv'.format(instance.user_id, instance.id, filename.removesuffix('.csv'))
 
 def user_roc_path(filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/<filename>_roc.jpg
     return '{0}_roc.jpg'.format(filename.removesuffix('.csv'))
+
+def user_metrics_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/metrics_<filename>
+    return 'user_{0}/{1}/metrics_{2}'.format(instance.user_id, instance.id, filename)
 
 
 def validate_file_extension(value):
@@ -175,13 +178,13 @@ class NpEncoder(json.JSONEncoder):
 
 class FinishedExperiments(Experiments):
     result = models.FileField(
-        verbose_name="ground truth path",
+        verbose_name="result",
         upload_to=user_result_path,
         blank=True,
         null=True
     )
     result_with_addition = models.FileField(
-        verbose_name="ground truth path",
+        verbose_name="result with addition",
         upload_to=user_result_with_addition_path,
         blank=True,
         null=True
@@ -190,6 +193,13 @@ class FinishedExperiments(Experiments):
         blank=True,
         null=True
     )
+    metrics_file = models.FileField(
+        verbose_name="metrics",
+        upload_to=user_metrics_path,
+        blank=True,
+        null=True
+    )
+
     roc_path = models.FileField(
         verbose_name="Roc curve",
         upload_to=user_result_path,

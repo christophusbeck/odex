@@ -210,6 +210,9 @@ class DetectorThread(threading.Thread):
             odm_handling.write_data_to_csv(result_csv_path, result_csv)
             odm_handling.write_data_to_csv(result_with_addition_path,  result_with_addition)
 
+            metrics_path = "media/" + models.user_metrics_path(exp, exp.file_name)
+            odm_handling.write_data_to_csv(metrics_path, self.metrics_to_csv(metrics))
+
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
             user = exp.user
             models.PendingExperiments.objects.filter(id=self.id).delete()
@@ -231,6 +234,7 @@ class DetectorThread(threading.Thread):
             finished_exp.result = models.user_result_path(exp, exp.file_name)
             finished_exp.result_with_addition = models.user_result_with_addition_path(exp, exp.file_name)
             finished_exp.set_metrics(metrics)
+            finished_exp.metrics_file = models.user_metrics_path(exp, exp.file_name)
 
             if exp.has_ground_truth:
                 print("models.user_roc_path(exp, exp.main_file): ", models.user_roc_path(exp.main_file.name) )
@@ -282,3 +286,17 @@ class DetectorThread(threading.Thread):
                 print(i)
         print("included_cols: ", included_cols)
         return included_cols
+
+
+    def metrics_to_csv(self, metrics):
+        headers = []
+        values = []
+        for header, value in metrics.items():#把字典的键取出来
+            headers.append(header)
+            values.append(value)
+        data = []
+        data.append(headers)
+        data.append(values)
+        print("data: ", data)
+        return data
+
