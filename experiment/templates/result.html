@@ -90,7 +90,7 @@
 
             {% if exp.has_generated_file %}
                 <h3>Detected outliers after merging with generated data: {{ outliers_generated }} </h3>
-                <a href="{{ exp.result.url }}" download>
+                <a href="{{ exp.result_with_addition.url }}" download>
                     <img src="/static/img/button/download.png">
                 </a>
                 <h3>ROC curve:</h3>
