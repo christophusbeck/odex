@@ -61,7 +61,7 @@
 
         {% if exp.state == "finished" %}
             <h3>Detected outliers: {{ outliers }}</h3>
-            <a href="{{ exp.result.url }}"  download>
+            <a href="{{ exp.result.url }}" download>
                 <img src="/static/img/button/download.png">
             </a>
             {% if exp.has_ground_truth %}
@@ -90,10 +90,14 @@
 
             {% if exp.has_generated_file %}
                 <h3>Detected outliers after merging with generated data: {{ outliers_generated }} </h3>
+                <a href="{{ exp.result.url }}" download>
+                    <img src="/static/img/button/download.png">
+                </a>
                 <h3>ROC curve:</h3>
                 <div align="center">
                     <img src="/media/{{ exp.roc_after_merge_path }}" style="width:50%;"/>
                 </div>
+
             {% endif %}
         {% endif %}
 
