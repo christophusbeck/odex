@@ -119,14 +119,14 @@
             <br>
 
 
-            Select Outlier Detection Method and input parameters:
-            <label>
-                <select name="odms" id="odms" onchange="displaySelected(this)">
+            <fieldset>
+            <legend> Select Outlier Detection Method and input parameters:
+                <select name="odms" id="odms" onchange="displaySelected(this)"></legend>
                     {% for key in odms %}
                         <option value="{{ forloop.counter }}" {% if forloop.first %}selected{% endif %}> {{ key }}
                     {% endfor %}
                 </select>
-            </label>
+            </fieldset>
 
 
             {% for key, para in odms.items %}
