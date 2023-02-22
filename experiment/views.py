@@ -283,6 +283,7 @@ class ResultView(View):
         columns = exp.get_columns()
         print(columns)
         paras = exp.get_para()
+        print("paras: ", paras)
         if exp.state == "pending":
             exp = models.PendingExperiments.objects.filter(id=request.GET['id']).first()
             return render(request, self.template_name, {"exp": exp, "columns": columns, "paras": paras})

@@ -114,6 +114,12 @@ def user_result_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/result_<filename>
     return 'user_{0}/{1}/result_{2}'.format(instance.user_id, instance.id, filename)
 
+
+def user_result_with_addition_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/result_<filename>
+    return 'user_{0}/{1}/result_{2}_with_addition'.format(instance.user_id, instance.id, filename)
+
+
 def user_roc_path(filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/<filename>_roc.jpg
     return '{0}_roc.jpg'.format(filename.removesuffix('.csv'))
@@ -171,8 +177,12 @@ class FinishedExperiments(Experiments):
     result = models.FileField(
         verbose_name="ground truth path",
         upload_to=user_result_path,
-        help_text="please upload a ground truth file",
-        validators=[validate_file_extension],
+        blank=True,
+        null=True
+    )
+    result_with_addition = models.FileField(
+        verbose_name="ground truth path",
+        upload_to=user_result_with_addition_path,
         blank=True,
         null=True
     )
