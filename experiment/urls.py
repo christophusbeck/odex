@@ -10,4 +10,5 @@ urlpatterns = [
     path('aboutus/', user.views.AboutUsView.as_view()),
     path('login/', user.views.LoginView.as_view()),
     path('result/', views.ResultView.as_view()),
+    path('explist/', views.ExperimentListView.as_view(), name='explist'),
 ]
