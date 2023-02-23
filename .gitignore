@@ -1,4 +1,5 @@
 # ignore result files
+/media/
 /static/
 
 # coverage data
