@@ -252,12 +252,12 @@ def operate_or_on_arrays(array_1, proba_1, array_2, proba_2):
 
 def picture_ROC_curve(ground_truth, probability, roc_path):
     # TODO ROC curve plotting
-    print("probability: ", probability)
+    # print("probability: ", probability)
     pos = [x[1] for x in probability]
-    print("pos: ", pos)
-    print(len(pos))
-    print("ground_truth: ", ground_truth)
-    print("ground_truth: ", len(ground_truth))
+    # print("pos: ", pos)
+    # print(len(pos))
+    # print("ground_truth: ", ground_truth)
+    # print("ground_truth: ", len(ground_truth))
     fpr, tpr, thresholds = roc_curve(ground_truth, pos, pos_label=1)
 
     # for i, value in enumerate(thresholds):

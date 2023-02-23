@@ -25,6 +25,8 @@ class DetectorThread(threading.Thread):
 
             user_csv = odm_handling.get_data_from_csv(exp.main_file.path)
             user_data = odm_handling.get_array_from_csv_data(user_csv[1:])
+            print("user_csv: ", len(user_csv))
+            print("user_data: ", len(user_data))
 
             exp_operation = exp.operation
             exp_operation_option = exp.operation_option
@@ -82,6 +84,7 @@ class DetectorThread(threading.Thread):
                 outlier_probability = clf.predict_proba(user_data)
 
             metrics = {}
+            metrics["Number of entities"] = len(user_data)
             metrics["Detected Outliers"] = sum(outlier_classification)
 
             ground_truth_array = np.ndarray
@@ -108,6 +111,8 @@ class DetectorThread(threading.Thread):
                 user_gen_data = odm_handling.get_array_from_csv_data(user_gen_csv[1:])
                 merged_data = np.concatenate((user_data, user_gen_data))
                 clf_merge = exp_odm(**exp_para)
+                metrics["Number of additional rows"] = len(user_gen_data)
+                metrics["Number of entities after merging"] = len(merged_data)
 
                 if exp_operation_option == 3:
                     or_prediction = list([0] * len(user_data))
@@ -116,7 +121,7 @@ class DetectorThread(threading.Thread):
                         and_prediction = list([1] * len(user_data))
                         and_probability = list([[0, 1]] * len(user_data))
                         for and_selection in or_selection:
-                            subspace = odm_handling.get_array_from_csv_data(odm_handling.col_subset(user_csv[1:],
+                            subspace = odm_handling.get_array_from_csv_data(odm_handling.col_subset(merged_data[0:],
                                                                                                     and_selection))
                             clf_merge.fit(subspace)
                             subspace_pred = clf.predict(subspace)
@@ -129,7 +134,7 @@ class DetectorThread(threading.Thread):
                                                                                           and_prediction,
                                                                                           and_probability)
                     outlier_classification_after_merge = or_prediction
-                    ourlier_probability = or_probability
+                    outlier_probability_after_merge = or_probability
                 else:
 
                     clf_merge.fit(merged_data)
@@ -157,33 +162,53 @@ class DetectorThread(threading.Thread):
                         metrics["Delta accuracy (merged - original)"])
                     metrics["Accuracy after merging"] = '{:.5%}'.format(metrics["Accuracy after merging"])
 
-                    merge_probability = clf_merge.predict_proba(merged_data)
+                    outlier_probability_after_merge = clf_merge.predict_proba(merged_data)
                     roc_after_merge_path = "media/" + models.user_roc_path(exp.generated_file.name)
-                    odm_handling.picture_ROC_curve(ground_truth_gen_array, merge_probability,
+                    odm_handling.picture_ROC_curve(ground_truth_gen_array, outlier_probability_after_merge,
                                                    roc_after_merge_path)
 
             if "Accuracy" in metrics.keys():
                 metrics["Accuracy"] = '{:.5%}'.format(metrics["Accuracy"])
 
             result_csv_path = "media/" + models.user_result_path(exp, exp.file_name)
+            result_with_addition_path = "media/" + models.user_result_with_addition_path(exp, exp.file_name)
             result_csv = []
+            result_with_addition = []
+            res_headline = []
             i = 0
 
-            res_headline = user_csv[0]
+            # res_headline = user_csv[0]
+            print("res_headline: ",res_headline)
+            print("res_headline type : ", type(res_headline))
+            res_headline.append("Id")
             res_headline.append("Probability")
             res_headline.append("Classification")
             if exp.ground_truth != "":
                 res_headline.append("Ground truth")
             result_csv.append(res_headline)
+            if exp.generated_file != "":
+                result_with_addition.append(res_headline)
+
 
             for row in user_csv[1:]:
-                row.append(outlier_probability[i])
-                row.append(outlier_classification[i])
+                result_row = []
+                result_row.append(i+1)
+                result_row.append(outlier_probability[i])
+                result_row.append(outlier_classification[i])
                 if exp.ground_truth != "":
-                    row.append(str(int(ground_truth_array[i][0])))
-                result_csv.append(row)
+                    result_row.append(str(int(ground_truth_array[i][0])))
+                result_csv.append(result_row)
+                if exp.generated_file != "":
+                    result_with_addition_row = []
+                    result_with_addition_row.append(i + 1)
+                    result_with_addition_row.append(outlier_probability_after_merge[i])
+                    result_with_addition_row.append(outlier_classification_after_merge[i])
+                    if exp.ground_truth != "":
+                        result_with_addition_row.append(str(int(ground_truth_array[i][0])))
+                    result_with_addition.append(result_with_addition_row)
                 i += 1
             odm_handling.write_data_to_csv(result_csv_path, result_csv)
+            odm_handling.write_data_to_csv(result_with_addition_path,  result_with_addition)
 
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
             user = exp.user
@@ -204,7 +229,9 @@ class DetectorThread(threading.Thread):
             finished_exp.has_ground_truth = exp.has_ground_truth
             finished_exp.has_generated_file = exp.has_generated_file
             finished_exp.result = models.user_result_path(exp, exp.file_name)
+            finished_exp.result_with_addition = models.user_result_with_addition_path(exp, exp.file_name)
             finished_exp.set_metrics(metrics)
+            finished_exp.metrics_file = models.user_metrics_path(exp, exp.file_name)
 
             if exp.has_ground_truth:
                 print("models.user_roc_path(exp, exp.main_file): ", models.user_roc_path(exp.main_file.name) )
@@ -226,6 +253,9 @@ class DetectorThread(threading.Thread):
                 os.remove(exp.generated_file.path)
 
             print("metrics: ", metrics)
+
+            metrics_path = "media/" + models.user_metrics_path(finished_exp, finished_exp.file_name)
+            odm_handling.write_data_to_csv(metrics_path, self.metrics_to_csv(finished_exp, metrics))
 
         except Exception as e:
             print("Error occured")
@@ -256,3 +286,36 @@ class DetectorThread(threading.Thread):
                 print(i)
         print("included_cols: ", included_cols)
         return included_cols
+
+
+    def metrics_to_csv(self, exp, metrics):
+        headers = []
+        values = []
+
+        headers.append("file name")
+        values.append(exp.file_name)
+
+        headers.append("start time")
+        values.append(exp.start_time)
+
+        headers.append("duration")
+        values.append(exp.duration)
+
+        headers.append("selected subspaces")
+        values.append(exp.get_operation_option_display()+ exp.operation)
+
+        headers.append("selected odm")
+        values.append(exp.odm)
+
+        headers.append("hyper parameters")
+        values.append(exp.parameters)
+
+        for header, value in metrics.items():#把字典的键取出来
+            headers.append(header)
+            values.append(value)
+        data = []
+        data.append(headers)
+        data.append(values)
+        print("data: ", data)
+        return data
+

@@ -1,4 +1,3 @@
-from datetime import datetime, date, timedelta
 import json
 
 import numpy as np
@@ -8,12 +7,12 @@ from django.utils.translation import gettext_lazy as _
 from user.models import Users
 
 
+
 class Experiment_state(models.TextChoices):
     finished = 'finished', _('finished')
     pending = 'pending', _('pending')
     editing = 'editing', _('editing')
     failed = 'failed', _('failed')
-
 
 class Pyod_methods(models.TextChoices):
     abod = 'ABOD', _('Angle-based Outlier Detector')
@@ -39,8 +38,7 @@ class Experiments(models.Model):
         help_text="please enter a name"
     )
     file_name = models.CharField(verbose_name="file", max_length=128)
-    state = models.CharField(verbose_name="state", max_length=200, choices=Experiment_state.choices, blank=True,
-                             null=True)
+    state = models.CharField(verbose_name="state", max_length=200, choices=Experiment_state.choices, blank=True, null=True)
     odm = models.CharField(verbose_name="odm", max_length=128, choices=Pyod_methods.choices, blank=True, null=True)
     operation = models.CharField(
         verbose_name="logical formula",
@@ -117,9 +115,17 @@ def user_result_path(instance, filename):
     return 'user_{0}/{1}/result_{2}'.format(instance.user_id, instance.id, filename)
 
 
+def user_result_with_addition_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/result_<filename>_with_addition.csv
+    return 'user_{0}/{1}/result_{2}_with_addition.csv'.format(instance.user_id, instance.id, filename.removesuffix('.csv'))
+
 def user_roc_path(filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/<filename>_roc.jpg
     return '{0}_roc.jpg'.format(filename.removesuffix('.csv'))
+
+def user_metrics_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/metrics_<filename>
+    return 'user_{0}/{1}/metrics_{2}'.format(instance.user_id, instance.id, filename)
 
 
 def validate_file_extension(value):
@@ -170,25 +176,16 @@ class NpEncoder(json.JSONEncoder):
         return super(NpEncoder, self).default(obj)
 
 
-class DatetimeEncoder(json.JSONEncoder):
-
-    def default(self, obj):
-        if isinstance(obj, datetime):
-            return obj.strftime('%d.%m.%Y %H:%M:%S')
-        elif isinstance(obj, date):
-            return obj.strftime('%d.%m.%Y')
-        elif isinstance(obj, timedelta):
-            return obj.strftime('P1DT02H00M03.400000S')
-        else:
-            return list(json.JSONEncoder.default(self, obj))
-
-
 class FinishedExperiments(Experiments):
     result = models.FileField(
-        verbose_name="ground truth path",
+        verbose_name="result",
         upload_to=user_result_path,
-        help_text="please upload a ground truth file",
-        validators=[validate_file_extension],
+        blank=True,
+        null=True
+    )
+    result_with_addition = models.FileField(
+        verbose_name="result with addition",
+        upload_to=user_result_with_addition_path,
         blank=True,
         null=True
     )
@@ -196,6 +193,13 @@ class FinishedExperiments(Experiments):
         blank=True,
         null=True
     )
+    metrics_file = models.FileField(
+        verbose_name="metrics",
+        upload_to=user_metrics_path,
+        blank=True,
+        null=True
+    )
+
     roc_path = models.FileField(
         verbose_name="Roc curve",
         upload_to=user_result_path,
@@ -216,3 +220,4 @@ class FinishedExperiments(Experiments):
 
     def get_metrics(self):
         return json.loads(self.metrics)
+
