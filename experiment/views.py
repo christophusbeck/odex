@@ -315,11 +315,10 @@ class ExperimentListView(View):
         return JsonResponse(data, safe=False)
 
     def encoder(self, o):
-        match o:
-            case datetime() | time() | date():
-                return o.strftime('%d.%m.%Y %H:%M:%S')
-            case timedelta():
-                return o.total_seconds()
+        if isinstance(o, (datetime, date, time)):
+            return o.strftime('%d.%m.%Y %H:%M:%S')
+        if isinstance(o, timedelta):
+            return o.total_seconds()
 
 # @method_decorator(csrf_exempt, name='dispatch')
 # class DownloadView(View):
