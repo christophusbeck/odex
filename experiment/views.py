@@ -1,10 +1,8 @@
 import csv
 import json
-import os
-import time
 
 import pandas as pd
-from django.conf import settings
+from django.forms import model_to_dict
 from django.shortcuts import render, redirect
 from django.views import View
 from django.utils import timezone
@@ -91,30 +89,14 @@ class MainView(View):
 
     def get(self, request, *args, **kwargs):
 
-        queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"])
-        print(request.session["info"]["id"])
-
-        order = "asc"
-        tag = "id"
-        if request.GET.get('order', False) == "des" and request.GET.get('tag', False) == "id":
-            queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"]).order_by('-id')
-            order = "des"
-            tag = "id"
-        elif request.GET.get('order', False) == "asc" and request.GET.get('tag', False) == "file":
-            queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"]).order_by('file_name')
-            order = "asc"
-            tag = "file"
-        elif request.GET.get('order', False) == "des" and request.GET.get('tag', False) == "file":
-            queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"]).order_by('-file_name')
-            order = "des"
-            tag = "file"
+        queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"]).order_by('-id')
         form = CreateForm()
         if request.GET.get('q', False):
             text = request.GET.get('q')
             print(text)
             queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"], run_name=text)
 
-        return render(request, self.template_name, {"queryset": queryset, "form": form, "order": order, "tag": tag})
+        return render(request, self.template_name, {"queryset": queryset, "form": form})
 
     def post(self, request, *args, **kwargs):
         form = CreateForm(data=request.POST, files=request.FILES)
@@ -254,7 +236,7 @@ class Configuration(View):
                 print("form.files['ground_truth']: ", form.files['ground_truth'])
             if 'generated_file' in form.files:
                 exp.generated_file = form.files['generated_file']
-                print("form.files['generated_file']: ",form.files['generated_file'])
+                print("form.files['generated_file']: ", form.files['generated_file'])
 
             exp.start_time = timezone.now()
 
@@ -298,6 +280,31 @@ class ResultView(View):
 
         return redirect("/configuration/?id=" + exp.id)
 
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ExperimentListView(View):
+    def get(self, request, *args, **kwargs):
+        opts = []
+        rows = []
+        uid = request.session["info"]["id"]
+        operations = models.Experiments.objects.filter(user_id=uid).order_by('-id')
+        for operation in operations:
+            opts.append(operation.get_operation_option_display() + operation.operation)
+        result = models.Experiments.objects.filter(user_id=uid).values(
+            "run_name", "created_time", "state", "odm", "file_name", "start_time", "duration"
+        ).order_by('-id')
+        total = result.count()
+        for opt in opts:
+            for r in result:
+                r["operation"] = opt
+
+        for item in result:
+            item = dict(item)
+            rows.append(item)
+        print(rows)
+
+        data = {'rows': rows, 'total': total}
+        return JsonResponse(json.dumps(data, default=str), safe=False)
 
 # @method_decorator(csrf_exempt, name='dispatch')
 # class DownloadView(View):
