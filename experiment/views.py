@@ -2,7 +2,7 @@ import csv
 import json
 
 import pandas as pd
-from django.forms import model_to_dict
+from datetime import datetime, date, time, timedelta
 from django.shortcuts import render, redirect
 from django.views import View
 from django.utils import timezone
@@ -88,15 +88,10 @@ class MainView(View):
     template_name = "main.html"
 
     def get(self, request, *args, **kwargs):
-
-        queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"]).order_by('-id')
+        queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"])
         form = CreateForm()
-        if request.GET.get('q', False):
-            text = request.GET.get('q')
-            print(text)
-            queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"], run_name=text)
-
-        return render(request, self.template_name, {"queryset": queryset, "form": form})
+        return render(request, self.template_name, {"form": form})
+        # return render(request, self.template_name, {"queryset": queryset, "form": form})
 
     def post(self, request, *args, **kwargs):
         form = CreateForm(data=request.POST, files=request.FILES)
@@ -283,7 +278,7 @@ class ResultView(View):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ExperimentListView(View):
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         opts = []
         rows = []
         uid = request.session["info"]["id"]
@@ -291,7 +286,7 @@ class ExperimentListView(View):
         for operation in operations:
             opts.append(operation.get_operation_option_display() + operation.operation)
         result = models.Experiments.objects.filter(user_id=uid).values(
-            "run_name", "created_time", "state", "odm", "file_name", "start_time", "duration"
+            "id", "run_name", "created_time", "state", "odm", "file_name", "start_time", "duration"
         ).order_by('-id')
         total = result.count()
         for opt in opts:
@@ -300,11 +295,23 @@ class ExperimentListView(View):
 
         for item in result:
             item = dict(item)
+            for k, v in item.items():
+                if 'time' in k:
+                    item[k] = self.encoder(v)
+                elif 'duration' in k:
+                    item[k] = self.encoder(v)
             rows.append(item)
-        print(rows)
 
-        data = {'rows': rows, 'total': total}
-        return JsonResponse(json.dumps(data, default=str), safe=False)
+        data = {'total': total, 'rows': rows}
+        print(data)
+        return JsonResponse(data, safe=False)
+
+    def encoder(self, o):
+        match o:
+            case datetime() | time() | date():
+                return o.strftime('%d.%m.%Y %H:%M:%S')
+            case timedelta():
+                return o.total_seconds()
 
 # @method_decorator(csrf_exempt, name='dispatch')
 # class DownloadView(View):

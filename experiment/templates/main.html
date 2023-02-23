@@ -35,52 +35,55 @@
             </div>
             <table class="table table-bordered"
                    id="record_table"
+                   data-url="/explist/"
+                   data-method='post'
                    data-toolbar=".toolbar"
+                   data-auto-refresh="true"
                    data-search="true"
                    data-show-toggle="true"
                    data-show-columns="true"
                    data-show-columns-toggle-all="true"
                    data-pagination="true"
-                   data-side-pagination="client">
+                   data-side-pagination="client"
+                   data-auto-refresh-interval="2">
 
-
-                <tbody>
-                {% for obj in queryset %}
-                    <tr id="{{ obj.id }}">
-                        <td>{{ obj.run_name }}</td>
-                        <td>{{ obj.created_time }}</td>
-                        {% if obj.state == "failed" %}
-                            <td><font color="red">{{ obj.state }}</font></td>
-                        {% else %}
-                            <td>{{ obj.state }}</td>
-                        {% endif %}
-                        <td>{{ obj.odm }}</td>
-                        <td>{{ obj.file_name }}</td>
-                        <td>{{ obj.get_operation_option_display }} {{ obj.operation }}</td>
-                        <td>{{ obj.start_time }}</td>
-                        <td>{{ obj.duration }}</td>
-
-                        <td>
-                            <input id="{{ obj.id }}" class=" btn-delete" type="image"
-                                   src="/static/img/button/delete.png" width="50"
-                                   value="Delete">
-                            {% if obj.state == "pending" or obj.state == "finished" %}
-                                <a href="/result/?id={{ obj.id }}">
-                                    <input id="{{ obj.id }}" class="btn-details" type="image"
-                                           src="/static/img/button/show%20details.png" width="90"
-                                           value="Show Details">
-                                </a>
-                            {% else %}
-                                <a href="/configuration/?id={{ obj.id }}">
-                                    <input id="{{ obj.id }}" class="btn-edit" type="image"
-                                           src="/static/img/button/edit.png" width="75"
-                                           value="Edit again">
-                                </a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
+{#                <tbody>#}
+{#                {% for obj in queryset %}#}
+{#                    <tr id="{{ obj.id }}">#}
+{#                        <td>{{ obj.run_name }}</td>#}
+{#                        <td>{{ obj.created_time }}</td>#}
+{#                        {% if obj.state == "failed" %}#}
+{#                            <td><font color="red">{{ obj.state }}</font></td>#}
+{#                        {% else %}#}
+{#                            <td>{{ obj.state }}</td>#}
+{#                        {% endif %}#}
+{#                        <td>{{ obj.odm }}</td>#}
+{#                        <td>{{ obj.file_name }}</td>#}
+{#                        <td>{{ obj.get_operation_option_display }} {{ obj.operation }}</td>#}
+{#                        <td>{{ obj.start_time }}</td>#}
+{#                        <td>{{ obj.duration }}</td>#}
+{##}
+{#                        <td>#}
+{#                            <input id="{{ obj.id }}" class=" btn-delete" type="image"#}
+{#                                   src="/static/img/button/delete.png" width="50"#}
+{#                                   value="Delete">#}
+{#                            {% if obj.state == "pending" or obj.state == "finished" %}#}
+{#                                <a href="/result/?id={{ obj.id }}">#}
+{#                                    <input id="{{ obj.id }}" class="btn-details" type="image"#}
+{#                                           src="/static/img/button/show%20details.png" width="90"#}
+{#                                           value="Show Details">#}
+{#                                </a>#}
+{#                            {% else %}#}
+{#                                <a href="/configuration/?id={{ obj.id }}">#}
+{#                                    <input id="{{ obj.id }}" class="btn-edit" type="image"#}
+{#                                           src="/static/img/button/edit.png" width="75"#}
+{#                                           value="Edit again">#}
+{#                                </a>#}
+{#                            {% endif %}#}
+{#                        </td>#}
+{#                    </tr>#}
+{#                {% endfor %}#}
+{#                </tbody>#}
             </table>
         </div>
 
@@ -145,18 +148,19 @@
 
 
 {% block js %}
-    <script type="text/javascript">
+    <script src="https://unpkg.com/bootstrap-table@1.21.2/dist/extensions/auto-refresh/bootstrap-table-auto-refresh.min.js"></script>
+    <script>
         var DELETE_ID;
         {#setTimeout(function () {#}
         {#        refresh();#}
         {#    },#}
             {#== 10s#}
         {#    10000);#}
-
-        setInterval(function () {
-                refresh();
-            },
-            10000);
+{##}
+{#        setInterval(function () {#}
+{#                refresh();#}
+{#            },#}
+{#            10000);#}
 
         {#function refresh() {#}
         {#    location.reload()#}
@@ -167,58 +171,75 @@
         $(document).ready(function () {
             $('#record_table').bootstrapTable({
                 columns: [{
-                        field: "run_name",
-                        title: "Run name",
-                        sortable: true
-                    }, {
-                        field: 'created_time',
-                        title: "Created Time",
-                        sortable: true
-                    }, {
-                        field: "state",
-                        title: "State",
-                        sortable: true
-                    }, {
-                        field: "odm",
-                        title: "ODM",
-                        sortable: true
-                    }, {
-                        field: "file_name",
-                        title: "Database file",
-                        sortable: true
-                    }, {
-                        field: "operation",
-                        title: "Subspaces",
-                        sortable: true
-                    }, {
-                        field: "start_time",
-                        title: "Start time",
-                        sortable: true
-                    }, {
-                        field: "duration",
-                        title: "Duration",
-                        sortable: true
-                    }, {
-                        title: "Options"
-                    }]
+                    field: "id",
+                    title: "ID",
+                    sortable: true
+                }, {
+                    field: "run_name",
+                    title: "Run name",
+                    sortable: true
+                }, {
+                    field: 'created_time',
+                    title: "Created Time",
+                    sortable: true
+                }, {
+                    field: "state",
+                    title: "State",
+                    sortable: true,
+                    formatter: function (value) {
+                        let color = "";
+                        if (value === "failed") {
+                            color = '<span style="color:red">' + value + '</span>'
+                            return color;
+                        }
+                        color = '<span>' + value + '</span>'
+                        return color;
+                    }
+                }, {
+                    field: "odm",
+                    title: "ODM",
+                    sortable: true
+                }, {
+                    field: "file_name",
+                    title: "Database file",
+                    sortable: true
+                }, {
+                    field: "operation",
+                    title: "Subspaces",
+                    sortable: true
+                }, {
+                    field: "start_time",
+                    title: "Start time",
+                    sortable: true
+                }, {
+                    field: "duration",
+                    title: "Duration",
+                    sortable: true
+                }, {
+                    title: "Options",
+                    formatter: function (value, row, index) {
+                        var actions = []
+                        actions.push('<input id="' + row.id + '" class=" btn-delete" type="image" src="/static/img/button/delete.png" width="50" value="Delete">')
+                        if (row.state === "finished" || row.state === "pending") {
+                            actions.push('<a href="/result/?id=' + row.id + '"> <input id="' + row.id + '" class="btn-details" type="image" src="/static/img/button/show%20details.png" width="90" value="Show Details"> </a>')
+                        } else {
+                            actions.push('<a href="/configuration/?id=' + row.id + '"> <input id="' + row.id + '" class="btn-edit" type="image"src="/static/img/button/edit.png" width="75"value="Edit again"> </a>')
+                        }
+                        return actions.join("");
+                    }
+                }]
             });
-
-            {#initTable();#}
-            {##}
-            {#setInterval(function() {#}
-            {#    initTable();#}
-            {#)#}
         })
 
         $(function() {
-            setInterval(() => {
-                $('#record_table').bootstrapTable('updateCell', {
-                field: 'state',
-                value: `Updated Name ${i++}`,
-                reinit: false
+            $('#record_table').bootstrapTable()
+    	        .on('refresh.bs.table', function () {
+      	            console.timeEnd()
+				    console.time()
                 })
-            }, 100)
-        })
+        });
+
+
 
         $(function () {
             bindBtnAddEvent();
