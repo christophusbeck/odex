@@ -175,6 +175,9 @@
                         if (value === "failed") {
                             color = '<span style="color:red">' + value + '</span>'
                             return color;
+                        } else if(value === 'pending'){
+                            color = '<span style="color:orange">' + value + '</span>'
+                            return color;
                         }
                         color = '<span>' + value + '</span>'
                         return color;
