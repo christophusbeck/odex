@@ -3,6 +3,8 @@ import json
 
 import pandas as pd
 from datetime import datetime, date, time, timedelta
+
+from django.forms import model_to_dict
 from django.shortcuts import render, redirect
 from django.views import View
 from django.utils import timezone
@@ -225,7 +227,8 @@ class Configuration(View):
 
             exp.odm = form.cleaned_data['odm'] = selected_odm
             print("parameters: ", parameters)
-            print("parameters_type: ", " parameters_type: ".join([str(type(value)) for key, value in parameters.items()]))
+            print("parameters_type: ",
+                  " parameters_type: ".join([str(type(value)) for key, value in parameters.items()]))
             exp.set_para(parameters)
             exp.operation = operation
             exp.state = "pending"
@@ -287,38 +290,48 @@ class ResultView(View):
 @method_decorator(csrf_exempt, name='dispatch')
 class ExperimentListView(View):
     def post(self, request, *args, **kwargs):
-        opts = []
-        rows = []
         uid = request.session["info"]["id"]
-        operations = models.Experiments.objects.filter(user_id=uid).order_by('-id')
-        for operation in operations:
-            opts.append(operation.get_operation_option_display() + operation.operation)
-        result = models.Experiments.objects.filter(user_id=uid).values(
-            "id", "run_name", "created_time", "state", "odm", "file_name", "start_time", "duration"
-        ).order_by('-id')
+        result = models.Experiments.objects.filter(user_id=uid).all().order_by('-id')
+
+        #     .values(
+        #     "id", "run_name", "created_time", "state", "odm", "file_name",
+        #     "operation", "operation_option", "start_time", "duration"
+        # ).order_by('-id')
         total = result.count()
-        for opt in opts:
-            for r in result:
-                r["operation"] = opt
 
-        for item in result:
-            item = dict(item)
-            for k, v in item.items():
-                if 'time' in k:
-                    item[k] = self.encoder(v)
-                elif 'duration' in k:
-                    item[k] = self.encoder(v)
-            rows.append(item)
-
+        rows = self.row_generator(result)
         data = {'total': total, 'rows': rows}
         print(data)
         return JsonResponse(data, safe=False)
 
     def encoder(self, o):
         if isinstance(o, (datetime, date, time)):
-            return o.strftime('%d.%m.%Y %H:%M:%S')
+            return o.strftime('%m.%d.%Y %H:%M:%S')
         if isinstance(o, timedelta):
             return o.total_seconds()
+
+    def row_generator(self, result):
+        rows = []
+        selected_records = {"id", "run_name", "created_time", "state", "odm", "file_name",
+                            "operation", "start_time", "duration"}
+        for item in result:
+            item_dict = model_to_dict(item)
+            for k, v in item_dict.items():
+                if 'time' in k or 'duration' in k:
+                    item_dict[k] = self.encoder(v)
+                elif k == 'operation':
+                    if item_dict[k] is None:
+                        item_dict[k] = str(v)
+                elif k == 'operation_option':
+                    if item_dict[k] is None:
+                        item_dict[k] = str(v)
+                    else:
+                        item_dict[k] = item.get_operation_option_display()
+            item_dict['operation'] = item_dict['operation_option'] + item_dict['operation']
+            row = {k: v for k, v in item_dict.items() if k in selected_records}
+            rows.append(row)
+        return rows
+
 
 # @method_decorator(csrf_exempt, name='dispatch')
 # class DownloadView(View):
