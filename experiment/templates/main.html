@@ -151,22 +151,6 @@
     <script src="https://unpkg.com/bootstrap-table@1.21.2/dist/extensions/auto-refresh/bootstrap-table-auto-refresh.min.js"></script>
     <script>
         var DELETE_ID;
-        {#setTimeout(function () {#}
-        {#        refresh();#}
-        {#    },#}
-            {#== 10s#}
-        {#    10000);#}
-{##}
-{#        setInterval(function () {#}
-{#                refresh();#}
-{#            },#}
-{#            10000);#}
-
-        {#function refresh() {#}
-        {#    location.reload()#}
-        {##}
-
-
 
         $(document).ready(function () {
             $('#record_table').bootstrapTable({
@@ -217,9 +201,10 @@
                     sortable: true
                 }, {
                     title: "Options",
+                    events: operateEvents,
                     formatter: function (value, row, index) {
                         var actions = []
-                        actions.push('<input id="' + row.id + '" class=" btn-delete" type="image" src="/static/img/button/delete.png" width="50" value="Delete">')
+                        actions.push('<input id="delete" class=" btn-delete" type="image" src="/static/img/button/delete.png" width="50" value="Delete">')
                         if (row.state === "finished" || row.state === "pending") {
                             actions.push('<a href="/result/?id=' + row.id + '"> <input id="' + row.id + '" class="btn-details" type="image" src="/static/img/button/show%20details.png" width="90" value="Show Details"> </a>')
                         } else {
@@ -239,14 +224,21 @@
                 })
         });
 
+        window.operateEvents = {
+            'click #delete': function (e, value, row, index){
+                // Show delete dialog
+                $("#deleteModal").modal('show');
 
-
+                // Get the ID of the current row and assign it to all variables.
+                DELETE_ID = row.id;
+            }
+        }
         $(function () {
             bindBtnAddEvent();
             bindBtnSaveEvent();
             bindBtnDeleteEvent();
             bindBtnConfirmDeleteEvent();
-            bindBtnDetailsEvent();
+            {#bindBtnDetailsEvent();#}
             {#bindBtnEditEvent();#}
         })
 
@@ -280,18 +272,6 @@
                         }
                     }
                 })
-            });
-        }
-
-
-        function bindBtnDeleteEvent() {
-            $(".btn-delete").click(function () {
-                // Show delete dialog
-                $("#deleteModal").modal('show');
-
-                // Get the ID of the current row and assign it to all variables.
-                DELETE_ID = $(this).attr("id");
-
             });
         }
 
