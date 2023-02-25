@@ -13,20 +13,6 @@
                 background-repeat: no-repeat;
             }
         </style>
-{##}
-{#        <div style="float: right;width: 300px;">#}
-{#            <form method="get">#}
-{#                <div class="input-group">#}
-{#                    <input type="text" name="q" class="form-control" placeholder="Search for..."#}
-{#                           value="{{ search_data }}">#}
-{#                    <span class="input-group-btn">#}
-{#                        <button class="btn btn-default" type="submit">#}
-{#                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>#}
-{#                        </button>#}
-{#                      </span>#}
-{#                </div>#}
-{#            </form>#}
-{#        </div>#}
 
         <!-- Experiments List -->
             <!-- Table -->
@@ -46,48 +32,9 @@
                    data-pagination="true"
                    data-side-pagination="client"
                    data-auto-refresh-interval="2">
-
-{#                <tbody>#}
-{#                {% for obj in queryset %}#}
-{#                    <tr id="{{ obj.id }}">#}
-{#                        <td>{{ obj.run_name }}</td>#}
-{#                        <td>{{ obj.created_time }}</td>#}
-{#                        {% if obj.state == "failed" %}#}
-{#                            <td><font color="red">{{ obj.state }}</font></td>#}
-{#                        {% else %}#}
-{#                            <td>{{ obj.state }}</td>#}
-{#                        {% endif %}#}
-{#                        <td>{{ obj.odm }}</td>#}
-{#                        <td>{{ obj.file_name }}</td>#}
-{#                        <td>{{ obj.get_operation_option_display }} {{ obj.operation }}</td>#}
-{#                        <td>{{ obj.start_time }}</td>#}
-{#                        <td>{{ obj.duration }}</td>#}
-{##}
-{#                        <td>#}
-{#                            <input id="{{ obj.id }}" class=" btn-delete" type="image"#}
-{#                                   src="/static/img/button/delete.png" width="50"#}
-{#                                   value="Delete">#}
-{#                            {% if obj.state == "pending" or obj.state == "finished" %}#}
-{#                                <a href="/result/?id={{ obj.id }}">#}
-{#                                    <input id="{{ obj.id }}" class="btn-details" type="image"#}
-{#                                           src="/static/img/button/show%20details.png" width="90"#}
-{#                                           value="Show Details">#}
-{#                                </a>#}
-{#                            {% else %}#}
-{#                                <a href="/configuration/?id={{ obj.id }}">#}
-{#                                    <input id="{{ obj.id }}" class="btn-edit" type="image"#}
-{#                                           src="/static/img/button/edit.png" width="75"#}
-{#                                           value="Edit again">#}
-{#                                </a>#}
-{#                            {% endif %}#}
-{#                        </td>#}
-{#                    </tr>#}
-{#                {% endfor %}#}
-{#                </tbody>#}
             </table>
         </div>
 
-    </div>
 
 
     <!-- new run -->
@@ -131,27 +78,22 @@
     <!-- delete -->
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
-
             <div class="alert alert-danger alert-dismissible fade in" role="alert">
                 <h4>Are you sure to delete?</h4>
                 <p style="text-align: right;">
-                    <input type="image" src="/static/img/button/delete.png" id="btnConfirmDelete" width="65">
+                    <input type="image" src="/static/img/button/delete.png" id="btnConfirmDelete" width="65" onclick="bindBtnConfirmDeleteEvent()">
                     <input type="image" src="/static/img/button/cancel.png" data-dismiss="modal" width="75" align="top">
                 </p>
             </div>
-
         </div>
-    </div>
 
 
 {% endblock %}
 
 
 {% block js %}
-    <script src="https://unpkg.com/bootstrap-table@1.21.2/dist/extensions/auto-refresh/bootstrap-table-auto-refresh.min.js"></script>
-    <script>
-        var DELETE_ID;
 
+    <script>
         $(document).ready(function () {
             $('#record_table').bootstrapTable({
                 columns: [{
@@ -206,12 +148,12 @@
                     title: "Options",
                     events: operateEvents,
                     formatter: function (value, row, index) {
-                        var actions = []
+                        const actions = [];
                         actions.push('<input id="delete" class=" btn-delete" type="image" src="/static/img/button/delete.png" width="50" value="Delete">')
                         if (row.state === "finished" || row.state === "pending") {
-                            actions.push('<a href="/result/?id=' + row.id + '"> <input id="' + row.id + '" class="btn-details" type="image" src="/static/img/button/show%20details.png" width="90" value="Show Details"> </a>')
+                            actions.push('<a href="/result/?id=' + row.id + '"> <input id="detail" class="btn-details" type="image" src="/static/img/button/show%20details.png" width="90" value="Show Details"> </a>')
                         } else {
-                            actions.push('<a href="/configuration/?id=' + row.id + '"> <input id="' + row.id + '" class="btn-edit" type="image"src="/static/img/button/edit.png" width="75"value="Edit again"> </a>')
+                            actions.push('<a href="/configuration/?id=' + row.id + '"> <input id="edit" class="btn-edit" type="image"src="/static/img/button/edit.png" width="75"value="Edit again"> </a>')
                         }
                         return actions.join("");
                     }
@@ -227,19 +169,23 @@
                 })
         });
 
-        window.operateEvents = {
-            'click #delete': function (e, value, row, index){
-                // Show delete dialog
-                $("#deleteModal").modal('show');
+        $(function() {
+            $('#delete').bootstrapTable().on('click')
+        })
 
-                // Get the ID of the current row and assign it to all variables.
-                DELETE_ID = row.id;
-            }
+        window.operateEvents = {
+            'click #delete': function (e, value, row, index) {
+                // Show delete dialog
+                window.DELETE_ID = row.id;
+                console.log(DELETE_ID)
+                $("#deleteModal").modal('show');
+            },
         }
+
+
         $(function () {
             bindBtnAddEvent();
             bindBtnSaveEvent();
-            bindBtnDeleteEvent();
             bindBtnConfirmDeleteEvent();
             {#bindBtnDetailsEvent();#}
             {#bindBtnEditEvent();#}
