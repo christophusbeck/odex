@@ -42,6 +42,7 @@ class UsersModelTest(TestCase):
         self.assertEquals(ret.password, '123456')
 
 class SecurityQuestionsModelTest(TestCase):
+    @classmethod
     def setUpTestData(cls):
         SecurityQuestions.objects.create(question='What is your favorite movie?')
 
