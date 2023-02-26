@@ -25,8 +25,8 @@ class UsersModelTest(TestCase):
 
 
     def test_delete(self):
-        tester = Users.objects.get(username='tester')
-        tester.delete()
+        user = Users.objects.get(username='tester')
+        user.delete()
         ret = Users.objects.filter(username='tester')
         self.assertEquals(len(ret), 0)
 
