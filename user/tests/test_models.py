@@ -1,8 +1,7 @@
 from django.test import TestCase
-from user.models import Users
+from user.models import Users,SecurityQuestions
 
 class UsersModelTest(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         Users.objects.create(username='tester', password='123')
@@ -41,4 +40,9 @@ class UsersModelTest(TestCase):
         user.password = "123456"
         ret = Users.objects.get(username='tester')
         self.assertEquals(ret.password, '123456')
+
+class SecurityQuestionsModelTest(TestCase):
+    def setUpTestData(cls):
+        SecurityQuestions.objects.create(question='What is your favorite movie?')
+
 
