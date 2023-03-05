@@ -207,8 +207,16 @@ class LoginViewTest(TestCase):
         form = response.context.get('form')
         self.assertEqual(str(form.errors['password'][0]), "password error")
 
-# class AboutUsViewTest(TestCase):
-#     def test_about_us(self):
-#         resp = self.client.get('/aboutus/')
-#         self.assertEqual(resp.status_code, 200)
-#         self.assertTemplateUsed(resp, 'aboutus.html')
+
+class AboutUsViewTest(TestCase):
+    def setUp(self):
+        self.url = reverse('aboutus')
+        self.response = self.client.get(self.url)
+
+    def test_page_status_code(self):
+        self.assertEqual(self.response.status_code, 200)
+
+    def test_register_url_resolves_registration_view(self):
+        view = resolve('/aboutus/')
+        self.assertEqual(view.func.view_class, views.AboutUsView)
+
