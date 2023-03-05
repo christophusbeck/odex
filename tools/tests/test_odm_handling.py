@@ -64,6 +64,7 @@ class Test_odm_handling(TestCase):
         self.assertTrue(valid_input_and_or)
 
     def test_subspace_selection_parser(self):
+        odm_handling.subspace_selection_parser("")
         pass
 
     def test_get_head_indexing(self):
