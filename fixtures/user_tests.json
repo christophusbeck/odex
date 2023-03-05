@@ -1,0 +1,105 @@
+[
+  {
+    "model": "user.tans",
+    "pk": 1,
+    "fields": {
+      "tan": "123",
+      "authenticated": 1
+    }
+  },
+  {
+    "model": "user.tans",
+    "pk": 2,
+    "fields": {
+      "tan": "124",
+      "authenticated": 0
+    }
+  },
+  {
+    "model": "user.users",
+    "pk": 1,
+    "fields": {
+        "username": "tester1",
+        "password": "7088966d4c03aeb6a66c390ec6462589"
+    }
+  },
+  {
+    "model": "user.securityanswers",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "question_id": 2,
+      "answer": "cat"
+    }
+  },
+  {
+    "model": "user.securityquestions",
+    "pk": 1,
+    "fields": {
+      "question": "Who was your favorite teacher?"
+    }
+  },
+  {
+    "model": "user.securityquestions",
+    "pk": 2,
+    "fields": {
+      "question": "What's the name of your first pet?"
+    }
+  },
+  {
+    "model": "user.securityquestions",
+    "pk": 3,
+    "fields": {
+      "question": "When is your birthday?"
+    }
+  },
+  {
+    "model": "user.securityquestions",
+    "pk": 4,
+    "fields": {
+      "question": "Where are you born?"
+    }
+  },
+  {
+    "model": "user.securityquestions",
+    "pk": 5,
+    "fields": {
+      "question": "What is your favorite movie?"
+    }
+  },
+  {
+    "model": "user.securityquestions",
+    "pk": 6,
+    "fields": {
+      "question": "What is your mother’s maiden name?"
+    }
+  },
+  {
+    "model": "user.securityquestions",
+    "pk": 7,
+    "fields": {
+      "question": "What primary school/high school did you attend?"
+    }
+  },
+  {
+    "model": "user.securityquestions",
+    "pk": 8,
+    "fields": {
+      "question": "What was the name of the boy or the girl you first kissed?"
+    }
+  },
+  {
+    "model": "user.securityquestions",
+    "pk": 9,
+    "fields": {
+      "question": "Where were you when you had your first kiss?"
+    }
+  },
+  {
+    "model": "user.securityquestions",
+    "pk": 10,
+    "fields": {
+      "question": "What was the first exam you failed?"
+    }
+  }
+]
