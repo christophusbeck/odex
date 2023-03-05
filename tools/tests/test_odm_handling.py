@@ -2,17 +2,26 @@ import os
 import random
 import re
 import unittest
+from unittest import TestCase
+
 from tools import odm_handling
 import numpy as np
 
-class Test_odm_handling(unittest.TestCase):
+
+class Test_odm_handling(TestCase):
 
     def setup(self):
         pass
 
 
     def test_get_array_from_csv_data(self):
-        pass
+        data = np.random.random((50, 50))
+
+        listify = []
+        for row in data:
+            listify.append(list(row))
+
+        self.assertTrue((data == odm_handling.get_array_from_csv_data(listify)).all())
 
     def test_subspace_exclusion_check(self):
         max_col = random.randint(2, 10)
