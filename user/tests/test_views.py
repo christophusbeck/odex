@@ -147,3 +147,68 @@ class ResetPasswordViewTest(TestCase):
         form = response.context.get('form')
         self.assertIsInstance(initial_form, forms.InitialResetForm)
         self.assertIsInstance(form, forms.ResetPasswordForm)
+
+
+class LoginViewTest(TestCase):
+    fixtures = ['user_tests.json']
+
+    def setUp(self):
+        data = {
+            'username': 'tester1',
+            'password': '123',
+        }
+        self.url = reverse('login')
+        self.successful_url = reverse('main')
+        self.response_get = self.client.get(self.url)
+        self.response_post = self.client.post(self.url, data, follow=True)
+
+    '''--------------------------- Test Fixture Loading ---------------------------'''
+
+    def test_fixtures(self):
+        user = models.Users.objects.get(id=1)
+        self.assertEqual(user.username, 'tester1')
+
+    '''---------------------------   Basic URL tests    ---------------------------'''
+
+    def test_page_status_code(self):
+        self.assertEqual(self.response_get.status_code, 200)
+
+    def test_register_url_resolves_registration_view(self):
+        view = resolve('/login/')
+        self.assertEqual(view.func.view_class, views.LoginView)
+
+    def test_csrf(self):
+        self.assertContains(self.response_get, 'csrfmiddlewaretoken')
+
+    def test_contains_form(self):
+        form = self.response_get.context.get('form')
+        self.assertIsInstance(form, forms.LoginForm)
+
+    '''--------------------------- Successful Login ---------------------------'''
+
+    def test_redirection(self):
+        self.assertRedirects(self.response_post, self.successful_url, status_code=302, target_status_code=200)
+
+    '''--------------------------- Failed Login ------------------------------'''
+
+    def test_empty_form(self):
+        response = self.client.post(self.url, {})
+        self.assertEqual(response.status_code, 200)
+
+    def test_not_existed_username(self):
+        data = {'username': 'tester', 'password': '123'}
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+
+    def test_error_password(self):
+        data = {'username': 'tester1', 'password': '123456'}
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        form = response.context.get('form')
+        self.assertEqual(str(form.errors['password'][0]), "password error")
+
+# class AboutUsViewTest(TestCase):
+#     def test_about_us(self):
+#         resp = self.client.get('/aboutus/')
+#         self.assertEqual(resp.status_code, 200)
+#         self.assertTemplateUsed(resp, 'aboutus.html')
