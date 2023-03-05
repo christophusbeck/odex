@@ -77,7 +77,10 @@ class Test_odm_handling(TestCase):
             self.assertEqual(index_tuple, [headrow[int(i)], str(i)])
 
     def test_get_def_value_dict(self):
-        pass
+        def foo(self, param_1 = 1, param_2 = 2):
+            pass
+        foo_dict = {"param_1" : 1, "param_2" : 2}
+        self.assertEqual(odm_handling.get_def_value_dict(foo), foo_dict)
 
     def test_get_odm_dict(self):
         odm_dict = odm_handling.get_odm_dict()
