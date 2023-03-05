@@ -8,7 +8,7 @@ urlpatterns = [
     path('checkusername/', views.CheckUsername.as_view(), name='check_username'),
     path('logout/', views.LogOutView.as_view(), name='logout'),
     # after user clicks logout, he/she should return to login page
-    path('user/delete/', views.DeleteAccountView.as_view(), name='delete'),
+    path('user/delete/', views.DeleteAccountView.as_view(), name='delete_user'),
     path('resetpassword/', views.ResetPasswordView.as_view(), name='reset_password'),
     #path('forgetpassword/', views.ForgetPasswordView.as_view()),
     path('changename/', views.ChangeNameView.as_view(), name='change_name'),
