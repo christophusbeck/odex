@@ -31,4 +31,15 @@ class RegistrationViewTest(TestCase):
         form = self.response_get.context.get('form')
         self.assertIsInstance(form, forms.RegisterForm)
 
+    def test_redirection(self):
+        data = {
+            'username': 'tester',
+            'password': '123456',
+            'repeat_password': '123456',
+            'tan': '124',
+            'question': 2,
+            'answer': 'cat'
+        }
 
+        response = self.client.post(self.url, data, follow=True)
+        self.assertRedirects(response, self.successful_url, status_code=302, target_status_code=200)
