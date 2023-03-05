@@ -122,7 +122,6 @@ class ResetPasswordViewTest(TestCase):
     def test_register_url_resolves_registration_view(self):
         view = resolve('/resetpassword/')
         self.assertEqual(view.func.view_class, views.ResetPasswordView)
-        # alternative: self.assertEqual(view.func.__name__, views.RegistrationView.as_view().__name__)
 
     def test_csrf(self):
         self.assertContains(self.response, 'csrfmiddlewaretoken')
@@ -131,3 +130,10 @@ class ResetPasswordViewTest(TestCase):
         form = self.response.context.get('initial_form')
         self.assertIsInstance(form, forms.InitialResetForm)
 
+    '''--------------------------- Username does not exist ---------------------------'''
+
+    def test_not_existed_username(self):
+        data = {'username': 'user'}
+        response = self.client.get(self.url, data)
+        form = response.context.get('initial_form')
+        self.assertEqual(str(form.errors['username'][0]), "This user does not exist")
