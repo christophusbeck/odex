@@ -8,9 +8,18 @@ class RegistrationViewTest(TestCase):
     fixtures = ['user_tests.json']
 
     def setUp(self):
+        data = {
+            'username': 'tester',
+            'password': '123456',
+            'repeat_password': '123456',
+            'tan': '124',
+            'question': 2,
+            'answer': 'cat'
+        }
         self.url = reverse('register')
         self.successful_url = reverse('login')
         self.response_get = self.client.get(self.url)
+        self.response_post = self.client.post(self.url, data, follow=True)
 
     def test_fixtures(self):
         tan = models.TANs.objects.get(id=1)
@@ -32,14 +41,4 @@ class RegistrationViewTest(TestCase):
         self.assertIsInstance(form, forms.RegisterForm)
 
     def test_redirection(self):
-        data = {
-            'username': 'tester',
-            'password': '123456',
-            'repeat_password': '123456',
-            'tan': '124',
-            'question': 2,
-            'answer': 'cat'
-        }
-
-        response = self.client.post(self.url, data, follow=True)
-        self.assertRedirects(response, self.successful_url, status_code=302, target_status_code=200)
+        self.assertRedirects(self.response_post, self.successful_url, status_code=302, target_status_code=200)
