@@ -52,6 +52,7 @@ class RegistrationView(View):
             security_answer = form.cleaned_data['answer']
 
             check.authenticated = True
+            check.save()
             user = Users()
             user.username = username
             user.password = password
