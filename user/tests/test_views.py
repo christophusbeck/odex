@@ -21,10 +21,12 @@ class RegistrationViewTest(TestCase):
         self.response_get = self.client.get(self.url)
         self.response_post = self.client.post(self.url, data, follow=True)
 
+    '''--------------------------- Test Fixture Loading ---------------------------'''
     def test_fixtures(self):
         tan = models.TANs.objects.get(id=1)
         self.assertEqual(tan.tan, '123')
 
+    '''---------------------------   Basic URL tests    ---------------------------'''
     def test_page_status_code(self):
         self.assertEqual(self.response_get.status_code, 200)
 
@@ -40,6 +42,7 @@ class RegistrationViewTest(TestCase):
         form = self.response_get.context.get('form')
         self.assertIsInstance(form, forms.RegisterForm)
 
+    '''--------------------------- Successful Registration ---------------------------'''
     def test_redirection(self):
         self.assertRedirects(self.response_post, self.successful_url, status_code=302, target_status_code=200)
 
