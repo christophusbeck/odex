@@ -85,3 +85,16 @@ class RegistrationViewTest(TestCase):
         response = self.client.post(self.url, data)
         form = response.context.get('form')
         self.assertEqual(str(form.errors['tan'][0]), "tan is used")
+
+    def test_invalid_tan(self):
+        data = {
+            'username': 'new user',
+            'password': '123456',
+            'repeat_password': '123456',
+            'tan': '321',
+            'question': 2,
+            'answer': 'cat'
+        }
+        response = self.client.post(self.url, data)
+        form = response.context.get('form')
+        self.assertEqual(str(form.errors['tan'][0]), "invalid tan")
