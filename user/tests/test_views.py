@@ -48,3 +48,7 @@ class RegistrationViewTest(TestCase):
 
     def test_user_creation(self):
         self.assertTrue(models.Users.objects.filter(username='tester').exists())
+
+    def test_tan_authenticated(self):
+        tan = models.TANs.objects.filter(tan='124').first()
+        self.assertTrue(tan.authenticated)
