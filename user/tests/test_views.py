@@ -52,3 +52,8 @@ class RegistrationViewTest(TestCase):
     def test_tan_authenticated(self):
         tan = models.TANs.objects.filter(tan='124').first()
         self.assertTrue(tan.authenticated)
+
+    def test_security_answer(self):
+        user = models.Users.objects.filter(username='tester').first()
+        answer = models.SecurityAnswers.objects.filter(user=user).first()
+        self.assertEqual(answer.answer, 'cat')
