@@ -1,15 +1,15 @@
 import os
 import random
 import re
-import unittest
+from django.test import TestCase
 from tools import odm_handling
 import numpy as np
 
-class Test_odm_handling(unittest.TestCase):
+
+class Test_odm_handling(TestCase):
 
     def setup(self):
         pass
-
 
     def test_get_array_from_csv_data(self):
         pass
@@ -121,19 +121,18 @@ class Test_odm_handling(unittest.TestCase):
             self.assertEqual([orig_val], subset[i])
             i += 1
 
-
     def test_operate_and_on_arrays(self):
         pass
 
     def test_operate_or_on_arrays(self):
-        #or_array_1 = np.random.random_integers(0, 2, 100)
-        #or_array_2 = np.random.random_integers(0, 2, 100)
-        #proba_1 = [[0], [0]] * 100
-        #proba_2 = [[0], [0]] * 100
-        #(or_array_result, new_proba) = odm_handling.operate_or_on_arrays(or_array_1, proba_1, or_array_2, proba_2)
+        # or_array_1 = np.random.random_integers(0, 2, 100)
+        # or_array_2 = np.random.random_integers(0, 2, 100)
+        # proba_1 = [[0], [0]] * 100
+        # proba_2 = [[0], [0]] * 100
+        # (or_array_result, new_proba) = odm_handling.operate_or_on_arrays(or_array_1, proba_1, or_array_2, proba_2)
 
-        #for (a, b, c) in (or_array_1, or_array_2, or_array_result):
-            #self.assertEqual(c, a or b)
+        # for (a, b, c) in (or_array_1, or_array_2, or_array_result):
+        # self.assertEqual(c, a or b)
         pass
 
     def test_csv_write_and_read(self):
