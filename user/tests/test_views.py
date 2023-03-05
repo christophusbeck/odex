@@ -137,3 +137,13 @@ class ResetPasswordViewTest(TestCase):
         response = self.client.get(self.url, data)
         form = response.context.get('initial_form')
         self.assertEqual(str(form.errors['username'][0]), "This user does not exist")
+
+    '''--------------------------- Username exists ---------------------------'''
+
+    def test_existed_username(self):
+        data = {'username': 'tester1'}
+        response = self.client.get(self.url, data)
+        initial_form = response.context.get('initial_form')
+        form = response.context.get('form')
+        self.assertIsInstance(initial_form, forms.InitialResetForm)
+        self.assertIsInstance(form, forms.ResetPasswordForm)
