@@ -42,3 +42,6 @@ class RegistrationViewTest(TestCase):
 
     def test_redirection(self):
         self.assertRedirects(self.response_post, self.successful_url, status_code=302, target_status_code=200)
+
+    def test_user_creation(self):
+        self.assertTrue(models.Users.objects.filter(username='tester').exists())
