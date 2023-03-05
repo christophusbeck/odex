@@ -98,3 +98,36 @@ class RegistrationViewTest(TestCase):
         response = self.client.post(self.url, data)
         form = response.context.get('form')
         self.assertEqual(str(form.errors['tan'][0]), "invalid tan")
+
+
+class ResetPasswordViewTest(TestCase):
+    fixtures = ['user_tests.json']
+
+    def setUp(self):
+        self.url = reverse('reset_password')
+        self.successful_url = reverse('login')
+        self.response = self.client.get(self.url)
+
+    '''--------------------------- Test Fixture Loading ---------------------------'''
+
+    def test_fixtures(self):
+        user = models.Users.objects.get(id=1)
+        self.assertEqual(user.username, 'tester1')
+
+    '''---------------------------   Basic URL tests    ---------------------------'''
+
+    def test_page_status_code(self):
+        self.assertEqual(self.response.status_code, 200)
+
+    def test_register_url_resolves_registration_view(self):
+        view = resolve('/resetpassword/')
+        self.assertEqual(view.func.view_class, views.ResetPasswordView)
+        # alternative: self.assertEqual(view.func.__name__, views.RegistrationView.as_view().__name__)
+
+    def test_csrf(self):
+        self.assertContains(self.response, 'csrfmiddlewaretoken')
+
+    def test_contains_initial_form(self):
+        form = self.response.context.get('initial_form')
+        self.assertIsInstance(form, forms.InitialResetForm)
+
