@@ -3,7 +3,7 @@ from user.models import Users,SecurityQuestions
 
 class UsersModelTest(TestCase):
     @classmethod
-    def setUp(self):
+    def setUpTestData(cls):
         Users.objects.create(username='tester', password='123')
 
     def test_username_max_length(self):
@@ -29,20 +29,19 @@ class UsersModelTest(TestCase):
         ret = Users.objects.filter(username='tester')
         self.assertEquals(len(ret), 0)
 
-    # def test_update_username(self):
-    #     user = Users.objects.get(username='tester')
-    #     user.username = 'tester2'
-    #     ret = Users.objects.get(username='tester2')
-    #     self.assertEquals(ret.username, 'tester2')
+    def test_update_username(self):
+        user = Users.objects.get(username='tester')
+        user.username = "tester1"
+        ret = Users.objects.get(username='tester1')
+        self.assertEquals(ret.username, 'tester1')
 
-    # def test_update_password(self):
-    #     user = Users.objects.get(username='tester')
-    #     user.password = '123456'
-    #     ret = Users.objects.get(username='tester')
-    #     self.assertEquals(ret.password, '123456')
+    def test_update_password(self):
+        user = Users.objects.get(username='tester')
+        user.password = "123456"
+        ret = Users.objects.get(username='tester')
+        self.assertEquals(ret.password, '123456')
 
 class SecurityQuestionsModelTest(TestCase):
-    @classmethod
     def setUpTestData(cls):
         SecurityQuestions.objects.create(question='What is your favorite movie?')
 
