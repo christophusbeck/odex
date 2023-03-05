@@ -57,3 +57,9 @@ class RegistrationViewTest(TestCase):
         user = models.Users.objects.filter(username='tester').first()
         answer = models.SecurityAnswers.objects.filter(user=user).first()
         self.assertEqual(answer.answer, 'cat')
+
+    def test_security_question(self):
+        user = models.Users.objects.filter(username='tester').first()
+        answer = models.SecurityAnswers.objects.filter(user=user).first()
+        question = models.SecurityQuestions.objects.get(id=answer.question.id)
+        self.assertEqual(question.id, 2)
