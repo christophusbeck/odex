@@ -3,6 +3,7 @@ import random
 import re
 import unittest
 
+import pyod.models.abod
 from django.test import TestCase
 from tools import odm_handling
 import numpy as np
@@ -108,6 +109,7 @@ class Test_odm_handling(TestCase):
         odm_name = odm_name.split(".")[3]
 
         self.assertEqual(pick, odm_handling.match_odm_by_name(odm_name))
+        self.assertEqual(pyod.models.abod.ABOD, odm_handling.match_odm_by_name("give me the default option"))
 
     def test_calculate_confusion_matrix(self):
         pred = np.random.randint(0, 2, 100)
