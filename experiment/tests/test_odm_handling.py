@@ -214,6 +214,16 @@ class Test_odm_handling(TestCase):
         self.assertEqual(write_data_str, read_data)
         os.remove(path)
 
+    def test_picture_ROC_curve(self):
+        gt = np.random.random_integers(0, 1, 100)
+        path = "roc.png"
+        prob = []
+        for i in range(100):
+            p = np.random.random()
+            prob.append([p, 1 - p])
+        odm_handling.picture_ROC_curve(gt, prob, path)
+        self.assertTrue(os.path.exists(path))
+        os.remove(path)
 
 if __name__ == '__main__':
     unittest.main()
