@@ -137,15 +137,22 @@ class Test_odm_handling(TestCase):
         pass
 
     def test_operate_or_on_arrays(self):
-        # or_array_1 = np.random.random_integers(0, 2, 100)
-        # or_array_2 = np.random.random_integers(0, 2, 100)
-        # proba_1 = [[0], [0]] * 100
-        # proba_2 = [[0], [0]] * 100
-        # (or_array_result, new_proba) = odm_handling.operate_or_on_arrays(or_array_1, proba_1, or_array_2, proba_2)
+        or_array_1 = np.random.random_integers(0, 1, 100)
+        or_array_2 = np.random.random_integers(0, 1, 100)
+        proba_1 = []
+        proba_2 = []
+        for i in range(100):
+            p1 = np.random.random()
+            proba_1.append([p1, 1 - p1])
+            p2 = np.random.random()
+            proba_2.append([p2, 1 - p2])
 
-        # for (a, b, c) in (or_array_1, or_array_2, or_array_result):
-        # self.assertEqual(c, a or b)
-        pass
+        (or_array_result, new_proba) = odm_handling.operate_or_on_arrays(or_array_1, proba_1, or_array_2, proba_2)
+
+        for i in range(100):
+            self.assertEqual(or_array_result[i], or_array_1[i] or or_array_2[i])
+            self.assertEqual(new_proba[i][0], min(proba_1[i][0], proba_2[i][0]))
+            self.assertEqual(new_proba[i][1], max(proba_1[i][1], proba_2[i][1]))
 
     def test_csv_write_and_read(self):
         path = "unit_test_csv.csv"
