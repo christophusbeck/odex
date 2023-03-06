@@ -53,7 +53,17 @@ class Test_odm_handling(TestCase):
         self.assertTrue(valid_input_and_or)
 
     def test_subspace_selection_parser(self):
-        pass
+        subspace_1 = "{1,2}"
+        subspace_2 = "{1,3}"
+        subspace_3 = "{2,3}"
+
+        parsing_1 = odm_handling.subspace_selection_parser(subspace_1)
+        parsing_2 = odm_handling.subspace_selection_parser(subspace_1 + "|" + subspace_2)
+        parsing_3 = odm_handling.subspace_selection_parser(subspace_1 + "|" + subspace_2 + "&" + subspace_3)
+
+        self.assertEquals(parsing_1, [[[0, 1]]])
+        self.assertEquals(parsing_2, [[[0, 1]], [[0, 2]]])
+        self.assertEquals(parsing_3, [[[0, 1]], [[0, 2], [1, 2]]])
 
     def test_get_head_indexing(self):
 
