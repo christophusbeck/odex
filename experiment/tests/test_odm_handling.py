@@ -1,3 +1,4 @@
+import inspect
 import os
 import random
 import re
@@ -98,6 +99,16 @@ class Test_odm_handling(TestCase):
 
     def test_get_list_of_odm(self):
         self.assertTrue(len(odm_handling.get_list_of_odm()) > 0)
+
+    def test_static_odms_dic(self):
+        odm_dict = odm_handling.static_odms_dic()
+        pick = random.choice(list(odm_handling.get_odm_dict().values()))
+        odm_name = str(pick)
+        odm_name = odm_name.replace("<class '", "")
+        odm_name = odm_name.replace("'>", "")
+        odm_name = odm_name.split(".")[3]
+
+        self.assertEqual(odm_handling.get_def_value_dict(pick), odm_dict[odm_name])
 
     def test_match_odm_by_name(self):
         odm_dict = odm_handling.get_odm_dict()
