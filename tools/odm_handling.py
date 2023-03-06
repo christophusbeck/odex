@@ -226,11 +226,11 @@ def operate_and_on_arrays(array_1, proba_1, array_2, proba_2):
         if array_1[i] == 1 and array_2[i] == 1:
             result.append(1)
             new_probability.append([max(proba_1[i][0], proba_2[i][0]), min(proba_1[i][1], proba_2[i][1])])
-            print([max(proba_1[i][0], proba_2[i][0]), min(proba_1[i][1], proba_2[i][1])])
+            #print([max(proba_1[i][0], proba_2[i][0]), min(proba_1[i][1], proba_2[i][1])])
         else:
             result.append(0)
             new_probability.append([max(proba_1[i][0], proba_2[i][0]), min(proba_1[i][1], proba_2[i][1])])
-            print([max(proba_1[i][0], proba_2[i][0]), min(proba_1[i][1], proba_2[i][1])])
+            #print([max(proba_1[i][0], proba_2[i][0]), min(proba_1[i][1], proba_2[i][1])])
         i += 1
     return result, new_probability
 
