@@ -14,7 +14,10 @@ class Test_odm_handling(TestCase):
         pass
 
     def test_get_array_from_csv_data(self):
-        pass
+        data = np.random.random((100, 100))
+        data_list = list(data)
+        returned_data = odm_handling.get_array_from_csv_data(data_list)
+        self.assertTrue((data == returned_data).all())
 
     def test_subspace_exclusion_check(self):
         max_col = random.randint(2, 10)
