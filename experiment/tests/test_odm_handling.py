@@ -19,6 +19,10 @@ class Test_odm_handling(TestCase):
         returned_data = odm_handling.get_array_from_csv_data(data_list)
         self.assertTrue((data == returned_data).all())
 
+        corrupt_data_list = [[1.0, 1.0], [2.0, "eeee"]]
+        returned_corrupt = odm_handling.get_array_from_csv_data(corrupt_data_list)
+        self.assertTrue(([[1.0, 1.0], [2.0]] == returned_corrupt).all())
+
     def test_subspace_exclusion_check(self):
         max_col = random.randint(2, 10)
 
