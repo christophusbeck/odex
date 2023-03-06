@@ -107,8 +107,8 @@ class Test_odm_handling(TestCase):
         self.assertEqual(pick, odm_dict[odm_name])
 
     def test_calculate_confusion_matrix(self):
-        pred = np.random.randint(0, 1, 100)
-        actual = pred = np.random.randint(0, 1, 100)
+        pred = np.random.randint(0, 2, 100)
+        actual = np.random.randint(0, 2, 100)
 
         (tp_test, fn_test, fp_test, tn_test) = odm_handling.calculate_confusion_matrix(pred, actual)
 
