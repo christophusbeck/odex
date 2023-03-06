@@ -33,12 +33,15 @@ class Test_odm_handling(TestCase):
         exclude_negative = odm_handling.subspace_exclusion_check("-1", max_col)
         exclude_beyond_max = odm_handling.subspace_exclusion_check(str(max_col + 1), max_col)
         valid_picks_list = odm_handling.subspace_exclusion_check(str(max_col - 1), max_col)
+        exclude_too_high = odm_handling.subspace_exclusion_check("1,2,3", 2)
+        print(exclude_too_high)
 
         self.assertFalse(empty_string)
         self.assertFalse(nonsensical_string)
         self.assertFalse(exclude_negative)
         self.assertFalse(exclude_beyond_max)
         self.assertTrue(len(valid_picks_list) > 0)
+        self.assertFalse(exclude_too_high)
 
     def test_subspace_combination_check(self):
         max_col = random.randint(2, 10)
