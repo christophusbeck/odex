@@ -95,6 +95,9 @@ class Test_odm_handling(TestCase):
         odm_dict = odm_handling.get_odm_dict()
         self.assertTrue(len(odm_dict) > 0)
 
+    def test_get_list_of_odm(self):
+        self.assertTrue(len(odm_handling.get_list_of_odm()) > 0)
+
     def test_match_odm_by_name(self):
         odm_dict = odm_handling.get_odm_dict()
         pick = random.choice(list(odm_dict.values()))
