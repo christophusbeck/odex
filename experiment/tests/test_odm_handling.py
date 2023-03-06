@@ -134,7 +134,22 @@ class Test_odm_handling(TestCase):
             i += 1
 
     def test_operate_and_on_arrays(self):
-        pass
+        and_array_1 = np.random.random_integers(0, 1, 100)
+        and_array_2 = np.random.random_integers(0, 1, 100)
+        proba_1 = []
+        proba_2 = []
+        for i in range(100):
+            p1 = np.random.random()
+            proba_1.append([p1, 1 - p1])
+            p2 = np.random.random()
+            proba_2.append([p2, 1 - p2])
+
+        (and_array_result, new_proba) = odm_handling.operate_and_on_arrays(and_array_1, proba_1, and_array_2, proba_2)
+
+        for i in range(100):
+            self.assertEqual(and_array_result[i], and_array_1[i] and and_array_2[i])
+            self.assertEqual(new_proba[i][0], max(proba_1[i][0], proba_2[i][0]))
+            self.assertEqual(new_proba[i][1], min(proba_1[i][1], proba_2[i][1]))
 
     def test_operate_or_on_arrays(self):
         or_array_1 = np.random.random_integers(0, 1, 100)
