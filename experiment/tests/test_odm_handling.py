@@ -104,7 +104,7 @@ class Test_odm_handling(TestCase):
         odm_name = odm_name.replace("'>", "")
         odm_name = odm_name.split(".")[3]
 
-        self.assertEqual(pick, odm_dict[odm_name])
+        self.assertEqual(pick, odm_handling.match_odm_by_name(odm_name))
 
     def test_calculate_confusion_matrix(self):
         pred = np.random.randint(0, 2, 100)
