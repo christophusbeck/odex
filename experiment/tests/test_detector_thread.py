@@ -15,16 +15,33 @@ from tools import odm_handling
 
 
 class Test_detector_thread(TestCase):
+    path_media = "media\\"
+    path_input = "input.csv"
+    path_gt = "gt.csv"
+    path_gen = "gen.csv"
 
     def setup(self):
+        training_data, test_data, train_gt, test_gt = pyod.utils.data.generate_data(400, 100, 3, 0.1)
+        odm_handling.write_data_to_csv(self.path_media + self.path_input, training_data)
+
+        gt_list = []
+        for row in train_gt:
+            gt_list.append([row])
+
+        odm_handling.write_data_to_csv(self.path_media + self.path_gt, gt_list)
+        odm_handling.write_data_to_csv(self.path_media + self.path_gen, test_data)
         pass
 
+    def tearDown(self):
+        if os.path.exists(self.path_media + self.path_input):
+            os.remove(self.path_media + self.path_input)
+        if os.path.exists(self.path_media + self.path_gt):
+            os.remove(self.path_media + self.path_gt)
+        if os.path.exists(self.path_media + self.path_gen):
+            os.remove(self.path_media + self.path_gen)
 
     def test_run_only_od(self):
-        path_media = "media\\"
-        path_input = "input.csv"
-        path_gt = "gr.csv"
-        path_gen = "gen.csv"
+
         user = models.Users.objects.create(id=0)
 
         exp = models.PendingExperiments.objects.create(user=user, id=0)
@@ -34,25 +51,13 @@ class Test_detector_thread(TestCase):
         exp.set_para(odm_handling.get_def_value_dict(exp.odm).copy())
         exp.operation = "1"
 
-        training_data, test_data, train_gt, test_gt = pyod.utils.data.generate_data(400, 100, 3, 0.1)
-        odm_handling.write_data_to_csv(path_media + path_input, training_data)
-
-        gt_list = []
-        for row in train_gt:
-            gt_list.append([row])
-
-        odm_handling.write_data_to_csv(path_media + path_gt, gt_list)
-        odm_handling.write_data_to_csv(path_media + path_gen, test_data)
-
-        exp.main_file.name = path_input
+        exp.main_file.name = self.path_input
         exp.save()
 
         det_thread = detector_thread.DetectorThread(id=0)
         det_thread.run()
 
-        os.remove(path_media + path_input)
-        #os.remove(path_media + path_gt)
-        os.remove(path_media + path_gen)
+
 
 
 
