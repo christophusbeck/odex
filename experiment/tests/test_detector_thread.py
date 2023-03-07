@@ -30,9 +30,9 @@ class Test_detector_thread(TestCase):
 
         odm_handling.write_data_to_csv(self.path_media + self.path_gt, gt_list)
         odm_handling.write_data_to_csv(self.path_media + self.path_gen, test_data)
-        pass
 
     def tearDown(self):
+        models.Experiments.objects.all().delete()
         if os.path.exists(self.path_media + self.path_input):
             os.remove(self.path_media + self.path_input)
         if os.path.exists(self.path_media + self.path_gt):
@@ -41,12 +41,10 @@ class Test_detector_thread(TestCase):
             os.remove(self.path_media + self.path_gen)
 
     def test_run_only_od(self):
-
         user = models.Users.objects.create(id=0)
-
         exp = models.PendingExperiments.objects.create(user=user, id=0)
         exp.id = 0
-        odm_pick = "ABOD" #random.choice(list(odm_handling.get_odm_dict().keys()))
+        odm_pick = "ABOD"  # random.choice(list(odm_handling.get_odm_dict().keys()))
         exp.odm = odm_handling.match_odm_by_name(odm_pick)
         exp.set_para(odm_handling.get_def_value_dict(exp.odm).copy())
         exp.operation = "1"
@@ -56,14 +54,6 @@ class Test_detector_thread(TestCase):
 
         det_thread = detector_thread.DetectorThread(id=0)
         det_thread.run()
-
-
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
