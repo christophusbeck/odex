@@ -93,7 +93,10 @@ class Test_detector_thread(TestCase):
         self.__run_detector_thread(False, False, "3")
 
     def test_run_with_gt(self):
-        pass
+        self.__run_detector_thread(True, False, "1")
+        self.__run_detector_thread(True, False, "2")
+        self.__run_detector_thread(True, False, "3")
+
 
 if __name__ == '__main__':
     unittest.main()
