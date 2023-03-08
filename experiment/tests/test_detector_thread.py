@@ -19,6 +19,7 @@ class Test_detector_thread(TestCase):
     path_input = "input.csv"
     path_gt = "gt.csv"
     path_gen = "gen.csv"
+    path_outputs = "media/user_0/0/"
 
     def setup(self):
         pass
@@ -55,6 +56,7 @@ class Test_detector_thread(TestCase):
         exp.run_name = "test_exp"
 
         exp.main_file.name = self.path_input
+        exp.file_name = self.path_input
         exp.save()
 
         #odm_handling.write_data_to_csv("media/user_0/0/result_" +self.path_input, [[]])
@@ -62,9 +64,8 @@ class Test_detector_thread(TestCase):
         det_thread = detector_thread.DetectorThread(id=0)
         det_thread.run()
 
-
-
-
+        self.assertTrue(os.path.exists(self.path_outputs + "metrics_" + self.path_input))
+        self.assertTrue(os.path.exists(self.path_outputs + "result_" + self.path_input))
 
 if __name__ == '__main__':
     unittest.main()
