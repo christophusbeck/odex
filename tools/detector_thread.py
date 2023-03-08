@@ -114,7 +114,7 @@ class DetectorThread(threading.Thread):
                 metrics["Number of additional rows"] = len(user_gen_data)
                 metrics["Number of entities after merging"] = len(merged_data)
 
-                if exp_operation_option == 3:
+                if exp_operation_option == "3":
                     or_prediction = list([0] * len(user_data))
                     or_probability = list([[1, 0]] * len(user_data))
                     for or_selection in subspace_combination:
