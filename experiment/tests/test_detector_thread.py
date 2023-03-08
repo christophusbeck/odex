@@ -50,7 +50,12 @@ class Test_detector_thread(TestCase):
         exp.odm = odm_handling.match_odm_by_name(odm_pick)
         print(exp.odm)
         exp.set_para({})
-        exp.operation = operation_option
+        exp.operation = "1"
+        if operation_option == "2":
+            exp.operation = "1"
+        if operation_option == "3":
+            exp.operation = "{1,2}|{1,3}&{2,3}"
+
         exp.operation_option = operation_option
         exp.start_time = timezone.now()
         exp.run_name = "test_exp"
@@ -66,17 +71,26 @@ class Test_detector_thread(TestCase):
 
         det_thread = detector_thread.DetectorThread(id=0)
         det_thread.run()
+
         self.assertTrue(os.path.exists(self.path_outputs + "metrics_" + self.path_input))
         self.assertTrue(os.path.exists(self.path_outputs + "result_" + self.path_input))
+        path_gen_res = self.path_outputs + "result_" + self.path_input.replace(".csv", "") + "_with_addition.csv"
         if use_gen:
-            self.assertTrue(os.path.exists(self.path_outputs + "result_" +
-                                           self.path_input.replace(".csv") + "_with_addition.csv"))
+            self.assertTrue(os.path.exists(path_gen_res))
 
-        os.remove(self.path_outputs + "metrics_" + self.path_input)
-        os.remove(self.path_outputs + "result_" + self.path_input)
+        models.Users.objects.all().delete()
+        models.PendingExperiments.objects.all().delete()
+
+        #os.remove(self.path_outputs + "metrics_" + self.path_input)
+        #os.remove(self.path_outputs + "result_" + self.path_input)
+        #os.remove(path_gen_res)
+        #os.remove(self.path_media + self.path_gt)
+        #os.remove(self.path_media + self.path_gen)
 
     def test_run_only_od(self):
         self.__run_detector_thread(False, False, "1")
+        self.__run_detector_thread(False, False, "2")
+        self.__run_detector_thread(False, False, "3")
 
     def test_run_with_gt(self):
         pass
