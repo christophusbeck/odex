@@ -27,15 +27,21 @@ class Test_detector_thread(TestCase):
         pass
 
     def test_run_only_od(self):
-        training_data, test_data, train_gt, test_gt = pyod.utils.data.generate_data(400, 100, 3, 0.1)
-        odm_handling.write_data_to_csv(self.path_media + self.path_input, training_data)
+        training_data, test_data, train_gt, test_gt = pyod.utils.data.generate_data(401, 100, 3, 0.1)
+
 
         gt_list = []
         for row in train_gt:
             gt_list.append([row])
 
+        odm_handling.write_data_to_csv(self.path_media + self.path_input, training_data)
         odm_handling.write_data_to_csv(self.path_media + self.path_gt, gt_list)
         odm_handling.write_data_to_csv(self.path_media + self.path_gen, test_data)
+        if not os.path.exists("media/user_0/"):
+            os.mkdir("media/user_0/")
+        if not os.path.exists("media/user_0/0/"):
+            os.mkdir("media/user_0/0/")
+
 
         user = models.Users.objects.create(id=0)
         exp = models.PendingExperiments.objects.create(user=user, id=0)
