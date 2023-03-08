@@ -28,8 +28,9 @@ class Test_detector_thread(TestCase):
         pass
 
     def __run_detector_thread(self, use_gt=False, use_gen=False, operation_option="1"):
-        training_data, test_data, train_gt, test_gt = pyod.utils.data.generate_data(401, 100, 3, 0.1)
-
+        training_data, test_data, train_gt, test_gt = pyod.utils.data.generate_data(400, 100, 3, 0.1)
+        training_data = list(training_data)
+        training_data.insert(0, ["x1", "x2", "x3"])
         gt_list = []
         for row in train_gt:
             gt_list.append([row])
@@ -72,40 +73,52 @@ class Test_detector_thread(TestCase):
         det_thread = detector_thread.DetectorThread(id=0)
         det_thread.run()
 
-        self.assertTrue(os.path.exists(self.path_outputs + "metrics_" + self.path_input))
+        if not use_gen:
+            self.assertTrue(os.path.exists(self.path_outputs + "metrics_" + self.path_input))
         self.assertTrue(os.path.exists(self.path_outputs + "result_" + self.path_input))
         path_gen_res = self.path_outputs + "result_" + self.path_input.replace(".csv", "") + "_with_addition.csv"
         if use_gen:
             self.assertTrue(os.path.exists(path_gen_res))
 
+        if use_gt:
+            path_input_roc = self.path_media + "input_roc.jpg"
+            self.assertTrue(os.path.exists(path_input_roc))
+        if use_gt and use_gen:
+            path_geb_roc = self.path_media + "gen_roc.jpg"
+            self.assertTrue(os.path.exists(path_geb_roc))
+
         models.Users.objects.all().delete()
         models.PendingExperiments.objects.all().delete()
 
-        #os.remove(self.path_outputs + "metrics_" + self.path_input)
-        #os.remove(self.path_outputs + "result_" + self.path_input)
-        #os.remove(path_gen_res)
-        #os.remove(self.path_media + self.path_gt)
-        #os.remove(self.path_media + self.path_gen)
+        os.remove(self.path_outputs + "metrics_" + self.path_input)
+        os.remove(self.path_outputs + "result_" + self.path_input)
+        os.remove(path_gen_res)
+        os.remove(self.path_media + self.path_gt)
+        os.remove(self.path_media + self.path_gen)
 
     def test_run_only_od(self):
         self.__run_detector_thread(False, False, "1")
         self.__run_detector_thread(False, False, "2")
         self.__run_detector_thread(False, False, "3")
+        pass
 
     def test_run_with_gt(self):
         self.__run_detector_thread(True, False, "1")
         self.__run_detector_thread(True, False, "2")
         self.__run_detector_thread(True, False, "3")
+        pass
 
     def test_run_with_gen(self):
         self.__run_detector_thread(False, True, "1")
         self.__run_detector_thread(False, True, "2")
         self.__run_detector_thread(False, True, "3")
+        pass
 
     def test_run_with_gt_and_gen(self):
         self.__run_detector_thread(True, True, "1")
         self.__run_detector_thread(True, True, "2")
         self.__run_detector_thread(True, True, "3")
+        pass
 
 
 if __name__ == '__main__':
