@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.urls import reverse, resolve
 
 from user import views, forms, models
@@ -208,6 +208,69 @@ class LoginViewTest(TestCase):
         self.assertEqual(str(form.errors['password'][0]), "password error")
 
 
+class ChangeNameViewTest(TestCase):
+    fixtures = ['user_tests.json']
+
+    def setUp(self):
+        self.client = Client()
+        self.client.login(username='tester1', password='123')
+        data = {
+            'username': 'new_tester',
+        }
+        self.url = reverse('change_name')
+        self.successful_url = reverse('main')
+        self.response_get = self.client.get(self.url)
+        self.response_post = self.client.post(self.url, data, follow=True)
+
+    '''--------------------------- Test Fixture Loading ---------------------------'''
+
+    def test_fixtures(self):
+        user = models.Users.objects.get(id=2)
+        self.assertEqual(user.username, 'tester2')
+
+    '''---------------------------   Basic URL tests    ---------------------------'''
+
+    def test_page_status_code(self):
+        self.assertEqual(self.response_get.status_code, 200)
+
+    def test_register_url_resolves_registration_view(self):
+        view = resolve('/changename/')
+        self.assertEqual(view.func.view_class, views.ChangeNameView)
+
+    def test_csrf(self):
+        self.assertContains(self.response, 'csrfmiddlewaretoken')
+
+    def test_contains_initial_form(self):
+        form = self.response.context.get('form')
+        self.assertIsInstance(form, forms.ChangeNameForm)
+
+    '''--------------------------- Successful ChangeName ---------------------------'''
+
+    def test_redirection(self):
+        self.assertRedirects(self.response_post, self.successful_url, status_code=302, target_status_code=200)
+
+    def test_user_change_name(self):
+        self.assertTrue(models.Users.objects.filter(username='new_tester').exists())
+        self.assertTrue(not models.Users.objects.filter(username='tester1').exists())
+
+    '''--------------------------- Failed ChangeName ---------------------------'''
+
+    def test_empty_form(self):
+        response = self.client.post(self.url, {})
+        self.assertEqual(response.status_code, 200)
+
+    def test_already_existed_username(self):
+        data = {
+            'username': 'tester2',
+        }
+        response = self.client.post(self.url, data)
+        form = response.context.get('form')
+        self.assertEqual(str(form.errors['username'][0]), "Username already exists")
+
+
+
+
+
 class AboutUsViewTest(TestCase):
     def setUp(self):
         self.url = reverse('aboutus')
@@ -219,4 +282,3 @@ class AboutUsViewTest(TestCase):
     def test_register_url_resolves_registration_view(self):
         view = resolve('/aboutus/')
         self.assertEqual(view.func.view_class, views.AboutUsView)
-
