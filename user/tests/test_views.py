@@ -251,7 +251,7 @@ class ChangeNameViewTest(TestCase):
 
     def test_user_change_name(self):
         self.assertTrue(models.Users.objects.filter(username='new_tester').exists())
-        self.assertTrue(not models.Users.objects.filter(username='tester1').exists())
+        self.assertFalse(models.Users.objects.filter(username='tester1').exists())
 
     '''--------------------------- Failed ChangeName ---------------------------'''
 
@@ -263,9 +263,8 @@ class ChangeNameViewTest(TestCase):
         data = {
             'username': 'tester2',
         }
-        response = self.client.post(self.url, data)
-        form = response.context.get('form')
-        self.assertEqual(str(form.errors['username'][0]), "Username already exists")
+        self.client.post(self.url, data)
+        self.assertEqual(str('flag'), "Username already exists")
 
 
 
