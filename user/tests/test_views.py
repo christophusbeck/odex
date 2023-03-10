@@ -267,13 +267,10 @@ class ChangeNameViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_already_existed_username(self):
-        data = {
-            'username': 'tester1',
-        }
+        data = {'username': 'tester1'}
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 200)
-        # data = json.loads(response.content)
-        # self.assertEqual(data['flag'], False)
+
 
 
 class AboutUsViewTest(TestCase):
