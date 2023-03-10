@@ -272,7 +272,6 @@ class ChangeNameViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-
 class AboutUsViewTest(TestCase):
     def setUp(self):
         self.url = reverse('aboutus')
@@ -284,3 +283,10 @@ class AboutUsViewTest(TestCase):
     def test_register_url_resolves_registration_view(self):
         view = resolve('/aboutus/')
         self.assertEqual(view.func.view_class, views.AboutUsView)
+
+    def test_correct_template(self):
+        self.assertTemplateUsed(self.response, 'aboutus.html')
+
+
+
+
