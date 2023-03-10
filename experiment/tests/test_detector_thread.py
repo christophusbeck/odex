@@ -35,13 +35,17 @@ class Test_detector_thread(TestCase):
         for row in train_gt:
             gt_list.append([row])
 
-        odm_handling.write_data_to_csv(self.path_media + self.path_input, training_data)
-        odm_handling.write_data_to_csv(self.path_media + self.path_gt, gt_list)
-        odm_handling.write_data_to_csv(self.path_media + self.path_gen, test_data)
+        if not os.path.exists("media/"):
+            os.mkdir("media/")
         if not os.path.exists("media/user_0/"):
             os.mkdir("media/user_0/")
         if not os.path.exists("media/user_0/0/"):
             os.mkdir("media/user_0/0/")
+
+        odm_handling.write_data_to_csv(self.path_media + self.path_input, training_data)
+        odm_handling.write_data_to_csv(self.path_media + self.path_gt, gt_list)
+        odm_handling.write_data_to_csv(self.path_media + self.path_gen, test_data)
+
 
         user = models.Users.objects.create(id=0)
         exp = models.PendingExperiments.objects.create(user=user, id=0)
@@ -66,8 +70,10 @@ class Test_detector_thread(TestCase):
 
         if use_gt:
             exp.ground_truth = self.path_gt
+            exp.has_ground_truth = True
         if use_gen:
             exp.generated_file = self.path_gen
+            exp.has_generated_file = True
         exp.save()
 
         det_thread = detector_thread.DetectorThread(id=0)
@@ -90,11 +96,14 @@ class Test_detector_thread(TestCase):
         models.Users.objects.all().delete()
         models.PendingExperiments.objects.all().delete()
 
-        os.remove(self.path_outputs + "metrics_" + self.path_input)
-        os.remove(self.path_outputs + "result_" + self.path_input)
-        os.remove(path_gen_res)
-        os.remove(self.path_media + self.path_gt)
-        os.remove(self.path_media + self.path_gen)
+        try:
+            os.remove(self.path_outputs + "metrics_" + self.path_input)
+            os.remove(self.path_outputs + "result_" + self.path_input)
+            os.remove(path_gen_res)
+            os.remove(self.path_media + self.path_gt)
+            os.remove(self.path_media + self.path_gen)
+        except Exception as e:
+            pass
 
     def test_run_only_od(self):
         self.__run_detector_thread(False, False, "1")
