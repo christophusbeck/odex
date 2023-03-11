@@ -9,20 +9,11 @@ from user.models import Users
 
 
 class Experiment_state(models.TextChoices):
-    finished = 'finished', _('finished')
-    pending = 'pending', _('pending')
-    editing = 'editing', _('editing')
-    failed = 'failed', _('failed')
+    finished = 'finished', 'finished'
+    pending = 'pending', 'pending'
+    editing = 'editing', 'editing'
+    failed = 'failed', 'failed'
 
-class Pyod_methods(models.TextChoices):
-    abod = 'ABOD', _('Angle-based Outlier Detector')
-    knn = 'KNN', _('k-Nearest Neighbors Detector')
-    '''
-    detection_name  = models.CharField(verbose_name = "detection name", max_length=128)
-    contamination = models.FloatField(verbose_name = "contamination")
-    n_neighbors = models.IntegerField(verbose_name="neighbors")
-    method = models.CharField(verbose_name="experiment name", max_length=128)
-    '''
 
 
 class Experiments(models.Model):
@@ -37,47 +28,64 @@ class Experiments(models.Model):
         max_length=128,
         help_text="please enter a name"
     )
-    file_name = models.CharField(verbose_name="file", max_length=128)
-    state = models.CharField(verbose_name="state", max_length=200, choices=Experiment_state.choices, blank=True, null=True)
-    odm = models.CharField(verbose_name="odm", max_length=128, choices=Pyod_methods.choices, blank=True, null=True)
+    file_name = models.CharField(
+        verbose_name="file",
+        max_length=128
+    )
+    state = models.CharField(
+        verbose_name="state",
+        max_length=200,
+        choices=Experiment_state.choices
+    )
+    odm = models.CharField(
+        verbose_name="odm",
+        max_length=128,
+        blank=True,
+        null=True
+    )
     operation = models.CharField(
         verbose_name="logical formula",
         max_length=128,
         blank=True,
         null=True
     )
-    auxiliary_file_name = models.CharField(
-        verbose_name="file",
-        max_length=128,
+    columns = models.TextField(
         blank=True,
         null=True
     )
-    columns = models.TextField(blank=True, null=True)
-    parameters = models.TextField(blank=True, null=True)
+    parameters = models.TextField(
+        blank=True,
+        null=True
+    )
     created_time = models.DateTimeField(
         verbose_name="created time",
         blank=True,
-        null=True)
+        null=True
+    )
     start_time = models.DateTimeField(
         verbose_name="start time",
         blank=True,
-        null=True)
+        null=True
+    )
     duration = models.DurationField(
         verbose_name="duration of run",
         blank=True,
         null=True
     )
     operation_option = models.CharField(
-        max_length=2,
+        verbose_name="operation option",
+        max_length=1,
         choices=[("1", "All subspaces"), ("2", "All, except"), ("3", "Combination")],
         blank=True,
         null=True
     )
     has_ground_truth = models.BooleanField(
+        verbose_name="if has ground truth",
         blank=True,
         null=True
     )
     has_generated_file = models.BooleanField(
+        verbose_name="if has generated file",
         blank=True,
         null=True
     )
@@ -199,7 +207,6 @@ class FinishedExperiments(Experiments):
         blank=True,
         null=True
     )
-
     roc_path = models.FileField(
         verbose_name="Roc curve",
         upload_to=user_result_path,

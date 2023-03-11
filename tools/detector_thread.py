@@ -218,7 +218,7 @@ class DetectorThread(threading.Thread):
             finished_exp.id = self.id
             finished_exp.run_name = exp.run_name
             finished_exp.file_name = exp.file_name
-            finished_exp.state = "finished"
+            finished_exp.state = models.Experiment_state.finished
             finished_exp.columns = exp.columns
             finished_exp.created_time = exp.created_time
             finished_exp.start_time = exp.start_time
@@ -243,7 +243,15 @@ class DetectorThread(threading.Thread):
 
 
             duration = timezone.now() - exp.start_time
+
+            print("timezone.now(): ", timezone.now())
+            print("exp.start_time: ", exp.start_time)
+            print("duration: ", duration)
+            print("duration.type: ", type(duration))
+            print("start_time.type: ", type(exp.start_time))
+
             finished_exp.duration = duration
+            finished_exp.full_clean()
             finished_exp.save()
 
             os.remove(exp.main_file.path)
@@ -262,11 +270,12 @@ class DetectorThread(threading.Thread):
             print(e)
             print("exp id:", self.id)
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
-            exp.state = 'failed'
+            exp.state = models.Experiment_state.failed
             exp.error = "There are some error related to your entered hyperparameters of odm you seleted. The error message is: " + \
                         str(e) + ". This error message will help you adjust the hyperparameters. " \
                                  "In some cases, it is also possible that there is an error in the file you uploaded. " \
                                  "Please check the column you want to execute to ensure that there are no null values or uncalculated values. "
+            exp.full_clean()
             exp.save()
             print(exp.error)
 

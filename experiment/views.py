@@ -102,17 +102,35 @@ class MainView(View):
             pending = models.PendingExperiments(user=user)
             pending.run_name = form.cleaned_data['run_name']
             pending.file_name = form.files['main_file'].name
-            pending.state = "editing"
+            pending.state = models.Experiment_state.editing
             pending.main_file = form.files['main_file']
             print("form.files['main_file']: ", form.files['main_file'])
+
             try:
                 data = pd.read_csv(pending.main_file)
             except Exception as e:
                 form.add_error('main_file', "Unsupported file, this .csv file has errors")
                 return JsonResponse({"status": False, 'error': form.errors})
-            pending.set_columns(list(data))
-            pending.created_time = timezone.now()
+
+            pending.full_clean()
             pending.save()
+            with open(pending.main_file.path, 'r') as f:
+                reader = csv.reader(f)
+                result = list(reader)
+                first_row = result[1]
+                columns = {}
+                for i in range(len(list(data))):
+                    if not result[0][i]:
+                        continue
+                    columns[list(data)[i]] = first_row[i]
+                pending.set_columns(columns)
+
+            pending.created_time = timezone.now()
+            pending.full_clean()
+            pending.save()
+            print("columns: ", pending.columns)
+            print("timezone.now().type: ", type(timezone.now()))
+            print("pending.created_time.type: ", type(pending.created_time))
             return JsonResponse({"status": True, "id": pending.id})
 
         return JsonResponse({"status": False, 'error': form.errors})
@@ -138,22 +156,22 @@ class Configuration(View):
         form = ConfigForm()
         odms = tools.odm_handling.static_odms_dic()
 
-        if isinstance(columns, list):
-
-            with open(exp.main_file.path, 'r') as f:
-                reader = csv.reader(f)
-                result = list(reader)
-                first_row = result[1]
-                new_columns = {}
-                for i in range(len(columns)):
-                    if not result[0][i]:
-                        continue
-                    new_columns[columns[i]] = first_row[i]
-                exp.set_columns(new_columns)
-                exp.save()
-                columns = new_columns
-
-        print(isinstance(columns, dict))
+        # if isinstance(columns, list):
+        #
+        #     with open(exp.main_file.path, 'r') as f:
+        #         reader = csv.reader(f)
+        #         result = list(reader)
+        #         first_row = result[1]
+        #         new_columns = {}
+        #         for i in range(len(columns)):
+        #             if not result[0][i]:
+        #                 continue
+        #             new_columns[columns[i]] = first_row[i]
+        #         exp.set_columns(new_columns)
+        #         exp.save()
+        #         columns = new_columns
+        #
+        # print(isinstance(columns, dict))
 
         return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms})
 
@@ -169,8 +187,8 @@ class Configuration(View):
         if form.is_valid():
             print("form.cleaned_data: ", form.cleaned_data)
             print("form.files: ", form.files)
-            selected_odm = list(odms.keys())[int(request.POST['odms']) - 1]
-            operation = ""
+            # selected_odm = list(odms.keys())[int(request.POST['odms']) - 1]
+            # operation = ""
 
             if form.cleaned_data['operation_model_options'] == '1':
                 operation = ""
@@ -225,13 +243,13 @@ class Configuration(View):
                         return render(request, self.template_name,
                                       {"exp": exp, "columns": columns, "form": form, "odms": odms})
 
-            exp.odm = form.cleaned_data['odm'] = selected_odm
+            exp.odm = selected_odm
             print("parameters: ", parameters)
             print("parameters_type: ",
                   " parameters_type: ".join([str(type(value)) for key, value in parameters.items()]))
             exp.set_para(parameters)
             exp.operation = operation
-            exp.state = "pending"
+            exp.state = models.Experiment_state.pending
             exp.operation_option = form.cleaned_data['operation_model_options']
             exp.has_ground_truth = 'ground_truth' in form.files
             exp.has_generated_file = 'generated_file' in form.files
@@ -245,6 +263,7 @@ class Configuration(View):
 
             exp.start_time = timezone.now()
 
+            exp.full_clean()
             exp.save()
 
             DetectorThread(exp.id).start()
@@ -264,10 +283,10 @@ class ResultView(View):
         print(columns)
         paras = exp.get_para()
         print("paras: ", paras)
-        if exp.state == "pending":
+        if exp.state == models.Experiment_state.pending:
             exp = models.PendingExperiments.objects.filter(id=request.GET['id']).first()
             return render(request, self.template_name, {"exp": exp, "columns": columns, "paras": paras})
-        elif exp.state == "finished":
+        elif exp.state == models.Experiment_state.finished:
             exp = models.FinishedExperiments.objects.filter(id=request.GET['id']).first()
             metrics = exp.get_metrics()
             detected_num = metrics['Detected Outliers']

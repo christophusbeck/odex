@@ -14,16 +14,16 @@ class CreateForm(BootStrapModelForm):
         model = models.PendingExperiments
         fields = ["run_name", "main_file"]
 
-class ConfigForm(BootStrapModelForm):
+class ConfigForm(BootStrapForm):
 
-    class Meta:
-        model = models.PendingExperiments
-        fields = ['odm', 'auxiliary_file_name', 'generated_file', 'ground_truth']
-        label = {
-            'operation': 'detected subspaces',
-            'generated_file': 'upload an additional data file',
-            'ground_truth': 'upload a ground truth file'
-        }
+    # class Meta:
+    #     model = models.PendingExperiments
+    #     fields = ['odm', 'auxiliary_file_name', 'generated_file', 'ground_truth']
+    #     label = {
+    #         'operation': 'detected subspaces',
+    #         'generated_file': 'upload an additional data file',
+    #         'ground_truth': 'upload a ground truth file'
+    #     }
 
     operation_except = forms.CharField(
         label="All subspaces, except",

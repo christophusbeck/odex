@@ -65,6 +65,7 @@
                     <label> All subspaces, except: </label> <br>
                     {{ form.operation_except }}
                     <small>{{ form.operation_except.help_text }}</small>
+                    <br>
                     <span style="color: red;">{{ form.operation_except.errors.0 }}</span>
                 </div>
 
@@ -72,6 +73,7 @@
                     <label> Combination: </label> <br>
                     {{ form.operation_written }}
                     <small>{{ form.operation_written.help_text }}</small>
+                    <br>
                     <span style="color: red;">{{ form.operation_written.errors.0 }}</span>
                 </div>
             </div>
@@ -96,6 +98,7 @@
             <button id="ground_truth_file" style="display: none">
                 <label>{{ form.ground_truth.label }}: </label>
                 {{ form.ground_truth }}
+                <br>
                 <span style="color: red;">{{ field.errors.0 }}</span>
             </button>
             <br>
@@ -110,6 +113,7 @@
                 <button id="addtional" style="display: none">
                     <label>{{ form.generated_file.label }}: </label>
                     {{ form.generated_file }}
+                    <br>
                     <span style="color: red;">{{ field.errors.0 }}</span>
                 </button>
                 <br>
