@@ -1,5 +1,7 @@
+import json
 import os
 
+import numpy as np
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import IntegrityError
@@ -8,7 +10,8 @@ from datetime import timedelta, datetime
 import pytz
 
 from user.models import Users
-from experiment.models import Experiments, Experiment_state, PendingExperiments, FinishedExperiments
+from experiment.models import Experiments, Experiment_state, PendingExperiments, FinishedExperiments, \
+    user_main_file_path, NpEncoder, user_roc_path
 
 
 class ExperimentsBaseTest(TestCase):
@@ -144,17 +147,7 @@ class ExperimentsTest(ExperimentsBaseTest):
             user=self.user,
             run_name='testexperiment',
             file_name='testfile.csv',
-            state='invalid_state',  # Invalid state value
-            odm='testodm',
-            operation='testoperation',
-            columns='{"testcolumn1": "6.433658544295",  "testcolumn2": "5.509168303351"}',
-            parameters='{"testparam1": 1, "testparam2": 2}',
-            created_time=self.data1,
-            start_time=self.data2,
-            duration=self.delta,
-            operation_option='2',
-            has_ground_truth=True,
-            has_generated_file=True
+            state='invalid_state'  # Invalid state value
         )
         self.assertRaises(ValidationError, experiment.full_clean)
 
@@ -164,16 +157,7 @@ class ExperimentsTest(ExperimentsBaseTest):
             run_name='testexperiment',
             file_name='testfile.csv',
             state=Experiment_state.editing,
-            odm='testodm',
-            operation='testoperation',
-            columns='{"testcolumn1": "6.433658544295",  "testcolumn2": "5.509168303351"}',
-            parameters='{"testparam1": 1, "testparam2": 2}',
-            created_time=self.data1,
-            start_time=self.data2,
-            duration=self.delta,
-            operation_option='invalid_option',  # Invalid operation option value
-            has_ground_truth=True,
-            has_generated_file=True
+            operation_option='invalid_option'  # Invalid operation option value
         )
         self.assertRaises(ValidationError, experiment.full_clean)
 
@@ -303,6 +287,14 @@ class ExperimentsTest(ExperimentsBaseTest):
         )
         self.assertIsNone(experiment.parameters)
 
+    def test_experiment_set_columns(self):
+        columns = {"testcolumn1": 6.433658544295, "testcolumn2": 5.509168303351}
+        experiment = Experiments.objects.get(run_name='testexperiment')
+        experiment.set_columns(columns)
+        self.assertEqual(experiment.columns, json.dumps(columns))
+
+
+
 
 class PendingExperimentsTest(ExperimentsBaseTest):
     @classmethod
@@ -311,6 +303,8 @@ class PendingExperimentsTest(ExperimentsBaseTest):
 
         # create a file to use in the test
         cls.file = SimpleUploadedFile("testfile.csv", b"file_content", content_type="text/csv")
+        cls.addfile = SimpleUploadedFile("testaddfile.csv", b"file_content", content_type="text/csv")
+        cls.gtfile = SimpleUploadedFile("testgtfile.csv", b"file_content", content_type="text/csv")
         cls.invalid_file = SimpleUploadedFile("testfile.pdf", b"file_content", content_type="application/pdf")
 
         # create a PendingExperiments object to use in the test
@@ -330,10 +324,70 @@ class PendingExperimentsTest(ExperimentsBaseTest):
             has_ground_truth=True,
             has_generated_file=True,
             main_file=cls.file,
-            generated_file=cls.file,
-            ground_truth=cls.file,
+            generated_file=cls.addfile,
+            ground_truth=cls.gtfile,
             error="testerror",
         )
+
+    def test_pending_experiment_user(self):
+        experiment = PendingExperiments.objects.get(id=1)
+        self.assertEqual(experiment.user, self.user)
+
+    def test_pending_experiment_run_name(self):
+        experiment = PendingExperiments.objects.get(id=1)
+        self.assertEqual(experiment.run_name, 'testexperiment')
+
+    def test_pending_experiment_file_name(self):
+        experiment = PendingExperiments.objects.get(id=1)
+        self.assertEqual(experiment.file_name, 'testfile.csv')
+
+    def test_pending_experiment_state(self):
+        experiment = PendingExperiments.objects.get(id=1)
+        self.assertEqual(experiment.state, Experiment_state.pending)
+
+    def test_pending_experiment_odm(self):
+        experiment = PendingExperiments.objects.get(id=1)
+        self.assertEqual(experiment.odm, 'testodm')
+
+    def test_pending_experiment_operation(self):
+        experiment = PendingExperiments.objects.get(id=1)
+        self.assertEqual(experiment.operation, 'testoperation')
+
+    def test_pending_experiment_columns(self):
+        experiment = PendingExperiments.objects.get(id=1)
+        self.assertEqual(experiment.get_columns(), {"testcolumn1": "6.433658544295", "testcolumn2": "5.509168303351"})
+
+    def test_pending_experiment_parameters(self):
+        experiment = PendingExperiments.objects.get(id=1)
+        self.assertEqual(experiment.get_para(), {"testparam1": 1, "testparam2": 2})
+
+    def test_pending_experiment_created_time(self):
+        experiment = PendingExperiments.objects.get(id=1)
+        self.assertEqual(experiment.created_time, self.data1)
+
+    def test_pending_experiment_start_time(self):
+        experiment = PendingExperiments.objects.get(id=1)
+        self.assertEqual(experiment.start_time, self.data2)
+
+    def test_pending_experiment_duration(self):
+        experiment = PendingExperiments.objects.get(id=1)
+        self.assertEqual(experiment.duration, self.delta)
+
+    def test_pending_experiment_operation_option(self):
+        experiment = PendingExperiments.objects.get(id=1)
+        self.assertEqual(experiment.operation_option, '2')
+
+    def test_pending_experiment_has_ground_truth(self):
+        experiment = PendingExperiments.objects.get(id=1)
+        self.assertEqual(experiment.has_ground_truth, True)
+
+    def test_pending_experiment_has_generated_file(self):
+        experiment = PendingExperiments.objects.get(id=1)
+        self.assertEqual(experiment.has_generated_file, True)
+
+    def test_pending_experiment_error(self):
+        experiment = PendingExperiments.objects.get(id=1)
+        self.assertEqual(experiment.error, "testerror")
 
     def test_pending_experiment_missing_required_fields(self):
         experiment = PendingExperiments(user_id=1)
@@ -393,6 +447,13 @@ class FinishedExperimentsTest(ExperimentsBaseTest):
     def setUp(cls):
         super().setUp()
 
+        cls.result = SimpleUploadedFile("testresult.csv", b"file_content", content_type="text/csv")
+        cls.result_with_addition = SimpleUploadedFile("testresult_with_addition.csv", b"file_content", content_type="text/csv")
+        cls.metrics_file = SimpleUploadedFile("testmetrics.csv", b"file_content", content_type="text/csv")
+        cls.roc = SimpleUploadedFile("testroc.png", b"PNG_FILE_CONTENT", content_type="image/png")
+        cls.roc_after_merge = SimpleUploadedFile("test_after_merge.png", b"PNG_FILE_CONTENT", content_type="image/png")
+        cls.invalid_file = SimpleUploadedFile("testfile.pdf", b"file_content", content_type="application/pdf")
+
         # create a FinishedExperiments object to use in the test
         finished_experiment = FinishedExperiments.objects.create(
             user=cls.user,
@@ -409,13 +470,163 @@ class FinishedExperimentsTest(ExperimentsBaseTest):
             operation_option='2',
             has_ground_truth=True,
             has_generated_file=True,
-            result='result.csv',
-            result_with_addition='result_with_addition.csv',
+            result=cls.result,
+            result_with_addition=cls.result_with_addition,
             metrics='{"testmetric1": 0.75, "testmetric2": 0.92}',
-            metrics_file='metrics.csv',
-            roc_path='roc.png',
-            roc_after_merge_path='roc_after_merge.png'
+            metrics_file=cls.metrics_file,
+            roc_path=user_roc_path(cls.roc.name),
+            roc_after_merge_path=user_roc_path(cls.roc_after_merge.name)
         )
+
+    def test_finished_experiment_user(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertEqual(experiment.user, self.user)
+
+    def test_finished_experiment_run_name(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertEqual(experiment.run_name, 'testexperiment')
+
+    def test_finished_experiment_file_name(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertEqual(experiment.file_name, 'testfile.csv')
+
+    def test_finished_experiment_state(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertEqual(experiment.state, Experiment_state.finished)
+
+    def test_finished_experiment_odm(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertEqual(experiment.odm, 'testodm')
+
+    def test_finished_experiment_operation(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertEqual(experiment.operation, 'testoperation')
+
+    def test_finished_experiment_columns(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertEqual(experiment.columns, '{"testcolumn1": "6.433658544295",  "testcolumn2": "5.509168303351"}')
+
+    def test_finished_experiment_parameters(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertEqual(experiment.parameters, '{"testparam1": 1, "testparam2": 2}')
+
+    def test_finished_experiment_created_time(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertEqual(experiment.created_time, self.data1)
+
+    def test_finished_experiment_start_time(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertEqual(experiment.start_time, self.data2)
+
+    def test_finished_experiment_duration(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertEqual(experiment.duration, self.delta)
+
+    def test_finished_experiment_operation_option(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertEqual(experiment.operation_option, '2')
+
+    def test_finished_experiment_has_ground_truth(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertTrue(experiment.has_ground_truth)
+
+    def test_finished_experiment_has_generated_file(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertTrue(experiment.has_generated_file)
+
+    def test_finished_experiment_result(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertIsNotNone(experiment.result)
+
+    def test_finished_experiment_result_with_addition(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertIsNotNone(experiment.result_with_addition)
+
+    def test_finished_experiment_metrics(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertEqual(experiment.get_metrics(), {"testmetric1": 0.75, "testmetric2": 0.92})
+
+    def test_finished_experiment_metrics_file(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertIsNotNone(experiment.metrics_file)
+
+    def test_finished_experiment_roc_path(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertIsNotNone(experiment.roc_path)
+
+    def test_finished_experiment_roc_after_merge_path(self):
+        experiment = FinishedExperiments.objects.get(run_name='testexperiment')
+        self.assertIsNotNone(experiment.roc_after_merge_path)
+
+    def test_roc_path(self):
+        filename = 'testfile.csv'
+        expected_path = 'testfile_roc.jpg'
+        self.assertEqual(user_roc_path(filename), expected_path)
+
+
+class NpEncoderTest(ExperimentsBaseTest):
+
+    @classmethod
+    def setUp(cls):
+        super().setUp()
+
+        experiment = FinishedExperiments.objects.create(
+            user=cls.user,
+            run_name='testexperiment',
+            file_name='testfile.csv',
+            state=Experiment_state.finished,
+            result='result.csv',
+            metrics='{"testmetric": "blank"}',
+            metrics_file='metrics.csv'
+        )
+
+
+    def test_integer_encoding(self):
+        obj = np.int32(10)
+        expected_output = 10
+        experiment = FinishedExperiments.objects.get(id=1)
+        experiment.set_metrics(obj)
+        self.assertEqual(experiment.get_metrics(),expected_output)
+
+    def test_float_encoding(self):
+        obj = np.float32(3.14)
+        experiment = FinishedExperiments.objects.get(id=1)
+        experiment.set_metrics(obj)
+        self.assertEqual(experiment.get_metrics(), obj)
+
+    def test_ndarray_encoding(self):
+        obj = np.array([1, 2, 3])
+        expected_output = [1, 2, 3]
+        experiment = FinishedExperiments.objects.get(id=1)
+        experiment.set_metrics(obj)
+        self.assertEqual(experiment.get_metrics(), expected_output)
+
+    def test_other_object_encoding(self):
+        obj = {'a': 1, 'b': 2, 'c': 3}
+        experiment = FinishedExperiments.objects.get(id=1)
+        experiment.set_metrics(obj)
+        self.assertEqual(experiment.get_metrics(), obj)
+
+    # def test_default_method_called(self):
+    #     # create a mock object that is not of type np.integer, np.floating, or np.ndarray
+    #     obj = {'a': 1, 'b': 2}
+    #     # create an instance of NpEncoder
+    #     encoder = NpEncoder()
+    #     # call the encode method of the encoder with the mock object
+    #     result = encoder.encode(obj)
+    #     # check if the decoded result is the same as the original object
+    #     experiment = FinishedExperiments.objects.get(id=1)
+    #     experiment.metrics = result
+    #     self.assertEqual(experiment.get_metrics(), obj)
+
+    def test_default_method_called(self):
+        # create a dictionary with a numpy array as a value
+        obj = set([1, 2, 3])
+        # encode the dictionary using NpEncoder
+        experiment = FinishedExperiments.objects.get(id=1)
+        with self.assertRaises(TypeError):
+            experiment.set_metrics(obj)
+
 
 
 

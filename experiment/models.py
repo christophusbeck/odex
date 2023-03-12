@@ -142,13 +142,14 @@ def user_result_with_addition_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/result_<filename>_with_addition.csv
     return 'user_{0}/{1}/result_{2}_with_addition.csv'.format(instance.user_id, instance.id, filename.removesuffix('.csv'))
 
-def user_roc_path(filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/<filename>_roc.jpg
-    return '{0}_roc.jpg'.format(filename.removesuffix('.csv'))
 
 def user_metrics_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/metrics_<filename>
     return 'user_{0}/{1}/metrics_{2}'.format(instance.user_id, instance.id, filename)
+
+def user_roc_path(filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/<filename>_roc.jpg
+    return '{0}_roc.jpg'.format(filename.removesuffix('.csv'))
 
 
 def validate_file_extension(value):
@@ -213,15 +214,13 @@ class FinishedExperiments(Experiments):
         verbose_name="metrics",
         upload_to=user_metrics_path
     )
-    roc_path = models.FileField(
-        verbose_name="Roc curve",
-        upload_to=user_result_path,
+    roc_path = models.TextField(
+        verbose_name="Path of roc curve",
         blank=True,
         null=True
     )
-    roc_after_merge_path = models.FileField(
-        verbose_name="Roc curve with additional file",
-        upload_to=user_result_path,
+    roc_after_merge_path = models.TextField(
+        verbose_name="Path of roc curve with additional file",
         blank=True,
         null=True
     )
