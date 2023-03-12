@@ -332,4 +332,4 @@ class ChangePasswordViewTest(TestCase):
         data = {'old_password': md5("321")}
         response = self.client.post(self.url, data)
         form = response.context.get('initial_form')
-        self.assertEqual(str(form.errors['old_password'][0]), "The possword is wrong")
+        self.assertEqual(str(form.errors['old_password'][0]), "The password is wrong")

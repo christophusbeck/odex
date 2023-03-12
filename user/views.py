@@ -145,7 +145,7 @@ class ChangePasswordView(View):
             if initial_form.is_valid():
                 user = Users.objects.get(id=request.session["info"]["id"])
                 if initial_form.cleaned_data['old_password'] != user.password:
-                    initial_form.add_error("old_password", "The possword is wrong")
+                    initial_form.add_error("old_password", "The password is wrong")
                     return render(request, self.template_name, {"initial_form": initial_form})
                 form = ChangePasswordForm()
                 return render(request, self.template_name, {"form": form})
