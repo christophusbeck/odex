@@ -27,7 +27,7 @@ class QuestionForm(BootStrapModelForm):
 class RegisterForm(BootStrapForm):
     username = forms.CharField(
         label="username",
-        max_length=64,
+        max_length=16,
         help_text="Please enter within 16 letters"
     )
     password = forms.CharField(
@@ -79,7 +79,7 @@ class RegisterForm(BootStrapForm):
 class InitialResetForm(BootStrapForm):
     username = forms.CharField(
         label="username",
-        max_length=64,
+        max_length=16,
         help_text="Please enter within 16 letters"
     )
 

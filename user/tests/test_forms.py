@@ -1,6 +1,7 @@
 from django.test import TestCase
 from user.models import Users, SecurityQuestions, SecurityAnswers, TANs
-from user.forms import LoginForm, QuestionForm, RegisterForm, ResetPasswordForm, ChangePasswordForm
+from user.forms import LoginForm, QuestionForm, RegisterForm, ResetPasswordForm, ChangePasswordForm, InitialResetForm, \
+    ChangeNameForm, InitialChangePasswordForm
 
 
 class LoginFormTest(TestCase):
@@ -150,3 +151,53 @@ class ChangePasswordFormTest(TestCase):
         form = ChangePasswordForm(data=self.valid_data)
         self.assertTrue(form.is_valid())
         self.assertEqual(form.cleaned_data['new_password'], '7088966d4c03aeb6a66c390ec6462589')
+
+
+class InitialResetFormTest(TestCase):
+    def test_valid_form(self):
+        form_data = {
+            'username': 'validusername'
+        }
+        form = InitialResetForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+    def test_blank_data(self):
+        form_data = {
+            'username': ''
+        }
+        form = InitialResetForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['username'], ['This field is required.'])
+
+    def test_invalid_length(self):
+        form_data = {
+            'username': 'thisusernameistoolong'
+        }
+        form = InitialResetForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['username'], [
+            'Ensure this value has at most 16 characters (it has ' + str(len('thisusernameistoolong')) + ').'])
+
+
+class ChangeNameFormTest(TestCase):
+    def test_valid_form(self):
+        form_data = {'username': 'testuser'}
+        form = ChangeNameForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+    def test_invalid_form(self):
+        form_data = {'username': ''}
+        form = ChangeNameForm(data=form_data)
+        self.assertFalse(form.is_valid())
+
+
+class InitialChangePasswordFormTest(TestCase):
+    def test_valid_password(self):
+        form_data = {'old_password': 'testpassword'}
+        form = InitialChangePasswordForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+    def test_invalid_password(self):
+        form_data = {'old_password': ''}
+        form = InitialChangePasswordForm(data=form_data)
+        self.assertFalse(form.is_valid())
