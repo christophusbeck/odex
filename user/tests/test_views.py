@@ -426,3 +426,36 @@ class LogOutViewTest(TestCase):
 
     def test_redirection(self):
         self.assertRedirects(self.response, self.successful_url, status_code=302, target_status_code=200)
+
+
+class DeleteAccountViewTest(TestCase):
+    fixtures = ['user_tests.json']
+
+    def setUp(self):
+        user = models.Users.objects.filter(username="tester1").first()
+        session = self.client.session
+        session['info'] = {'id': user.id, 'username': user.username}
+        session.save()
+        self.url = reverse('delete_user')
+        self.successful_url = reverse('login')
+        self.response = self.client.get(self.url, follow=True)
+
+    '''--------------------------- Test Fixture Loading ---------------------------'''
+
+    def test_fixtures(self):
+        user = models.Users.objects.get(id=1)
+        self.assertEqual(user.username, 'tester1')
+
+    '''---------------------------   Basic URL tests    ---------------------------'''
+
+    def test_page_status_code(self):
+        self.assertEqual(self.response.status_code, 200)
+
+    def test_register_url_resolves_registration_view(self):
+        view = resolve('/user/delete')
+        self.assertEqual(view.func.view_class, views.DeleteAccountView)
+
+    def test_csrf(self):
+        self.assertContains(self.response, 'csrfmiddlewaretoken')
+
+
