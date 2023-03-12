@@ -1,3 +1,5 @@
+import os
+
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import IntegrityError
@@ -356,6 +358,34 @@ class PendingExperimentsTest(ExperimentsBaseTest):
             main_file=self.invalid_file
         )
         self.assertRaises(ValidationError, experiment.full_clean)
+
+    def test_pending_experiment_file_upload(self):
+        experiment = PendingExperiments.objects.get(run_name='testexperiment')
+        self.assertIsNotNone(experiment.main_file)
+        self.assertIsNotNone(experiment.generated_file)
+        self.assertIsNotNone(experiment.ground_truth)
+
+    def test_pending_experiment_file_deletion(self):
+        experiment = PendingExperiments.objects.get(run_name='testexperiment')
+        file_path = experiment.main_file.path
+        experiment.delete()
+        self.assertFalse(os.path.isfile(file_path))
+
+    def test_pending_experiment_str_representation(self):
+        experiment = PendingExperiments.objects.get(run_name='testexperiment')
+        self.assertEqual(str(experiment), 'testexperiment (pending)')
+
+    def test_pending_experiment_columns_and_parameters_json(self):
+        experiment = PendingExperiments.objects.get(run_name='testexperiment')
+        columns_dict = {'testcolumn1': '6.433658544295', 'testcolumn2': '5.509168303351'}
+        parameters_dict = {'testparam1': 1, 'testparam2': 2}
+        self.assertDictEqual(experiment.get_columns(), columns_dict)
+        self.assertDictEqual(experiment.get_para(), parameters_dict)
+
+    def test_pending_experiment_operation_option_choices(self):
+        experiment = PendingExperiments.objects.get(run_name='testexperiment')
+        choices = [('1', 'All subspaces'), ('2', 'All, except'), ('3', 'Combination')]
+        self.assertEqual(experiment._meta.get_field('operation_option').choices, choices)
 
 
 class FinishedExperimentsTest(ExperimentsBaseTest):

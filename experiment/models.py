@@ -1,9 +1,12 @@
 import json
+import os
+import shutil
 
 import numpy as np
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from odex import settings
 from user.models import Users
 
 
@@ -13,7 +16,6 @@ class Experiment_state(models.TextChoices):
     pending = 'pending', 'pending'
     editing = 'editing', 'editing'
     failed = 'failed', 'failed'
-
 
 
 class Experiments(models.Model):
@@ -101,6 +103,19 @@ class Experiments(models.Model):
 
     def get_para(self):
         return json.loads(self.parameters)
+
+    def delete(self, *args, **kwargs):
+        # Delete the file before the model
+        shutil.rmtree(user_experiment_directory(self))
+        super(Experiments, self).delete(*args, **kwargs)
+
+    def __str__(self):
+        return self.run_name + " (" + self.state + ")"
+
+
+def user_experiment_directory(instance):
+    # return directory MEDIA_ROOT/user_<id>/<exp_id>
+    return '{0}/user_{1}/{2}'.format(settings.MEDIA_ROOT, instance.user_id, instance.id)
 
 
 def user_main_file_path(instance, filename):
@@ -201,14 +216,12 @@ class FinishedExperiments(Experiments):
     roc_path = models.FileField(
         verbose_name="Roc curve",
         upload_to=user_result_path,
-        validators=[validate_file_extension],
         blank=True,
         null=True
     )
     roc_after_merge_path = models.FileField(
         verbose_name="Roc curve with additional file",
         upload_to=user_result_path,
-        validators=[validate_file_extension],
         blank=True,
         null=True
     )

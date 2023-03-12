@@ -139,10 +139,7 @@ class MainView(View):
 @method_decorator(csrf_exempt, name='dispatch')
 class DeleteView(View):
     def get(self, request, *args, **kwargs):
-        print(request.GET['id'])
-        print(models.Users.objects.all())
-        models.Experiments.objects.filter(id=request.GET['id']).delete()
-        print(models.Users.objects.all())
+        models.Experiments.objects.filter(id=request.GET['id']).first().delete()
         return JsonResponse({"status": True})
 
 
