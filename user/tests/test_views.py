@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse, resolve
 from user import views, forms, models
 from user.models import Users
-import json
+from tools.encrypt import md5
 
 
 class RegistrationViewTest(TestCase):
@@ -293,9 +293,9 @@ class ChangePasswordViewTest(TestCase):
 
     def setUp(self):
         user = models.Users.objects.filter(username="tester1").first()
-        session = self.client.session
-        session['info'] = {'id': user.id, 'username': user.username}
-        session.save()
+        self.session = self.client.session
+        self.session['info'] = {'id': user.id, 'username': user.username}
+        self.session.save()
         self.url = reverse('change_password')
         self.successful_url = reverse('main')
         self.response_get = self.client.get(self.url)
@@ -321,3 +321,15 @@ class ChangePasswordViewTest(TestCase):
     def test_contains_initial_form(self):
         form = self.response_get.context.get('initial_form')
         self.assertIsInstance(form, forms.InitialChangePasswordForm)
+
+    '''--------------------------- Failed Changing Password ---------------------------'''
+
+    def test_empty_form(self):
+        response = self.client.post(self.url, {})
+        self.assertEqual(response.status_code, 200)
+
+    def test_wrong_old_password(self):
+        data = {'old_password': md5("321")}
+        response = self.client.post(self.url, data)
+        form = response.context.get('initial_form')
+        self.assertEqual(str(form.errors['old_password'][0]), "The possword is wrong")
