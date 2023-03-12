@@ -214,13 +214,11 @@ class ChangeNameViewTest(TestCase):
     fixtures = ['user_tests.json']
 
     def setUp(self):
-        user = Users.objects.create(username='tester3', password='123')
+        self.user = Users.objects.create(username='tester3', password='123')
         session = self.client.session
-        session['info'] = {'id': user.id, 'username': user.username}
+        session['info'] = {'id': self.user.id, 'username': self.user.username}
         session.save()
-        # 发送请求到需要登录的视图
         response = self.client.post('/login/')
-        # 用断言来检查视图是否正确处理请求
         self.assertEqual(response.status_code, 200)
         data = {
             'username': 'new_tester',
@@ -268,8 +266,10 @@ class ChangeNameViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_already_existed_username(self):
-        data = {'username': 'tester1'}
-        response = self.client.post(self.url, data)
+        session = self.client.session
+        session['info'] = {'id': self.user.id, 'username': 'tester1'}
+        session.save()
+        response = self.client.post(self.url)
         self.assertEqual(response.status_code, 200)
 
 
