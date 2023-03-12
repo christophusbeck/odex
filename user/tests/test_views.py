@@ -3,6 +3,7 @@ from django.urls import reverse, resolve
 from user import views, forms, models
 from user.models import Users
 from tools.encrypt import md5
+from django.http import JsonResponse
 
 
 class RegistrationViewTest(TestCase):
@@ -371,4 +372,13 @@ class CheckUsernameTest(TestCase):
     def test_register_url_resolves_registration_view(self):
         view = resolve('/checkusername/')
         self.assertEqual(view.func.view_class, views.CheckUsername)
+
+    '''--------------------------- Username does not exist ---------------------------'''
+
+    def test_not_existed_username(self):
+        data = {'username': 'user'}
+        response = self.client.get(self.url, data)
+        self.assertIsInstance(response, JsonResponse)
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(str(response.content, encoding='utf8'), {'flag': False})
 
