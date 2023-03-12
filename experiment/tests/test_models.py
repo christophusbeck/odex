@@ -1,17 +1,19 @@
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import IntegrityError
 from django.test import TestCase
 from datetime import timedelta, datetime
 import pytz
 
 from user.models import Users
-from experiment.models import Experiments, Experiment_state
+from experiment.models import Experiments, Experiment_state, PendingExperiments, FinishedExperiments
 
-class ExperimentsTest(TestCase):
+
+class ExperimentsBaseTest(TestCase):
     @classmethod
     def setUp(cls):
-        cls.timezone = pytz.timezone('Europe/Berlin')
-        cls.data1 = cls.timezone.localize(datetime(
+        timezone = pytz.timezone('Europe/Berlin')
+        cls.data1 = timezone.localize(datetime(
             year=2023,
             month=3,
             day=10,
@@ -20,7 +22,7 @@ class ExperimentsTest(TestCase):
             second=22,
             microsecond=222222
         ))
-        cls.data2 = cls.timezone.localize(datetime(
+        cls.data2 = timezone.localize(datetime(
             year=2023,
             month=3,
             day=10,
@@ -39,9 +41,14 @@ class ExperimentsTest(TestCase):
             weeks=0
         )
 
-
         # create a user to use in the test
         cls.user = Users.objects.create(username='testuser', password='testpass')
+
+
+class ExperimentsTest(ExperimentsBaseTest):
+    @classmethod
+    def setUp(cls):
+        super().setUp()
 
         # create an experiment to use in the test
         basic_experiment = Experiments.objects.create(
@@ -293,6 +300,96 @@ class ExperimentsTest(TestCase):
             state=Experiment_state.editing,
         )
         self.assertIsNone(experiment.parameters)
+
+
+class PendingExperimentsTest(ExperimentsBaseTest):
+    @classmethod
+    def setUp(cls):
+        super().setUp()
+
+        # create a file to use in the test
+        cls.file = SimpleUploadedFile("testfile.csv", b"file_content", content_type="text/csv")
+        cls.invalid_file = SimpleUploadedFile("testfile.pdf", b"file_content", content_type="application/pdf")
+
+        # create a PendingExperiments object to use in the test
+        pending_experiment = PendingExperiments.objects.create(
+            user=cls.user,
+            run_name='testexperiment',
+            file_name='testfile.csv',
+            state=Experiment_state.pending,
+            odm='testodm',
+            operation='testoperation',
+            columns='{"testcolumn1": "6.433658544295",  "testcolumn2": "5.509168303351"}',
+            parameters='{"testparam1": 1, "testparam2": 2}',
+            created_time=cls.data1,
+            start_time=cls.data2,
+            duration=cls.delta,
+            operation_option='2',
+            has_ground_truth=True,
+            has_generated_file=True,
+            main_file=cls.file,
+            generated_file=cls.file,
+            ground_truth=cls.file,
+            error="testerror",
+        )
+
+    def test_pending_experiment_missing_required_fields(self):
+        experiment = PendingExperiments(user_id=1)
+        self.assertRaises(ValidationError, experiment.full_clean)
+
+    def test_pending_experiment_valid(self):
+        experiment = PendingExperiments(
+            user_id=1,
+            run_name='test experiment',
+            file_name='testfile.csv',
+            state=Experiment_state.pending,
+            main_file=self.file
+        )
+        experiment.full_clean()  # should pass validation
+
+    def test_pending_experiment_file_extension_validation(self):
+        experiment = PendingExperiments(
+            user_id=1,
+            run_name='test experiment',
+            file_name='testfile.pdf',
+            state=Experiment_state.pending,
+            main_file=self.invalid_file
+        )
+        self.assertRaises(ValidationError, experiment.full_clean)
+
+
+class FinishedExperimentsTest(ExperimentsBaseTest):
+    @classmethod
+    def setUp(cls):
+        super().setUp()
+
+        # create a FinishedExperiments object to use in the test
+        finished_experiment = FinishedExperiments.objects.create(
+            user=cls.user,
+            run_name='testexperiment',
+            file_name='testfile.csv',
+            state=Experiment_state.finished,
+            odm='testodm',
+            operation='testoperation',
+            columns='{"testcolumn1": "6.433658544295",  "testcolumn2": "5.509168303351"}',
+            parameters='{"testparam1": 1, "testparam2": 2}',
+            created_time=cls.data1,
+            start_time=cls.data2,
+            duration=cls.delta,
+            operation_option='2',
+            has_ground_truth=True,
+            has_generated_file=True,
+            result='result.csv',
+            result_with_addition='result_with_addition.csv',
+            metrics='{"testmetric1": 0.75, "testmetric2": 0.92}',
+            metrics_file='metrics.csv',
+            roc_path='roc.png',
+            roc_after_merge_path='roc_after_merge.png'
+        )
+
+
+
+
 
 
 

@@ -151,8 +151,6 @@ class PendingExperiments(Experiments):
         upload_to=user_main_file_path,
         help_text="please upload a file",
         validators=[validate_file_extension],
-        blank=True,
-        null=True
     )
     generated_file = models.FileField(
         verbose_name="generated file path",
@@ -187,9 +185,7 @@ class NpEncoder(json.JSONEncoder):
 class FinishedExperiments(Experiments):
     result = models.FileField(
         verbose_name="result",
-        upload_to=user_result_path,
-        blank=True,
-        null=True
+        upload_to=user_result_path
     )
     result_with_addition = models.FileField(
         verbose_name="result with addition",
@@ -197,15 +193,10 @@ class FinishedExperiments(Experiments):
         blank=True,
         null=True
     )
-    metrics = models.TextField(
-        blank=True,
-        null=True
-    )
+    metrics = models.TextField()
     metrics_file = models.FileField(
         verbose_name="metrics",
-        upload_to=user_metrics_path,
-        blank=True,
-        null=True
+        upload_to=user_metrics_path
     )
     roc_path = models.FileField(
         verbose_name="Roc curve",
