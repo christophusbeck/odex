@@ -288,5 +288,36 @@ class AboutUsViewTest(TestCase):
         self.assertTemplateUsed(self.response, 'aboutus.html')
 
 
+class ChangePasswordViewTest(TestCase):
+    fixtures = ['user_tests.json']
 
+    def setUp(self):
+        user = models.Users.objects.filter(username="tester1").first()
+        session = self.client.session
+        session['info'] = {'id': user.id, 'username': user.username}
+        session.save()
+        self.url = reverse('change_password')
+        self.successful_url = reverse('main')
+        self.response_get = self.client.get(self.url)
 
+    '''--------------------------- Test Fixture Loading ---------------------------'''
+
+    def test_fixtures(self):
+        user = models.Users.objects.get(id=1)
+        self.assertEqual(user.username, 'tester1')
+
+    '''---------------------------   Basic URL tests    ---------------------------'''
+
+    def test_page_status_code(self):
+        self.assertEqual(self.response_get.status_code, 200)
+
+    def test_register_url_resolves_registration_view(self):
+        view = resolve('/changepassword/')
+        self.assertEqual(view.func.view_class, views.ChangePasswordView)
+
+    def test_csrf(self):
+        self.assertContains(self.response_get, 'csrfmiddlewaretoken')
+
+    def test_contains_initial_form(self):
+        form = self.response_get.context.get('initial_form')
+        self.assertIsInstance(form, forms.InitialChangePasswordForm)
