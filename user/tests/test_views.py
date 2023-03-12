@@ -458,4 +458,10 @@ class DeleteAccountViewTest(TestCase):
     def test_csrf(self):
         self.assertContains(self.response, 'csrfmiddlewaretoken')
 
+    '''--------------------------- Successful deleting account ---------------------------'''
 
+    def test_user_deleted(self):
+        self.assertFalse(models.Users.objects.filter(username="tester1").exists())
+
+    def test_redirection(self):
+        self.assertRedirects(self.response, self.successful_url, status_code=302, target_status_code=200)
