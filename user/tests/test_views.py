@@ -421,3 +421,8 @@ class LogOutViewTest(TestCase):
 
     def test_csrf(self):
         self.assertContains(self.response, 'csrfmiddlewaretoken')
+
+    '''--------------------------- Successful Log out ---------------------------'''
+
+    def test_redirection(self):
+        self.assertRedirects(self.response, self.successful_url, status_code=302, target_status_code=200)
