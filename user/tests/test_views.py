@@ -382,3 +382,11 @@ class CheckUsernameTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(str(response.content, encoding='utf8'), {'flag': False})
 
+    '''--------------------------- Username exists ---------------------------'''
+
+    def test_existed_username(self):
+        data = {'username': 'tester1'}
+        response = self.client.get(self.url, data)
+        self.assertIsInstance(response, JsonResponse)
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(str(response.content, encoding='utf8'), {'flag': True})
