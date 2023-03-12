@@ -293,9 +293,9 @@ class ChangePasswordViewTest(TestCase):
 
     def setUp(self):
         user = models.Users.objects.filter(username="tester1").first()
-        self.session = self.client.session
-        self.session['info'] = {'id': user.id, 'username': user.username}
-        self.session.save()
+        session = self.client.session
+        session['info'] = {'id': user.id, 'username': user.username}
+        session.save()
         self.url = reverse('change_password')
         self.successful_url = reverse('main')
         self.response_get = self.client.get(self.url)
@@ -333,3 +333,18 @@ class ChangePasswordViewTest(TestCase):
         response = self.client.post(self.url, data)
         form = response.context.get('initial_form')
         self.assertEqual(str(form.errors['old_password'][0]), "The password is wrong")
+
+    '''--------------------------- Successful Changing Password ---------------------------'''
+
+    def test_correct_old_password(self):
+        data1 = {
+            'old_password': md5("123")
+        }
+        self.client.post(self.url, data1)
+        data2 = {
+            "new_password": "321",
+            "repeat_password": "321"
+        }
+        self.client.post(self.url, data2)
+        user = models.Users.objects.filter(username="tester1").first()
+        self.assertEqual(user.password, md5("321"))
