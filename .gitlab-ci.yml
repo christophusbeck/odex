@@ -30,6 +30,10 @@
 # .gitlab-ci.yml are passed to the service and variables defined in the GitLab UI are not.
 # https://gitlab.com/gitlab-org/gitlab/-/issues/30178
 
+stages:
+  - test
+
+
 variables:
   # DJANGO_CONFIG: "test"
   DB_ENGINE: 'django.db.backends.sqlite3'
@@ -49,16 +53,15 @@ default:
   cache:
     paths:
       - ~/.cache/pip/
+      -
   before_script:
     - apt -y update
-#    - DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata
-    - apt -y install apt-utils
-    - apt -y install net-tools python3.9 python3-pip build-essential libsqlite3-dev
+    - apt -y install python3-pip build-essential libsqlite3-dev
     - apt -y upgrade
     - pip3 install -r requirements.txt
 
 
-django-tests:
+unit-tests:
   stage: test
   script:
     # use python3 explicitly. see https://wiki.ubuntu.com/Python/3
