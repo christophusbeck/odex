@@ -32,20 +32,17 @@
 
 variables:
   # DJANGO_CONFIG: "test"
-  MYSQL_DATABASE: $MYSQL_DB
-  MYSQL_USER: $MYSQL_USER
-  MYSQL_PASSWORD: $MYSQL_PASS
-  MYSQL_HOST: $MYSQL_HOST
-  MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASS
+  DB_ENGINE: 'django.db.backends.sqlite3'
+  DB_NAME: 'odexdb'
 
 default:
-  image: ubuntu:20.04
+  image: python:3.9
   #
   # Pick zero or more services to be used on all builds.
   # Only needed when using a docker container to run your tests in.
   # Check out: https://docs.gitlab.com/ee/ci/services/index.html
-  services:
-    - mysql:5.7
+#  services:
+#    - mysql:5.7
   #
   # This folder is cached between builds
   # http://docs.gitlab.com/ee/ci/yaml/README.html#cache
@@ -54,8 +51,9 @@ default:
       - ~/.cache/pip/
   before_script:
     - apt -y update
+#    - DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata
     - apt -y install apt-utils
-    - apt -y install net-tools python3.8 python3-pip mysql-client libmysqlclient-dev
+    - apt -y install net-tools python3.9 python3-pip build-essential libsqlite3-dev
     - apt -y upgrade
     - pip3 install -r requirements.txt
 
@@ -65,17 +63,15 @@ migrations:
   script:
     - python3 manage.py migrate
     - python3 manage.py makemigrations
-    # - python3 manage.py makemigrations myapp
     - python3 manage.py check
 
 
 django-tests:
   stage: test
   script:
-    # The MYSQL user only gets permissions for MYSQL_DB, so Django can't create a test database.
-    - echo "GRANT ALL on *.* to '${MYSQL_USER}';"| mysql -u root --password="${MYSQL_ROOT_PASSWORD}" -h mysql
     # use python3 explicitly. see https://wiki.ubuntu.com/Python/3
-    - python3 manage.py test
+    - coverage run manage.py test
+    - coverage report
 
 deploy:
   stage: deploy
