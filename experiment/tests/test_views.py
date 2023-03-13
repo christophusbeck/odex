@@ -1,5 +1,9 @@
 import csv
+import os
 from datetime import timedelta
+
+import requests
+from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import JsonResponse
 from django.test import TestCase, Client, RequestFactory
@@ -74,7 +78,7 @@ class Test_MainView(TestCase):
             'main_file': SimpleUploadedFile("test_data.txt", b"column1,column2,column3\n1,2,3\n4,5,6\n")
         }
         response_post = self.client.post(self.url, data, follow=True)
-        #self.assertFalse(Experiments.objects.filter(run_name='Test Experiment').exists())
+        self.assertFalse(Experiments.objects.filter(run_name='Test Experiment').exists())
 
 
 class Test_DeleteView(TestCase):
@@ -87,13 +91,39 @@ class Test_DeleteView(TestCase):
         session.save()
         response = self.client.post('/login/')
         self.assertEqual(response.status_code, 200)
-        self.experiment = Experiments.objects.create(id=1, user_id=1, run_name='Test')
+
+        '''--------------------------- create a folder and put the csv file in it ---------------------------'''
+
+        with open('test_data.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Name', 'Age', 'Gender'])
+            writer.writerow(['John', '25', 'Male'])
+            writer.writerow(['Jane', '30', 'Female'])
+
+        with open('test_data.csv', 'rb') as file:
+            self.csv_file = SimpleUploadedFile(file.name, file.read(), content_type='text/csv')
+
+
+        data = {
+            'run_name': 'Test Experiment',
+            'main_file':self.csv_file,
+        }
+        self.url = reverse('main')
+
+        self.response_post = self.client.post(self.url, data, follow=True)
+
+        self.exp = PendingExperiments.objects.filter(id=1, run_name='Test Experiment').first()
+
+        # os.makedirs('user_1/1/main_test') already create a folder in client post function
+
+        url_exp_id = str(self.response_post.content, encoding='utf8')
+
         self.url = reverse('delete_exp')
 
     def test_delete_experiment(self):
-        response = self.client.get(self.url, {'id': self.experiment.id})
+        response = self.client.get(self.url, {'id': self.exp.id})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Experiments.objects.filter(id=self.experiment.id).exists(), False)
+        self.assertFalse(Experiments.objects.filter(id=self.exp.id).exists())
 
 
 class Test_ExperimentlistView(TestCase):
@@ -171,10 +201,9 @@ class ConfigurationTestCase(TestCase):
             parameters='{"testparam1": 1, "testparam2": 2}',
             operation_option='2',
             has_ground_truth=True,
-            has_generated_file=True
+            has_generated_file=True,
+            main_file=csv_file
         )
-
-
 
         self.data = {'csrfmiddlewaretoken': ['LhESMQhKMlyrTJGAAhmbtB2fcdABFK1nkQiTJusQnnug3q9xwxQkDJTbABjgbMiF'],
                 'operation_model_options': ['1'],
@@ -331,7 +360,10 @@ class ConfigurationTestCase(TestCase):
                 }
 
         self.response_get = self.client.get(self.url, data={'id': self.exp.id})
-        self.response_post = self.client.post(self.url + f'/?id={self.exp.id}', data=self.data)
+        self.response_post = self.client.post(self.url, data= {'id': self.exp.id})
+
+        print(self.response_post.status_code)
+
 
     '''--------------------------- Test Fixture Loading ---------------------------'''
 
@@ -386,6 +418,9 @@ class ConfigurationTestCase(TestCase):
         file_data = b"file contents here"
         file_name = "test_file.csv"
         file_mock = SimpleUploadedFile(file_name, file_data, content_type="text/csv")
+
+
+
         self.assertRedirects(self.response_post, self.successful_url)
 
     '''--------------------------- Successful ChangeName ---------------------------'''
