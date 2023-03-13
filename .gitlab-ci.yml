@@ -53,7 +53,7 @@ default:
   cache:
     paths:
       - ~/.cache/pip/
-      -
+
   before_script:
     - apt -y update
     - apt -y install python3-pip build-essential libsqlite3-dev
