@@ -12,11 +12,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 
-"""these two lines is patch for MacOS on M1 (ARM, 64-bit)"""
-import pymysql
-
-pymysql.install_as_MySQLdb()
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -83,32 +78,10 @@ WSGI_APPLICATION = 'odex.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE'  : 'django.db.backends.mysql',
-#         'NAME'    : os.environ.get('MYSQL_DB'),
-#         'USER'    : os.environ.get('MYSQL_USER'),
-#         'PASSWORD': os.environ.get('MYSQL_PASS'),
-#         'HOST'    : os.environ.get('MYSQL_HOST'),
-#         'PORT'    : '3306',
-#         'CONN_MAX_AGE':60,
-#     }
-# }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'odexdb',
-#         'USER': 'root',
-#         'PASSWORD': 'odex123',
-#         'HOST': '127.0.0.1',
-#         'PORT': 3306,
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'odexdb',
+        'ENGINE': os.environ.get('DB_ENGINE'),
+        'NAME': os.environ.get('DB_NAME'),
     }
 }
 
