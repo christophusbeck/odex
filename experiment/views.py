@@ -157,13 +157,14 @@ class ConfigView(View):
         return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms, "id": id})
 
     def post(self, request, *args, **kwargs):
+        print("request.POST: ", request.POST)
+        print("request.GET: ", request.GET)
+
         form = ConfigForm(data=request.POST, files=request.FILES)
         odms = tools.odm_handling.static_odms_dic()
         exp = models.PendingExperiments.objects.filter(id=request.GET['id']).first()
         columns = exp.get_columns()
 
-        print("request.POST: ", request.POST)
-        print("request.GET: ", request.GET)
 
         if form.is_valid():
             print("form.cleaned_data: ", form.cleaned_data)

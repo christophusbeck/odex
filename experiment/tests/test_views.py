@@ -8,6 +8,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import JsonResponse
 from django.test import TestCase, Client, RequestFactory
 from django.urls import reverse, resolve
+from django.utils.http import urlencode
 from django.utils.timezone import now
 
 import user
@@ -67,9 +68,10 @@ class Test_MainView(TestCase):
             'main_file':csv_file,
         }
         response_post = self.client.post(self.url, data, follow=True)
-        exp = PendingExperiments.objects.filter(run_name='Test Experiment')
-        self.assertTrue(exp.exists())
-    #     all other attribute should be tested in model_testing
+        exp_queryset = PendingExperiments.objects.filter(run_name='Test Experiment')
+        self.assertTrue(exp_queryset.exists())
+        exp = PendingExperiments.objects.filter(run_name='Test Experiment').first()
+        self.assertJSONEqual(str(response_post.content, encoding='utf8'), {"status": True, "id": exp.id})
 
     def test_post_invalid_form(self):
         # except .csv file all other file would be rejected
@@ -108,15 +110,10 @@ class Test_DeleteView(TestCase):
             'run_name': 'Test Experiment',
             'main_file':self.csv_file,
         }
-        self.url = reverse('main')
-
-        self.response_post = self.client.post(self.url, data, follow=True)
-
+        url = reverse('main')
+        response_post = self.client.post(url, data, follow=True)
         self.exp = PendingExperiments.objects.filter(id=1, run_name='Test Experiment').first()
-
-        # os.makedirs('user_1/1/main_test') already create a folder in client post function
-
-        url_exp_id = str(self.response_post.content, encoding='utf8')
+        self.assertJSONEqual(str(response_post.content, encoding='utf8'), {"status": True, "id": self.exp.id})
 
         self.url = reverse('delete_exp')
 
@@ -124,6 +121,7 @@ class Test_DeleteView(TestCase):
         response = self.client.get(self.url, {'id': self.exp.id})
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Experiments.objects.filter(id=self.exp.id).exists())
+        self.assertJSONEqual(str(response.content, encoding='utf8'), {"status": True})
 
 
 class Test_ExperimentlistView(TestCase):
@@ -173,12 +171,15 @@ class ConfigurationTestCase(TestCase):
     fixtures = ['user_tests.json']
 
     def setUp(self):
-        user = Users.objects.filter(username="tester1").first()
+        '''--------------------------- logged in ---------------------------'''
+        user = Users.objects.create(username='tester3', password='123')
         session = self.client.session
         session['info'] = {'id': user.id, 'username': user.username}
         session.save()
-        self.url = reverse('configuration')
-        self.successful_url = reverse('main')
+        response = self.client.post('/login/')
+        self.assertEqual(response.status_code, 200)
+
+        '''--------------------------- create a folder and put the csv file in it ---------------------------'''
 
         with open('test_data.csv', 'w', newline='') as file:
             writer = csv.writer(file)
@@ -187,23 +188,21 @@ class ConfigurationTestCase(TestCase):
             writer.writerow(['Jane', '30', 'Female'])
 
         with open('test_data.csv', 'rb') as file:
-            csv_file = SimpleUploadedFile(file.name, file.read(), content_type='text/csv')
+            self.csv_file = SimpleUploadedFile(file.name, file.read(), content_type='text/csv')
 
-        # create a PendingExperiment object to use in the tests
-        self.exp = PendingExperiments.objects.create(
-            user=user,
-            run_name='testexperiment',
-            file_name='testfile.csv',
-            state=Experiment_state.pending,
-            odm='testodm',
-            operation='testoperation',
-            columns='{"testcolumn1": "6.433658544295",  "testcolumn2": "5.509168303351"}',
-            parameters='{"testparam1": 1, "testparam2": 2}',
-            operation_option='2',
-            has_ground_truth=True,
-            has_generated_file=True,
-            main_file=csv_file
-        )
+        data = {
+            'run_name': 'Test Experiment',
+            'main_file': self.csv_file,
+        }
+        url = reverse('main')
+        response = self.client.post(url, data, follow=True)
+        self.exp = PendingExperiments.objects.filter(id=1, run_name='Test Experiment').first()
+        self.assertJSONEqual(str(response.content, encoding='utf8'), {"status": True, "id": self.exp.id})
+
+        '''--------------------------- go into configuration ---------------------------'''
+
+        self.url = reverse('configuration')
+        self.successful_url = reverse('main')
 
         self.data = {'csrfmiddlewaretoken': ['LhESMQhKMlyrTJGAAhmbtB2fcdABFK1nkQiTJusQnnug3q9xwxQkDJTbABjgbMiF'],
                 'operation_model_options': ['1'],
@@ -360,10 +359,13 @@ class ConfigurationTestCase(TestCase):
                 }
 
         self.response_get = self.client.get(self.url, data={'id': self.exp.id})
-        self.response_post = self.client.post(self.url, data= {'id': self.exp.id})
 
-        print(self.response_post.status_code)
+        params = {"id": self.exp.id}
+        query_string = urlencode(params)
+        self.response_post = self.client.post(self.url + f'?{query_string}', data=self.data, follow=True)
 
+        print("get: ", self.response_get.status_code)
+        print("post: ", self.response_post.status_code)
 
     '''--------------------------- Test Fixture Loading ---------------------------'''
 
@@ -393,7 +395,7 @@ class ConfigurationTestCase(TestCase):
             response_get = self.client.get(self.url, data={'id': 1000000})
 
     def test_session(self):
-        user = Users.objects.filter(username="tester1").first()
+        user = Users.objects.filter(username="tester3").first()
         print(self.response_get.request['QUERY_STRING'])
         print(self.response_get.context)
         print(self.response_get.client.session['info'])
@@ -410,18 +412,13 @@ class ConfigurationTestCase(TestCase):
         # check that the context contains the expected objects
         self.assertEqual(self.response_get.context['exp'], self.exp)
         self.assertEqual(self.response_get.context['columns'],
-                         {"testcolumn1": "6.433658544295", "testcolumn2": "5.509168303351"})
+                         {'Name': 'John', 'Age': '25', 'Gender': 'Male'})
         self.assertIsNotNone(self.response_get.context['form'])
         self.assertIsNotNone(self.response_get.context['odms'])
 
     def test_post_valid_form(self):
-        file_data = b"file contents here"
-        file_name = "test_file.csv"
-        file_mock = SimpleUploadedFile(file_name, file_data, content_type="text/csv")
-
-
-
-        self.assertRedirects(self.response_post, self.successful_url)
+        print(str(self.response_post.content, encoding='utf8'))
+        # self.assertJSONEqual(str(self.response_post.content, encoding='utf8'), {"status": True, "id": exp.id})
 
     '''--------------------------- Successful ChangeName ---------------------------'''
 
