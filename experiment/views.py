@@ -114,6 +114,7 @@ class MainView(View):
 
             pending.full_clean()
             pending.save()
+
             with open(pending.main_file.path, 'r') as f:
                 reader = csv.reader(f)
                 result = list(reader)
