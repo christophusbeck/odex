@@ -71,7 +71,3 @@ unit-tests:
     - coverage run manage.py test --settings=odex.settings_test
     - coverage report
 
-deploy:
-  stage: deploy
-  script: echo "Define your deployment script!"
-  environment: production
