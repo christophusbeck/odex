@@ -1,5 +1,5 @@
 # ignore result files
-/media/
+/media/*
 
 # coverage data
 .coverage
@@ -10,5 +10,3 @@
 
 # database
 odexdb
-
-/input.csv
