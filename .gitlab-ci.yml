@@ -62,7 +62,8 @@ django-tests:
   stage: test
   script:
     # use python3 explicitly. see https://wiki.ubuntu.com/Python/3
-    - python3 manage.py makemigrations
+    - python3 manage.py makemigrations user
+    - python3 manage.py makemigrations experiment
     - python3 manage.py migrate
     - coverage run manage.py test --settings=odex.settings_test
     - coverage report
