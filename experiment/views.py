@@ -143,34 +143,17 @@ class DeleteView(View):
         return JsonResponse({"status": True})
 
 
-class Configuration(View):
+class ConfigView(View):
     template_name = "Configuration.html"
 
     def get(self, request, *args, **kwargs):
-
         exp = models.PendingExperiments.objects.filter(id=request.GET['id']).first()
         columns = exp.get_columns()
         form = ConfigForm()
         odms = tools.odm_handling.static_odms_dic()
+        id = request.GET['id']
 
-        # if isinstance(columns, list):
-        #
-        #     with open(exp.main_file.path, 'r') as f:
-        #         reader = csv.reader(f)
-        #         result = list(reader)
-        #         first_row = result[1]
-        #         new_columns = {}
-        #         for i in range(len(columns)):
-        #             if not result[0][i]:
-        #                 continue
-        #             new_columns[columns[i]] = first_row[i]
-        #         exp.set_columns(new_columns)
-        #         exp.save()
-        #         columns = new_columns
-        #
-        # print(isinstance(columns, dict))
-
-        return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms})
+        return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms, "id": id})
 
     def post(self, request, *args, **kwargs):
         form = ConfigForm(data=request.POST, files=request.FILES)
