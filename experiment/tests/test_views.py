@@ -282,8 +282,14 @@ class ConfigurationTestCase(TestCase):
         self.assertIsNotNone(self.response_get.context['odms'])
 
     def test_post_valid_form(self):
-        self.assertRedirects(self.response_post, self.successful_url, status_code= 302, target_status_code= 200)
+        self.assertRedirects(self.response_post, self.successful_url, status_code= 302, target_status_code= 200, fetch_redirect_response=True)
 
     def test_post_invalid_form(self):
+        self.data = {}
+        self.response_get = self.client.get(self.url, data={'id': self.exp.id})
+        # in order to get the information /?id=, using urlencode
+        params = {'id': self.exp.id}
+        query_string = urlencode(params)
+        self.response_post = self.client.post(f'{self.url}?{query_string}', data=self.data)
         self.assertEqual(self.response_post.status_code, 200)
 
