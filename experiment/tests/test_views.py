@@ -171,12 +171,15 @@ class ConfigurationTestCase(TestCase):
     fixtures = ['user_tests.json']
 
     def setUp(self):
-        user = Users.objects.filter(username="tester1").first()
+        '''--------------------------- logged in ---------------------------'''
+        user = Users.objects.create(username='tester3', password='123')
         session = self.client.session
         session['info'] = {'id': user.id, 'username': user.username}
         session.save()
-        self.url = reverse('configuration')
-        self.successful_url = reverse('main')
+        response = self.client.post('/login/')
+        self.assertEqual(response.status_code, 200)
+
+        '''--------------------------- create a folder and put the csv file in it ---------------------------'''
 
         with open('test_data.csv', 'w', newline='') as file:
             writer = csv.writer(file)
@@ -185,97 +188,21 @@ class ConfigurationTestCase(TestCase):
             writer.writerow(['Jane', '30', 'Female'])
 
         with open('test_data.csv', 'rb') as file:
-            csv_file = SimpleUploadedFile(file.name, file.read(), content_type='text/csv')
+            self.csv_file = SimpleUploadedFile(file.name, file.read(), content_type='text/csv')
 
-        url = reverse('main')
-
-        data = {'run_name': 'Test Experiment', 'main_file': csv_file}
-        self.client.post(url, data, follow=True)
-        self.exp = PendingExperiments.objects.filter(id=1, run_name='Test Experiment').first()
-
-
-        # self.data = {'csrfmiddlewaretoken': ['LhESMQhKMlyrTJGAAhmbtB2fcdABFK1nkQiTJusQnnug3q9xwxQkDJTbABjgbMiF'],
-        #         'operation_model_options': ['1'],
-        #         'operation_except': [''],
-        #         'operation_written': [''],
-        #         'ground_truth_options': ['1'],
-        #         'odms': ['1'],
-        #         'ABOD_contamination': [''],
-        #         'ABOD_n_neighbors': [''],
-        #         'ABOD_method': [''],
-        #         'CBLOF_n_clusters': [''],
-        #         'CBLOF_contamination': [''],
-        #         'CBLOF_clustering_estimator': [''],
-        #         'COF_contamination': [''],
-        #         'COF_n_neighbors': [''],
-        #         'COF_method': [''],
-        #         'COPOD_contamination': [''],
-        #         'COPOD_n_jobs': [''],
-        #         'ECOD_contamination': [''],
-        #         'ECOD_n_jobs': [''],
-        #         'FeatureBagging_base_estimator': [''],
-        #         'FeatureBagging_n_estimators': [''],
-        #         'FeatureBagging_contamination': [''],
-        #         'GMM_n_components': [''],
-        #         'GMM_covariance_type': [''],
-        #         'GMM_tol': [''],
-        #         'HBOS_n_bins': [''],
-        #         'HBOS_alpha': [''],
-        #         'HBOS_tol': [''],
-        #         'IForest_n_estimators': [''],
-        #         'IForest_max_samples': [''],
-        #         'IForest_contamination': [''],
-        #         'INNE_n_estimators': [''],
-        #         'INNE_max_samples': [''],
-        #         'INNE_contamination': [''],
-        #         'KDE_contamination': [''],
-        #         'KDE_bandwidth': [''],
-        #         'KDE_algorithm': [''],
-        #         'KPCA_contamination': [''],
-        #         'KPCA_n_components': [''],
-        #         'KPCA_n_selected_components': [''],
-        #         'LMDD_contamination': [''],
-        #         'LMDD_n_iter': [''],
-        #         'LMDD_dis_measure': [''],
-        #         'LODA_contamination': [''],
-        #         'LODA_n_bins': [''],
-        #         'LODA_n_random_cuts': [''],
-        #         'LOF_n_neighbors': [''],
-        #         'LOF_algorithm': [''],
-        #         'LOF_leaf_size': [''],
-        #         'LOCI_contamination': [''],
-        #         'LOCI_alpha': [''],
-        #         'LOCI_k': [''],
-        #         'LUNAR_model_type': [''],
-        #         'LUNAR_n_neighbours': [''],
-        #         'LUNAR_negative_sampling': [''],
-        #         'MAD_threshold': [''],
-        #         'MCD_contamination': [''],
-        #         'MCD_store_precision': [''],
-        #         'MCD_assume_centered': [''],
-        #         'OCSVM_kernel': [''],
-        #         'OCSVM_degree': [''],
-        #         'OCSVM_gamma': [''],
-        #         'PCA_n_components': [''],
-        #         'PCA_n_selected_components': [''],
-        #         'PCA_contamination': [''],
-        #         'RGraph_transition_steps': [''],
-        #         'RGraph_n_nonzero': [''],
-        #         'RGraph_gamma': [''],
-        #         'ROD_contamination': [''],
-        #         'ROD_parallel_execution': [''],
-        #         'Sampling_contamination': [''],
-        #         'Sampling_subset_size': [''],
-        #         'Sampling_metric': [''],
-        #         'x': ['68'],
-        #         'y': ['15']
-        #         }
-
-        self.data = {
-                'operation_except': '',
-                'operation_written': '',
-                'ground_truth_options': '1',
+        data = {
+            'run_name': 'Test Experiment',
+            'main_file': self.csv_file,
         }
+        url = reverse('main')
+        response = self.client.post(url, data, follow=True)
+        self.exp = PendingExperiments.objects.filter(id=1, run_name='Test Experiment').first()
+        self.assertJSONEqual(str(response.content, encoding='utf8'), {"status": True, "id": self.exp.id})
+
+        '''--------------------------- go into configuration ---------------------------'''
+
+        self.url = reverse('configuration')
+        self.successful_url = reverse('main')
 
         self.data = {'csrfmiddlewaretoken': 'LhESMQhKMlyrTJGAAhmbtB2fcdABFK1nkQiTJusQnnug3q9xwxQkDJTbABjgbMiF',
                      'operation_model_options': '1', 'operation_except': '', 'operation_written': '',
@@ -306,7 +233,7 @@ class ConfigurationTestCase(TestCase):
         # in order to get the information /?id=, using urlencode
         params = {'id': self.exp.id}
         query_string = urlencode(params)
-        self.response_post = self.client.post(f'{self.url}?{query_string}', data=self.data)
+        self.response_post = self.client.post(self.url + f'?{query_string}', data=self.data)
 
         print("--------------------\n")
         print(self.response_post.status_code)
@@ -339,13 +266,7 @@ class ConfigurationTestCase(TestCase):
             response_get = self.client.get(self.url, data={'id': 1000000})
 
     def test_session(self):
-        user = Users.objects.filter(username="tester1").first()
-        print(self.response_get.request['QUERY_STRING'])
-        print(self.response_get.context)
-        print(self.response_get.client.session['info'])
-        print(self.response_post.request['QUERY_STRING'])
-        print(self.response_post.context)
-        print(self.response_post.client.session['info'])
+        user = Users.objects.filter(username="tester3").first()
         self.assertEqual(self.response_get.client.session['info'], {'id': user.id, 'username': user.username})
 
     def test_get(self):
@@ -356,20 +277,13 @@ class ConfigurationTestCase(TestCase):
         # check that the context contains the expected objects
         self.assertEqual(self.response_get.context['exp'], self.exp)
         self.assertEqual(self.response_get.context['columns'],
-                         {"testcolumn1": "6.433658544295", "testcolumn2": "5.509168303351"})
+                         {'Age': '25', 'Gender': 'Male', 'Name': 'John'})
         self.assertIsNotNone(self.response_get.context['form'])
         self.assertIsNotNone(self.response_get.context['odms'])
 
     def test_post_valid_form(self):
-        # file_data = b"file contents here"
-        # file_name = "test_file.csv"
-        # file_mock = SimpleUploadedFile(file_name, file_data, content_type="text/csv")
-
-        self.assertRedirects(self.response_post, self.successful_url, status_code= 302, target_status_code= 200, fetch_redirect_response=True)
+        self.assertRedirects(self.response_post, self.successful_url, status_code= 302, target_status_code= 200)
 
     def test_post_invalid_form(self):
         self.assertEqual(self.response_post.status_code, 200)
-    # '''--------------------------- Successful ChangeName ---------------------------'''
-    #
-    # def test_redirection(self):
-    #     self.assertRedirects(self.response_post, self.successful_url, status_code=302, target_status_code=200)
+
