@@ -3,6 +3,7 @@ import os
 import threading
 
 import numpy as np
+from django.db import OperationalError
 from django.utils import timezone
 
 from experiment import models
@@ -265,11 +266,15 @@ class DetectorThread(threading.Thread):
             metrics_path = "media/" + models.user_metrics_path(finished_exp, finished_exp.file_name)
             odm_handling.write_data_to_csv(metrics_path, self.metrics_to_csv(finished_exp, metrics))
 
+        except OperationalError as e:
+            print("Error occured")
+            print(e)
+
         except Exception as e:
             print("Error occured")
             print(e)
             print("exp id:", self.id)
-            exp = models.PendingExperiments.objects.filter(id=self.id).first()
+            exp = models.PendingExperiments.objects.filter(experiments_ptr_id=self.id).first()
             exp.state = models.Experiment_state.failed
             exp.error = "There are some error related to your entered hyperparameters of odm you seleted. The error message is: " + \
                         str(e) + ". This error message will help you adjust the hyperparameters. " \

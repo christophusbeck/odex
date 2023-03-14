@@ -260,15 +260,16 @@ class ResultView(View):
     template_name = "result.html"
 
     def get(self, request, *args, **kwargs):
+        """--------------------- only pending and finished exp can access this get function ---------------------"""
         exp = models.Experiments.objects.filter(id=request.GET['id']).first()
         columns = exp.get_columns()
-        print(columns)
+        print("on reslut page, coulums: ", columns)
         paras = exp.get_para()
-        print("paras: ", paras)
+        print("on result page, paras: ", paras)
         if exp.state == models.Experiment_state.pending:
             exp = models.PendingExperiments.objects.filter(id=request.GET['id']).first()
             return render(request, self.template_name, {"exp": exp, "columns": columns, "paras": paras})
-        elif exp.state == models.Experiment_state.finished:
+        else:
             exp = models.FinishedExperiments.objects.filter(id=request.GET['id']).first()
             metrics = exp.get_metrics()
             detected_num = metrics['Detected Outliers']
@@ -284,8 +285,6 @@ class ResultView(View):
 
             return render(request, self.template_name, {"exp": exp, "columns": columns, "paras": paras,
                                                         "outliers": detected_num, "performance": performance})
-
-        return redirect("/configuration/?id=" + exp.id)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
