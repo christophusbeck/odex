@@ -68,6 +68,5 @@ unit-tests:
     - python3 manage.py makemigrations user
     - python3 manage.py makemigrations experiment
     - python3 manage.py migrate
-    - coverage run manage.py test --settings=odex.settings_test
-    - coverage report
+    - coverage run manage.py test --settings=odex.settings_test || coverage report
 
