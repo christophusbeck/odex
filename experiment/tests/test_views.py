@@ -518,6 +518,7 @@ class ConfigurationTest(TransactionTestCase):
         response_post = self.client.post(self.url + f'?{query_string}', data=self.wrong_data)
         self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
 
+        # Wait for the end of the detector thread
         time.sleep(0.2)
         exp = PendingExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.failed)
@@ -539,6 +540,7 @@ class ConfigurationTest(TransactionTestCase):
         response_post = self.client.post(self.url + f'?{query_string}', data=self.data_op1)
         self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
 
+        # Wait for the end of the detector thread
         time.sleep(0.2)
         exp = FinishedExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.finished)
@@ -549,6 +551,7 @@ class ConfigurationTest(TransactionTestCase):
         response_post = self.client.post(self.url + f'?{query_string}', data=self.data_op2)
         self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
 
+        # Wait for the end of the detector thread
         time.sleep(0.2)
         exp = FinishedExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.finished)
@@ -559,6 +562,7 @@ class ConfigurationTest(TransactionTestCase):
         response_post = self.client.post(self.url + f'?{query_string}', data=self.data_op3)
         self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
 
+        # Wait for the end of the detector thread
         time.sleep(0.2)
         exp = FinishedExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.finished)
@@ -566,12 +570,13 @@ class ConfigurationTest(TransactionTestCase):
 
     def test_post_valid_form_with_gt_file(self):
         data = self.data_op1.copy()
-        data["ground_truth"] = SimpleUploadedFile("test_data.csv", b"column1\n1\n0\n")
+        data["ground_truth"] = SimpleUploadedFile("test_data.csv", b"ground_truth\n1\n0\n")
         query_string = urlencode({'id': self.exp.id})
         response_post = self.client.post(self.url + f'?{query_string}', data=data)
         self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
 
-        time.sleep(1)
+        # Wait for the end of the detector thread
+        time.sleep(2)
         exp = FinishedExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.finished)
         self.assertEqual(exp.operation_option, "1")
@@ -579,6 +584,15 @@ class ConfigurationTest(TransactionTestCase):
     def test_post_valid_form_with_add_file(self):
         data = self.data_op1.copy()
         data["generated_file"] = SimpleUploadedFile("test_data.csv", b"column1,column2,column3\n1,2,3\n4,5,6\n")
+        query_string = urlencode({'id': self.exp.id})
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
+        self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
+
+        # Wait for the end of the detector thread
+        time.sleep(2)
+        exp = FinishedExperiments.objects.get(id=self.exp.id)
+        self.assertEqual(exp.state, Experiment_state.finished)
+        self.assertEqual(exp.operation_option, "1")
 
 
 
@@ -596,9 +610,6 @@ class ConfigurationTest(TransactionTestCase):
         self.assertTrue(response_post.context['form'].errors)
         self.assertIn('This field is required.', response_post.context['form'].errors['ground_truth_options'])
         self.assertIn('This field is required.', response_post.context['form'].errors['operation_model_options'])
-
-
-
 
     def test_post_invalid_form_with_subspace_option_2_but_no_operation(self):
         data = self.invalid_data_op2.copy()
@@ -667,6 +678,27 @@ class ConfigurationTest(TransactionTestCase):
         print("response_post.context['form'].errors: ", response_post.context['form'].errors)
         self.assertIn("Input error by ABOD_n_neighbors: invalid literal for int() with base 10: 'abd'",
                       response_post.context['form'].errors['__all__'])
+
+    def test_post_invalid_form_with_invalid_parameter(self):
+        data = self.data_op1.copy()
+        data['ABOD_contamination'] = '100000'
+        query_string = urlencode({'id': self.exp.id})
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
+        self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
+
+        time.sleep(0.2)
+        exp = PendingExperiments.objects.get(id=self.exp.id)
+        self.assertEqual(exp.state, Experiment_state.failed)
+        self.assertEqual(exp.operation_option, "1")
+        self.assertTrue(exp.error)
+        self.assertIn("There are some error related to your entered hyperparameters of odm you seleted. "
+                      "The error message is: contamination must be in (0, 0.5], "
+                      "got: 100000.000000. This error message will help you adjust the hyperparameters. "
+                      "In some cases, it is also possible that there is an error in the file you uploaded. "
+                      "Please check the column you want to execute to ensure "
+                      "that there are no null values or uncalculated values.",
+                      exp.error)
+
 
 
 
