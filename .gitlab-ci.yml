@@ -70,19 +70,18 @@ unit-tests:
     - python3 manage.py makemigrations experiment
     - python3 manage.py migrate
     - coverage run manage.py test --settings=odex.settings_test || coverage report
-    - coverage html -d coverage
+    - coverage html
   coverage: '/TOTAL.*\s+(\d+%)$/'
   artifacts:
     paths: 
-      - coverage/
-    expire_in: 10 days
+      - htmlcov/
 
 pages:
   stage: deploy
   dependencies:
     - coverage
   script:
-    - mv coverage/ public/
+    - mv htmlcov/ public/
   artifacts:
     paths:
       - public
