@@ -3,15 +3,79 @@
     "model": "user.tans",
     "pk": 1,
     "fields": {
-      "tan": "123",
-      "authenticated": 1
+      "tan": "121",
+      "authenticated": 0
     }
   },
   {
     "model": "user.tans",
     "pk": 2,
     "fields": {
+      "tan": "122",
+      "authenticated": 0
+    }
+  },
+  {
+    "model": "user.tans",
+    "pk": 3,
+    "fields": {
+      "tan": "123",
+      "authenticated": 1
+    }
+  },
+  {
+    "model": "user.tans",
+    "pk": 4,
+    "fields": {
       "tan": "124",
+      "authenticated": 0
+    }
+  },
+  {
+    "model": "user.tans",
+    "pk": 5,
+    "fields": {
+      "tan": "125",
+      "authenticated": 0
+    }
+  },
+  {
+    "model": "user.tans",
+    "pk": 6,
+    "fields": {
+      "tan": "126",
+      "authenticated": 0
+    }
+  },
+  {
+    "model": "user.tans",
+    "pk": 7,
+    "fields": {
+      "tan": "127",
+      "authenticated": 0
+    }
+  },
+  {
+    "model": "user.tans",
+    "pk": 8,
+    "fields": {
+      "tan": "128",
+      "authenticated": 0
+    }
+  },
+  {
+    "model": "user.tans",
+    "pk": 9,
+    "fields": {
+      "tan": "129",
+      "authenticated": 0
+    }
+  },
+  {
+    "model": "user.tans",
+    "pk": 10,
+    "fields": {
+      "tan": "130",
       "authenticated": 0
     }
   },
@@ -50,7 +114,6 @@
         "state": "finished",
         "odm": "text odm",
         "operation": "xi and x2",
-        "auxiliary_file_name": "test aux_file",
         "columns": "[\"x1\", \"x2\"]"
     }
   },

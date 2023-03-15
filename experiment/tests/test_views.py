@@ -597,9 +597,6 @@ class ConfigurationTest(TransactionTestCase):
         self.assertIn('This field is required.', response_post.context['form'].errors['ground_truth_options'])
         self.assertIn('This field is required.', response_post.context['form'].errors['operation_model_options'])
 
-
-
-
     def test_post_invalid_form_with_subspace_option_2_but_no_operation(self):
         data = self.invalid_data_op2.copy()
         data['operation_except'] = ''
@@ -662,6 +659,22 @@ class ConfigurationTest(TransactionTestCase):
         time.sleep(0.2)
         exp = PendingExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.editing)
+        self.assertIsNone(exp.operation_option)
+        self.assertTrue(response_post.context['form'].errors)
+        print("response_post.context['form'].errors: ", response_post.context['form'].errors)
+        self.assertIn("Input error by ABOD_n_neighbors: invalid literal for int() with base 10: 'abd'",
+                      response_post.context['form'].errors['__all__'])
+
+    def test_post_invalid_form_with_invalid_parameter(self):
+        data = self.data_op1.copy()
+        data['ABOD_contamination'] = '100000'
+        query_string = urlencode({'id': self.exp.id})
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
+        self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
+
+        time.sleep(0.2)
+        exp = PendingExperiments.objects.get(id=self.exp.id)
+        self.assertEqual(exp.state, Experiment_state.failed)
         self.assertIsNone(exp.operation_option)
         self.assertTrue(response_post.context['form'].errors)
         print("response_post.context['form'].errors: ", response_post.context['form'].errors)
