@@ -24,7 +24,6 @@ import json
 
 class Test_MainView(TestCase):
     fixtures = ['user_tests.json']
-    '''--------------------------- Session test ---------------------------'''
 
     def setUp(self):
         user = Users.objects.create(username='tester3', password='123')
@@ -36,11 +35,13 @@ class Test_MainView(TestCase):
         self.url = reverse('main')
 
     '''--------------------------- Test Fixture Loading for user ---------------------------'''
+
     def test_fixtures(self):
         user_test = Users.objects.get(id=1)
         self.assertEqual(user_test.username, 'tester1')
 
     '''---------------------------   Basic URL tests    ---------------------------'''
+
     def test_session(self):
             user = Users.objects.filter(username="tester3").first()
             response_get = self.client.get(self.url)
@@ -59,6 +60,7 @@ class Test_MainView(TestCase):
         self.assertTemplateUsed(response_get, 'main.html')
 
     '''---------------------------   Basic URL tests for GET    ---------------------------'''
+
     def test_main_get_without_login(self):
         client = Client()
         # without login and direct request to get into the main page, user would be redirected to the login page
@@ -74,7 +76,8 @@ class Test_MainView(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    '''---------------------------   Basic URL tests for POST    ---------------------------'''
+    '''---------------------------   Basic URL tests for POST with valid form    ---------------------------'''
+
     def test_post_valid_form(self):
         with open('test_data.csv', 'w', newline='') as file:
             writer = csv.writer(file)
@@ -113,6 +116,8 @@ class Test_MainView(TestCase):
         exp = PendingExperiments.objects.filter(run_name='Test Experiment').first()
         self.assertJSONEqual(str(response_post.content, encoding='utf8'), {"status": True, "id": exp.id})
         self.assertEqual(exp.get_columns(), {"Name": "John", "Age": "25", "Gender": "Male"})
+
+    '''---------------------------   Basic URL tests for POST with invalid form    ---------------------------'''
 
     def test_post_missing_form(self):
         data = {}
@@ -424,50 +429,6 @@ class ConfigurationTest(TransactionTestCase):
                                  'ROD_contamination': '', 'ROD_parallel_execution': '', 'Sampling_contamination': '',
                                  'Sampling_subset_size': '', 'Sampling_metric': '', 'x': '68', 'y': '15'}
 
-        self.data_with_add = {'operation_model_options': '1', 'operation_except': '', 'operation_written': '',
-                     'ground_truth_options': '1', 'odms': '1', 'ABOD_contamination': '', 'ABOD_n_neighbors': '',
-                     'ABOD_method': '', 'CBLOF_n_clusters': '', 'CBLOF_contamination': '',
-                     'CBLOF_clustering_estimator': '', 'COF_contamination': '', 'COF_n_neighbors': '', 'COF_method': '',
-                     'COPOD_contamination': '', 'COPOD_n_jobs': '', 'ECOD_contamination': '', 'ECOD_n_jobs': '',
-                     'FeatureBagging_base_estimator': '', 'FeatureBagging_n_estimators': '',
-                     'FeatureBagging_contamination': '', 'GMM_n_components': '', 'GMM_covariance_type': '',
-                     'GMM_tol': '', 'HBOS_n_bins': '', 'HBOS_alpha': '', 'HBOS_tol': '', 'IForest_n_estimators': '',
-                     'IForest_max_samples': '', 'IForest_contamination': '', 'INNE_n_estimators': '',
-                     'INNE_max_samples': '', 'INNE_contamination': '', 'KDE_contamination': '', 'KDE_bandwidth': '',
-                     'KDE_algorithm': '', 'KPCA_contamination': '', 'KPCA_n_components': '',
-                     'KPCA_n_selected_components': '', 'LMDD_contamination': '', 'LMDD_n_iter': '',
-                     'LMDD_dis_measure': '', 'LODA_contamination': '', 'LODA_n_bins': '', 'LODA_n_random_cuts': '',
-                     'LOF_n_neighbors': '', 'LOF_algorithm': '', 'LOF_leaf_size': '', 'LOCI_contamination': '',
-                     'LOCI_alpha': '', 'LOCI_k': '', 'LUNAR_model_type': '', 'LUNAR_n_neighbours': '',
-                     'LUNAR_negative_sampling': '', 'MAD_threshold': '', 'MCD_contamination': '',
-                     'MCD_store_precision': '', 'MCD_assume_centered': '', 'OCSVM_kernel': '', 'OCSVM_degree': '',
-                     'OCSVM_gamma': '', 'PCA_n_components': '', 'PCA_n_selected_components': '',
-                     'PCA_contamination': '', 'RGraph_transition_steps': '', 'RGraph_n_nonzero': '', 'RGraph_gamma': '',
-                     'ROD_contamination': '', 'ROD_parallel_execution': '', 'Sampling_contamination': '',
-                     'Sampling_subset_size': '', 'Sampling_metric': '', 'x': '68', 'y': '15'}
-
-        self.data_with_gt = {'operation_model_options': '1', 'operation_except': '', 'operation_written': '',
-                     'ground_truth_options': '1', 'odms': '1', 'ABOD_contamination': '', 'ABOD_n_neighbors': '',
-                     'ABOD_method': '', 'CBLOF_n_clusters': '', 'CBLOF_contamination': '',
-                     'CBLOF_clustering_estimator': '', 'COF_contamination': '', 'COF_n_neighbors': '', 'COF_method': '',
-                     'COPOD_contamination': '', 'COPOD_n_jobs': '', 'ECOD_contamination': '', 'ECOD_n_jobs': '',
-                     'FeatureBagging_base_estimator': '', 'FeatureBagging_n_estimators': '',
-                     'FeatureBagging_contamination': '', 'GMM_n_components': '', 'GMM_covariance_type': '',
-                     'GMM_tol': '', 'HBOS_n_bins': '', 'HBOS_alpha': '', 'HBOS_tol': '', 'IForest_n_estimators': '',
-                     'IForest_max_samples': '', 'IForest_contamination': '', 'INNE_n_estimators': '',
-                     'INNE_max_samples': '', 'INNE_contamination': '', 'KDE_contamination': '', 'KDE_bandwidth': '',
-                     'KDE_algorithm': '', 'KPCA_contamination': '', 'KPCA_n_components': '',
-                     'KPCA_n_selected_components': '', 'LMDD_contamination': '', 'LMDD_n_iter': '',
-                     'LMDD_dis_measure': '', 'LODA_contamination': '', 'LODA_n_bins': '', 'LODA_n_random_cuts': '',
-                     'LOF_n_neighbors': '', 'LOF_algorithm': '', 'LOF_leaf_size': '', 'LOCI_contamination': '',
-                     'LOCI_alpha': '', 'LOCI_k': '', 'LUNAR_model_type': '', 'LUNAR_n_neighbours': '',
-                     'LUNAR_negative_sampling': '', 'MAD_threshold': '', 'MCD_contamination': '',
-                     'MCD_store_precision': '', 'MCD_assume_centered': '', 'OCSVM_kernel': '', 'OCSVM_degree': '',
-                     'OCSVM_gamma': '', 'PCA_n_components': '', 'PCA_n_selected_components': '',
-                     'PCA_contamination': '', 'RGraph_transition_steps': '', 'RGraph_n_nonzero': '', 'RGraph_gamma': '',
-                     'ROD_contamination': '', 'ROD_parallel_execution': '', 'Sampling_contamination': '',
-                     'Sampling_subset_size': '', 'Sampling_metric': '', 'x': '68', 'y': '15'}
-
     '''--------------------------- Test Fixture Loading ---------------------------'''
 
     def test_fixtures(self):
@@ -475,6 +436,7 @@ class ConfigurationTest(TransactionTestCase):
         self.assertEqual(user.username, 'tester1')
 
     '''---------------------------   Basic URL tests    ---------------------------'''
+
     def test_session(self):
         user = Users.objects.filter(username="tester3").first()
         response_get = self.client.get(self.url, data={'id': self.exp.id})
@@ -501,6 +463,7 @@ class ConfigurationTest(TransactionTestCase):
             response_get = self.client.get(self.url, data={'id': 1000000})
 
     '''---------------------------   Basic URL tests for GET    ---------------------------'''
+
     def test_get_editing_experiment(self):
         response_get = self.client.get(self.url, data={'id': self.exp.id})
         self.assertEqual(response_get.status_code, 200)
@@ -534,7 +497,8 @@ class ConfigurationTest(TransactionTestCase):
         self.assertIsNotNone(response_get.context['form'])
         self.assertIsNotNone(response_get.context['odms'])
 
-    '''---------------------------   Basic URL tests for POST    ---------------------------'''
+    '''---------------------------   Basic URL tests for POST with valid form   ---------------------------'''
+
     def test_post_valid_for_with_subspace_option_1(self):
         query_string = urlencode({'id': self.exp.id})
         response_post = self.client.post(self.url + f'?{query_string}', data=self.data_op1)
@@ -580,6 +544,7 @@ class ConfigurationTest(TransactionTestCase):
         exp = FinishedExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.finished)
         self.assertEqual(exp.operation_option, "1")
+        self.assertTrue(exp.has_ground_truth)
 
     def test_post_valid_form_with_add_file(self):
         data = self.data_op1.copy()
@@ -593,8 +558,9 @@ class ConfigurationTest(TransactionTestCase):
         exp = FinishedExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.finished)
         self.assertEqual(exp.operation_option, "1")
+        self.assertTrue(exp.has_generated_file)
 
-
+    '''---------------------------   Basic URL tests for POST with invalid form    ---------------------------'''
 
     def test_post_invalid_form_with_no_data(self):
         data = {}
@@ -618,6 +584,7 @@ class ConfigurationTest(TransactionTestCase):
         response_post = self.client.post(self.url + f'?{query_string}', data=data)
         self.assertTemplateUsed(response_post, "configuration.html")
 
+        # Wait for the end of the detector thread
         time.sleep(0.2)
         exp = PendingExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.editing)
@@ -630,6 +597,7 @@ class ConfigurationTest(TransactionTestCase):
         response_post = self.client.post(self.url + f'?{query_string}', data=self.invalid_data_op2)
         self.assertTemplateUsed(response_post, "configuration.html")
 
+        # Wait for the end of the detector thread
         time.sleep(0.2)
         exp = PendingExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.editing)
@@ -645,6 +613,7 @@ class ConfigurationTest(TransactionTestCase):
         response_post = self.client.post(self.url + f'?{query_string}', data=data)
         self.assertTemplateUsed(response_post, "configuration.html")
 
+        # Wait for the end of the detector thread
         time.sleep(0.2)
         exp = PendingExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.editing)
@@ -658,6 +627,7 @@ class ConfigurationTest(TransactionTestCase):
         response_post = self.client.post(self.url + f'?{query_string}', data=self.invalid_data_op3)
         self.assertTemplateUsed(response_post, "configuration.html")
 
+        # Wait for the end of the detector thread
         time.sleep(0.2)
         exp = PendingExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.editing)
@@ -670,6 +640,7 @@ class ConfigurationTest(TransactionTestCase):
         response_post = self.client.post(self.url + f'?{query_string}', data=data)
         self.assertTemplateUsed(response_post, "configuration.html")
 
+        # Wait for the end of the detector thread
         time.sleep(0.2)
         exp = PendingExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.editing)
@@ -686,6 +657,7 @@ class ConfigurationTest(TransactionTestCase):
         response_post = self.client.post(self.url + f'?{query_string}', data=data)
         self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
 
+        # Wait for the end of the detector thread
         time.sleep(0.2)
         exp = PendingExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.failed)
@@ -698,9 +670,6 @@ class ConfigurationTest(TransactionTestCase):
                       "Please check the column you want to execute to ensure "
                       "that there are no null values or uncalculated values.",
                       exp.error)
-
-
-
 
 
 class ResultViewTest(TransactionTestCase):
@@ -737,8 +706,7 @@ class ResultViewTest(TransactionTestCase):
 
         '''--------------------------- go into configuration ---------------------------'''
 
-        cls.data = {'csrfmiddlewaretoken': 'LhESMQhKMlyrTJGAAhmbtB2fcdABFK1nkQiTJusQnnug3q9xwxQkDJTbABjgbMiF',
-                     'operation_model_options': '1', 'operation_except': '', 'operation_written': '',
+        cls.data = { 'operation_model_options': '1', 'operation_except': '', 'operation_written': '',
                      'ground_truth_options': '1', 'odms': '1', 'ABOD_contamination': '', 'ABOD_n_neighbors': '',
                      'ABOD_method': '', 'CBLOF_n_clusters': '', 'CBLOF_contamination': '',
                      'CBLOF_clustering_estimator': '', 'COF_contamination': '', 'COF_n_neighbors': '', 'COF_method': '',
@@ -760,17 +728,7 @@ class ResultViewTest(TransactionTestCase):
                      'ROD_contamination': '', 'ROD_parallel_execution': '', 'Sampling_contamination': '',
                      'Sampling_subset_size': '', 'Sampling_metric': '', 'x': '68', 'y': '15'}
 
-        # in order to get the information /?id=, using urlencode
-        url = reverse('configuration')
-        params = {'id': cls.exp.id}
-        query_string = urlencode(params)
-        response_post = cls.client.post(url + f'?{query_string}', data=cls.data)
-
         cls.url = reverse('result')
-        cls.successful_url = reverse('main')
-
-        # self.response_get = self.client.get(self.url, data={'id': self.exp.id})
-        # self.response_post = self.client.post(self.url + f'?{query_string}', data=self.data)
 
     '''--------------------------- Test Fixture Loading ---------------------------'''
 
@@ -779,6 +737,11 @@ class ResultViewTest(TransactionTestCase):
         self.assertEqual(user.username, 'tester1')
 
     '''---------------------------   Basic URL tests    ---------------------------'''
+
+    def test_session(self):
+        user = Users.objects.filter(username="tester3").first()
+        response_get = self.client.get(self.url, data={'id': self.exp.id})
+        self.assertEqual(response_get.client.session['info'], {'id': user.id, 'username': user.username})
 
     def test_page_status_code(self):
         response_get = self.client.get(self.url, data={'id': self.exp.id})
@@ -800,12 +763,52 @@ class ResultViewTest(TransactionTestCase):
         with self.assertRaises(AttributeError):
             response_get = self.client.get(self.url, data={'id': 1000000})
 
-    def test_session(self):
-        user = Users.objects.filter(username="tester3").first()
+    '''---------------------------   Basic URL tests for GET    ---------------------------'''
+
+    def test_get_pending_experiment(self):
+        url = reverse('configuration')
+        params = {'id': self.exp.id}
+        query_string = urlencode(params)
+        response_post = self.client.post(url + f'?{query_string}', data=self.data)
+        self.assertRedirects(response_post, reverse('main'), status_code=302, target_status_code=200)
+
+        exp = PendingExperiments.objects.get(id=self.exp.id)
+        self.assertEqual(exp.state, Experiment_state.pending)
         response_get = self.client.get(self.url, data={'id': self.exp.id})
-        self.assertEqual(response_get.client.session['info'], {'id': user.id, 'username': user.username})
+        self.assertEqual(response_get.status_code, 200)
+        self.assertTemplateUsed(response_get, 'result.html')
+        self.assertContains(response_get, self.exp.id)
 
     def test_get_finished_experiment(self):
+        url = reverse('configuration')
+        params = {'id': self.exp.id}
+        query_string = urlencode(params)
+        response_post = self.client.post(url + f'?{query_string}', data=self.data)
+        self.assertRedirects(response_post, reverse('main'), status_code=302, target_status_code=200)
+
+        # Wait for the end of the detector thread
+        time.sleep(2)
+        exp = FinishedExperiments.objects.get(id=self.exp.id)
+        self.assertEqual(exp.state, Experiment_state.finished)
+        response_get = self.client.get(self.url, data={'id': self.exp.id})
+        self.assertEqual(response_get.status_code, 200)
+        self.assertTemplateUsed(response_get, 'result.html')
+        self.assertContains(response_get, self.exp.id)
+
+    def test_get_finished_experiment_with_add(self):
+        data = self.data.copy()
+        data["generated_file"] = SimpleUploadedFile("test_data.csv", b"column1,column2,column3\n1,2,3\n4,5,6\n")
+        url = reverse('configuration')
+        params = {'id': self.exp.id}
+        query_string = urlencode(params)
+        response_post = self.client.post(url + f'?{query_string}', data=data)
+        self.assertRedirects(response_post, reverse('main'), status_code=302, target_status_code=200)
+
+        # Wait for the end of the detector thread
+        time.sleep(2)
+        exp = FinishedExperiments.objects.get(id=self.exp.id)
+        self.assertEqual(exp.state, Experiment_state.finished)
+        self.assertTrue(exp.has_generated_file)
         response_get = self.client.get(self.url, data={'id': self.exp.id})
         self.assertEqual(response_get.status_code, 200)
         self.assertTemplateUsed(response_get, 'result.html')
