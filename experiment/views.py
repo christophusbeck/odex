@@ -108,23 +108,21 @@ class MainView(View):
 
             try:
                 data = pd.read_csv(pending.main_file)
-            except Exception as e:
-                form.add_error('main_file', "Unsupported file, this .csv file has errors")
+                with pending.main_file.file as f:
+                    reader = csv.reader(f)
+                    result = list(reader)
+                    first_row = result[1]
+                    columns = {}
+                    for i in range(len(list(data))):
+                        if not result[0][i]:
+                            continue
+                        columns[list(data)[i]] = first_row[i]
+                    pending.set_columns(columns)
+
+            except Exception:
+                form.add_error('main_file', "Unsupported file, this .csv file has errors.")
+                print("form.errors: ", form.errors)
                 return JsonResponse({"status": False, 'error': form.errors})
-
-            pending.full_clean()
-            pending.save()
-
-            with open(pending.main_file.path, 'r') as f:
-                reader = csv.reader(f)
-                result = list(reader)
-                first_row = result[1]
-                columns = {}
-                for i in range(len(list(data))):
-                    if not result[0][i]:
-                        continue
-                    columns[list(data)[i]] = first_row[i]
-                pending.set_columns(columns)
 
             pending.created_time = timezone.now()
             pending.full_clean()
@@ -134,6 +132,7 @@ class MainView(View):
             print("pending.created_time.type: ", type(pending.created_time))
             return JsonResponse({"status": True, "id": pending.id})
 
+        print("form.errors: ", form.errors)
         return JsonResponse({"status": False, 'error': form.errors})
 
 

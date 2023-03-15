@@ -74,14 +74,46 @@ class Test_MainView(TestCase):
         exp = PendingExperiments.objects.filter(run_name='Test Experiment').first()
         self.assertJSONEqual(str(response_post.content, encoding='utf8'), {"status": True, "id": exp.id})
 
-    def test_post_invalid_form(self):
-        # except .csv file all other file would be rejected
+    def test_post_missing_form(self):
+        data = {}
+        response_post = self.client.post(self.url, data, follow=True)
+        print(response_post.json()['error'])
+        self.assertFalse(Experiments.objects.filter(run_name='Test Experiment').exists())
+        self.assertJSONEqual(str(response_post.content, encoding='utf8'),
+                             {"status": False, 'error': response_post.json()['error']})
+
+        self.assertTrue(response_post.json()['error'])
+        self.assertIn('This field is required.', response_post.json()['error']['run_name'])
+        self.assertIn('This field is required.', response_post.json()['error']['main_file'])
+
+
+    def test_post_invalid_form_with_non_csv_file(self):
         data = {
             'run_name': 'Test Experiment',
             'main_file': SimpleUploadedFile("test_data.txt", b"column1,column2,column3\n1,2,3\n4,5,6\n")
         }
         response_post = self.client.post(self.url, data, follow=True)
         self.assertFalse(Experiments.objects.filter(run_name='Test Experiment').exists())
+        self.assertJSONEqual(str(response_post.content, encoding='utf8'),
+                             {"status": False, 'error': response_post.json()['error']})
+
+        self.assertTrue(response_post.json()['error'])
+        self.assertNotIn('run_name', response_post.json()['error'])
+        self.assertIn('Unsupported file extension.', response_post.json()['error']['main_file'])
+
+    def test_post_invalid_form_with_fake_csv_file(self):
+        data = {
+            'run_name': 'Test Experiment',
+            'main_file': SimpleUploadedFile("test_data.csv", b"file_content")
+        }
+        response_post = self.client.post(self.url, data, follow=True)
+        self.assertFalse(Experiments.objects.filter(run_name='Test Experiment').exists())
+        self.assertJSONEqual(str(response_post.content, encoding='utf8'),
+                             {"status": False, 'error': response_post.json()['error']})
+
+        self.assertTrue(response_post.json()['error'])
+        self.assertNotIn('run_name', response_post.json()['error'])
+        self.assertIn('Unsupported file, this .csv file has errors.', response_post.json()['error']['main_file'])
 
 
 class Test_DeleteView(TestCase):
@@ -301,7 +333,7 @@ class ConfigurationTest(TransactionTestCase):
     def test_get_failed_experiment(self):
         params = {'id': self.exp.id}
         query_string = urlencode(params)
-        self.response_post = self.client.post(self.url + f'?{query_string}', data=self.wrong_data)
+        response_post = self.client.post(self.url + f'?{query_string}', data=self.wrong_data)
         time.sleep(1)
         print("self.exp.state: ", self.exp.state)
         self.assertEqual(self.exp.state, Experiment_state.failed)
@@ -317,6 +349,7 @@ class ConfigurationTest(TransactionTestCase):
 
 
     def test_post_valid_form(self):
+        print("self.exp.state: ", self.exp)
         # in order to get the information /?id=, using urlencode
         params = {'id': self.exp.id}
         query_string = urlencode(params)

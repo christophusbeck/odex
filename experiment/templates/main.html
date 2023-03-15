@@ -54,12 +54,12 @@
                                     <label>Run Name</label>
                                     {{ form.run_name }}
                                     <small>{{ form.run_name.help_text }}</small>
-                                    <span style="color: red;">{{ form.run_name.errors.0 }}</span>
+                                    <div id="run_name" style="color: red;">{{ form.run_name.errors.0 }}</div>
                                     <div class="form-group" style="position: relative;margin-bottom: 25px;">
                                         <label>Run Name</label>
                                         {{ form.main_file }}
                                         <small>{{ form.main_file.help_text }}</small>
-                                        <span style="color: red;">{{ form.main_file.errors.0 }}</span>
+                                        <div id="main_file" style="color: red;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -211,7 +211,8 @@
                         } else {
                             // Display error messages in a dialog.
                             $.each(res.error, function (name, errorList) {
-                                $("#id_" + name).next().text(errorList[0]);
+                                {#$("#id_" + name).next().text(errorList[0]);#}
+                                $("#"+name).text(errorList[0]);
                             })
                         }
                     }
