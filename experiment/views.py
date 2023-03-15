@@ -1,4 +1,5 @@
 import csv
+import io
 import json
 
 import pandas as pd
@@ -107,19 +108,18 @@ class MainView(View):
             print("form.files['main_file']: ", form.files['main_file'])
 
             try:
-                data = pd.read_csv(pending.main_file)
-                with pending.main_file.file as f:
-                    reader = csv.reader(f)
-                    result = list(reader)
-                    first_row = result[1]
-                    columns = {}
-                    for i in range(len(list(data))):
-                        if not result[0][i]:
-                            continue
-                        columns[list(data)[i]] = first_row[i]
-                    pending.set_columns(columns)
+                csv_file = io.TextIOWrapper(form.files['main_file'].file, encoding='utf-8')
+                reader = csv.reader(csv_file)
+                result = list(reader)
+                first_row = result[1]
+                columns = {}
+                for i in range(len(result[0])):
+                    if not result[0][i]:
+                        continue
+                    columns[result[0][i]] = first_row[i]
+                pending.set_columns(columns)
 
-            except Exception:
+            except Exception as e:
                 form.add_error('main_file', "Unsupported file, this .csv file has errors.")
                 print("form.errors: ", form.errors)
                 return JsonResponse({"status": False, 'error': form.errors})

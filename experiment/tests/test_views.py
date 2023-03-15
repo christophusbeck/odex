@@ -66,13 +66,32 @@ class Test_MainView(TestCase):
 
         data = {
             'run_name': 'Test Experiment',
-            'main_file':csv_file,
+            'main_file': csv_file
         }
         response_post = self.client.post(self.url, data, follow=True)
-        exp_queryset = PendingExperiments.objects.filter(run_name='Test Experiment')
-        self.assertTrue(exp_queryset.exists())
+        self.assertTrue(PendingExperiments.objects.filter(run_name='Test Experiment').exists())
         exp = PendingExperiments.objects.filter(run_name='Test Experiment').first()
         self.assertJSONEqual(str(response_post.content, encoding='utf8'), {"status": True, "id": exp.id})
+
+    def test_post_valid_form_mit_blank_column(self):
+        with open('test_data.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Name', '', 'Age', '', 'Gender', '', ''])
+            writer.writerow(['John', '', '25', '', 'Male', '', ''])
+            writer.writerow(['Jane', '', '30', '', 'Female', '', ''])
+
+        with open('test_data.csv', 'rb') as file:
+            csv_file = SimpleUploadedFile(file.name, file.read(), content_type='text/csv')
+
+        data = {
+            'run_name': 'Test Experiment',
+            'main_file': csv_file
+        }
+        response_post = self.client.post(self.url, data, follow=True)
+        self.assertTrue(PendingExperiments.objects.filter(run_name='Test Experiment').exists())
+        exp = PendingExperiments.objects.filter(run_name='Test Experiment').first()
+        self.assertJSONEqual(str(response_post.content, encoding='utf8'), {"status": True, "id": exp.id})
+        self.assertEqual(exp.get_columns(), {"Name": "John", "Age": "25", "Gender": "Male"})
 
     def test_post_missing_form(self):
         data = {}
