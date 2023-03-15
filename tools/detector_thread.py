@@ -136,10 +136,12 @@ class DetectorThread(threading.Thread):
                                                                                           and_probability)
                     outlier_classification_after_merge = or_prediction
                     outlier_probability_after_merge = or_probability
+
                 else:
 
                     clf_merge.fit(merged_data)
                     outlier_classification_after_merge = clf_merge.predict(merged_data)
+                    outlier_probability_after_merge = clf_merge.predict_proba(merged_data)
 
                 metrics["Detected Outliers after merging with generated data"] = sum(
                     outlier_classification_after_merge)
@@ -163,7 +165,6 @@ class DetectorThread(threading.Thread):
                         metrics["Delta accuracy (merged - original)"])
                     metrics["Accuracy after merging"] = '{:.5%}'.format(metrics["Accuracy after merging"])
 
-                    outlier_probability_after_merge = clf_merge.predict_proba(merged_data)
                     roc_after_merge_path = "media/" + models.user_roc_path(exp.generated_file.name)
                     odm_handling.picture_ROC_curve(ground_truth_gen_array, outlier_probability_after_merge,
                                                    roc_after_merge_path)
