@@ -32,7 +32,7 @@
 
 stages:
   - test
-  - deploy
+  - coverage
 
 
 variables:
@@ -78,4 +78,4 @@ unit-tests:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
-      junit: coverage.xml
+      junit: report.xml
