@@ -74,5 +74,7 @@ unit-tests:
   coverage: '/TOTAL.*\s+(\d+%)$/'
   artifacts:
     when: always
+    paths: 
+      - coverage.xml
     reports:
-      junit: coverage.xml
+      cobertura: coverage.xml
