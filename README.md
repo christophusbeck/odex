@@ -1,6 +1,7 @@
 # PSE Implementation
 
-
+[![pipeline status](https://git.scc.kit.edu/ipd-boehm/pse/ipd-pse-2022-ws/subspace-outlier-profiling/team-1/pse-implementation/badges/main/pipeline.svg)](https://git.scc.kit.edu/ipd-boehm/pse/ipd-pse-2022-ws/subspace-outlier-profiling/team-1/pse-implementation/-/commits/main) 
+[![coverage report](https://git.scc.kit.edu/ipd-boehm/pse/ipd-pse-2022-ws/subspace-outlier-profiling/team-1/pse-implementation/badges/main/coverage.svg)](https://git.scc.kit.edu/ipd-boehm/pse/ipd-pse-2022-ws/subspace-outlier-profiling/team-1/pse-implementation/-/commits/main)
 
 ## Getting started
 
