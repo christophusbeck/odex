@@ -144,7 +144,7 @@ class DeleteView(View):
 
 
 class ConfigView(View):
-    template_name = "Configuration.html"
+    template_name = "configuration.html"
 
     def get(self, request, *args, **kwargs):
         exp = models.PendingExperiments.objects.filter(id=request.GET['id']).first()
@@ -166,24 +166,23 @@ class ConfigView(View):
 
 
         if form.is_valid():
+            '''------------------------ operation_model_options can only be 1, 2 or 3 here ------------------------'''
             print("form.cleaned_data: ", form.cleaned_data)
             print("form.files: ", form.files)
-            # selected_odm = list(odms.keys())[int(request.POST['odms']) - 1]
-            # operation = ""
 
             if form.cleaned_data['operation_model_options'] == '1':
                 operation = ""
 
             elif form.cleaned_data['operation_model_options'] == '2':
                 if not form.cleaned_data['operation_except']:
-                    form.add_error('operation_except', "Please enter your excluded subspaces")
+                    form.add_error('operation_except', "Please enter your excluded subspaces.")
                     return render(request, self.template_name,
                                   {"exp": exp, "columns": columns, "form": form, "odms": odms})
                 # here parser the subspaces input
                 elif not tools.odm_handling.subspace_exclusion_check(form.cleaned_data['operation_except'],
                                                                      len(columns)):
                     print("Please enter correct excluded subspaces")
-                    form.add_error('operation_except', "Please enter your excluded subspaces in correct format")
+                    form.add_error('operation_except', "Please enter your excluded subspaces in correct format.")
                     return render(request, self.template_name,
                                   {"exp": exp, "columns": columns, "form": form, "odms": odms})
 
@@ -191,22 +190,19 @@ class ConfigView(View):
                                                                     len(columns))
                 operation = json.dumps(picks).replace("\"", "").replace("[", "").replace("]", "")
 
-            elif form.cleaned_data['operation_model_options'] == '3':
+            else:
                 if not form.cleaned_data['operation_written']:
-                    form.add_error('operation_written', "Please enter your subspace combination")
+                    form.add_error('operation_written', "Please enter your subspace combination.")
                     return render(request, self.template_name,
                                   {"exp": exp, "columns": columns, "form": form, "odms": odms})
                 # here parser the subspaces input
                 elif not tools.odm_handling.subspace_combination_check(form.cleaned_data['operation_written'],
                                                                        len(columns)):
                     print("Please enter your subspaces")
-                    form.add_error('operation_written', "Please enter your subspace combination in correct format")
+                    form.add_error('operation_written', "Please enter your subspace combination in correct format.")
                     return render(request, self.template_name,
                                   {"exp": exp, "columns": columns, "form": form, "odms": odms})
                 operation = form.cleaned_data['operation_written']
-
-            else:
-                return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms})
 
             print("form.cleaned_data: ", form.cleaned_data)
             print("form.files: ", form.files)
