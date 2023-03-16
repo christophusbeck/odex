@@ -31,9 +31,9 @@ class Test_detector_thread(TestCase):
         self.__try_remove_file(self.path_outputs + "result_" + self.path_input.replace(".csv", "") + "_with_addition.csv")
         self.__try_remove_file(self.path_media + self.path_gt)
         self.__try_remove_file(self.path_media + self.path_gen)
+        self.__try_remove_file(self.path_media + self.path_input)
         self.__try_remove_file(self.path_media + "input_roc.jpg")
         self.__try_remove_file(self.path_media + "gen_roc.jpg")
-        pass
 
     def __try_remove_file(self, path):
         if os.path.exists(path):
