@@ -15,6 +15,7 @@ from django.utils.timezone import now
 import user
 import experiment
 from experiment.models import Experiments, PendingExperiments, FinishedExperiments, Experiment_state
+from tools.odm_handling import get_odm_dict
 from user.models import Users
 from experiment.views import ResultView
 import json
@@ -284,150 +285,81 @@ class ConfigurationTest(TransactionTestCase):
         self.url = reverse('configuration')
         self.successful_url = reverse('main')
 
-        self.data_op1 = {'operation_model_options': '1', 'operation_except': '', 'operation_written': '',
-                     'ground_truth_options': '1', 'odms': '1', 'ABOD_contamination': '', 'ABOD_n_neighbors': '',
-                     'ABOD_method': '', 'CBLOF_n_clusters': '', 'CBLOF_contamination': '',
-                     'CBLOF_clustering_estimator': '', 'COF_contamination': '', 'COF_n_neighbors': '', 'COF_method': '',
-                     'COPOD_contamination': '', 'COPOD_n_jobs': '', 'ECOD_contamination': '', 'ECOD_n_jobs': '',
-                     'FeatureBagging_base_estimator': '', 'FeatureBagging_n_estimators': '',
-                     'FeatureBagging_contamination': '', 'GMM_n_components': '', 'GMM_covariance_type': '',
-                     'GMM_tol': '', 'HBOS_n_bins': '', 'HBOS_alpha': '', 'HBOS_tol': '', 'IForest_n_estimators': '',
-                     'IForest_max_samples': '', 'IForest_contamination': '', 'INNE_n_estimators': '',
-                     'INNE_max_samples': '', 'INNE_contamination': '', 'KDE_contamination': '', 'KDE_bandwidth': '',
-                     'KDE_algorithm': '', 'KPCA_contamination': '', 'KPCA_n_components': '',
-                     'KPCA_n_selected_components': '', 'LMDD_contamination': '', 'LMDD_n_iter': '',
-                     'LMDD_dis_measure': '', 'LODA_contamination': '', 'LODA_n_bins': '', 'LODA_n_random_cuts': '',
-                     'LOF_n_neighbors': '', 'LOF_algorithm': '', 'LOF_leaf_size': '', 'LOCI_contamination': '',
-                     'LOCI_alpha': '', 'LOCI_k': '', 'LUNAR_model_type': '', 'LUNAR_n_neighbours': '',
-                     'LUNAR_negative_sampling': '', 'MAD_threshold': '', 'MCD_contamination': '',
-                     'MCD_store_precision': '', 'MCD_assume_centered': '', 'OCSVM_kernel': '', 'OCSVM_degree': '',
-                     'OCSVM_gamma': '', 'PCA_n_components': '', 'PCA_n_selected_components': '',
-                     'PCA_contamination': '', 'RGraph_transition_steps': '', 'RGraph_n_nonzero': '', 'RGraph_gamma': '',
-                     'ROD_contamination': '', 'ROD_parallel_execution': '', 'Sampling_contamination': '',
-                     'Sampling_subset_size': '', 'Sampling_metric': '', 'x': '68', 'y': '15'}
+        # self.data = {'operation_model_options': '1', 'operation_except': '', 'operation_written': '',
+        #              'ground_truth_options': '1', 'odms': '1', 'ABOD_contamination': '', 'ABOD_n_neighbors': '',
+        #              'ABOD_method': '', 'CBLOF_n_clusters': '', 'CBLOF_contamination': '',
+        #              'CBLOF_clustering_estimator': '', 'COF_contamination': '', 'COF_n_neighbors': '', 'COF_method': '',
+        #              'COPOD_contamination': '', 'COPOD_n_jobs': '', 'ECOD_contamination': '', 'ECOD_n_jobs': '',
+        #              'FeatureBagging_base_estimator': '', 'FeatureBagging_n_estimators': '',
+        #              'FeatureBagging_contamination': '', 'GMM_n_components': '', 'GMM_covariance_type': '',
+        #              'GMM_tol': '', 'HBOS_n_bins': '', 'HBOS_alpha': '', 'HBOS_tol': '', 'IForest_n_estimators': '',
+        #              'IForest_max_samples': '', 'IForest_contamination': '', 'INNE_n_estimators': '',
+        #              'INNE_max_samples': '', 'INNE_contamination': '', 'KDE_contamination': '', 'KDE_bandwidth': '',
+        #              'KDE_algorithm': '', 'KPCA_contamination': '', 'KPCA_n_components': '',
+        #              'KPCA_n_selected_components': '', 'LMDD_contamination': '', 'LMDD_n_iter': '',
+        #              'LMDD_dis_measure': '', 'LODA_contamination': '', 'LODA_n_bins': '', 'LODA_n_random_cuts': '',
+        #              'LOF_n_neighbors': '', 'LOF_algorithm': '', 'LOF_leaf_size': '', 'LOCI_contamination': '',
+        #              'LOCI_alpha': '', 'LOCI_k': '', 'LUNAR_model_type': '', 'LUNAR_n_neighbours': '',
+        #              'LUNAR_negative_sampling': '', 'MAD_threshold': '', 'MCD_contamination': '',
+        #              'MCD_store_precision': '', 'MCD_assume_centered': '', 'OCSVM_kernel': '', 'OCSVM_degree': '',
+        #              'OCSVM_gamma': '', 'PCA_n_components': '', 'PCA_n_selected_components': '',
+        #              'PCA_contamination': '', 'RGraph_transition_steps': '', 'RGraph_n_nonzero': '', 'RGraph_gamma': '',
+        #              'ROD_contamination': '', 'ROD_parallel_execution': '', 'Sampling_contamination': '',
+        #              'Sampling_subset_size': '', 'Sampling_metric': ''}
 
-        self.data_op2 = {'operation_model_options': '2', 'operation_except': '1', 'operation_written': '',
-                     'ground_truth_options': '1', 'odms': '1', 'ABOD_contamination': '', 'ABOD_n_neighbors': '',
-                     'ABOD_method': '', 'CBLOF_n_clusters': '', 'CBLOF_contamination': '',
-                     'CBLOF_clustering_estimator': '', 'COF_contamination': '', 'COF_n_neighbors': '', 'COF_method': '',
-                     'COPOD_contamination': '', 'COPOD_n_jobs': '', 'ECOD_contamination': '', 'ECOD_n_jobs': '',
-                     'FeatureBagging_base_estimator': '', 'FeatureBagging_n_estimators': '',
-                     'FeatureBagging_contamination': '', 'GMM_n_components': '', 'GMM_covariance_type': '',
-                     'GMM_tol': '', 'HBOS_n_bins': '', 'HBOS_alpha': '', 'HBOS_tol': '', 'IForest_n_estimators': '',
-                     'IForest_max_samples': '', 'IForest_contamination': '', 'INNE_n_estimators': '',
-                     'INNE_max_samples': '', 'INNE_contamination': '', 'KDE_contamination': '', 'KDE_bandwidth': '',
-                     'KDE_algorithm': '', 'KPCA_contamination': '', 'KPCA_n_components': '',
-                     'KPCA_n_selected_components': '', 'LMDD_contamination': '', 'LMDD_n_iter': '',
-                     'LMDD_dis_measure': '', 'LODA_contamination': '', 'LODA_n_bins': '', 'LODA_n_random_cuts': '',
-                     'LOF_n_neighbors': '', 'LOF_algorithm': '', 'LOF_leaf_size': '', 'LOCI_contamination': '',
-                     'LOCI_alpha': '', 'LOCI_k': '', 'LUNAR_model_type': '', 'LUNAR_n_neighbours': '',
-                     'LUNAR_negative_sampling': '', 'MAD_threshold': '', 'MCD_contamination': '',
-                     'MCD_store_precision': '', 'MCD_assume_centered': '', 'OCSVM_kernel': '', 'OCSVM_degree': '',
-                     'OCSVM_gamma': '', 'PCA_n_components': '', 'PCA_n_selected_components': '',
-                     'PCA_contamination': '', 'RGraph_transition_steps': '', 'RGraph_n_nonzero': '', 'RGraph_gamma': '',
-                     'ROD_contamination': '', 'ROD_parallel_execution': '', 'Sampling_contamination': '',
-                     'Sampling_subset_size': '', 'Sampling_metric': '', 'x': '68', 'y': '15'}
-
-        self.data_op3 = {'operation_model_options': '3', 'operation_except': '', 'operation_written': '{1,2}',
-                         'ground_truth_options': '1', 'odms': '1', 'ABOD_contamination': '', 'ABOD_n_neighbors': '',
-                         'ABOD_method': '', 'CBLOF_n_clusters': '', 'CBLOF_contamination': '',
-                         'CBLOF_clustering_estimator': '', 'COF_contamination': '', 'COF_n_neighbors': '',
-                         'COF_method': '',
-                         'COPOD_contamination': '', 'COPOD_n_jobs': '', 'ECOD_contamination': '', 'ECOD_n_jobs': '',
-                         'FeatureBagging_base_estimator': '', 'FeatureBagging_n_estimators': '',
-                         'FeatureBagging_contamination': '', 'GMM_n_components': '', 'GMM_covariance_type': '',
-                         'GMM_tol': '', 'HBOS_n_bins': '', 'HBOS_alpha': '', 'HBOS_tol': '', 'IForest_n_estimators': '',
-                         'IForest_max_samples': '', 'IForest_contamination': '', 'INNE_n_estimators': '',
-                         'INNE_max_samples': '', 'INNE_contamination': '', 'KDE_contamination': '', 'KDE_bandwidth': '',
-                         'KDE_algorithm': '', 'KPCA_contamination': '', 'KPCA_n_components': '',
-                         'KPCA_n_selected_components': '', 'LMDD_contamination': '', 'LMDD_n_iter': '',
-                         'LMDD_dis_measure': '', 'LODA_contamination': '', 'LODA_n_bins': '', 'LODA_n_random_cuts': '',
-                         'LOF_n_neighbors': '', 'LOF_algorithm': '', 'LOF_leaf_size': '', 'LOCI_contamination': '',
-                         'LOCI_alpha': '', 'LOCI_k': '', 'LUNAR_model_type': '', 'LUNAR_n_neighbours': '',
-                         'LUNAR_negative_sampling': '', 'MAD_threshold': '', 'MCD_contamination': '',
-                         'MCD_store_precision': '', 'MCD_assume_centered': '', 'OCSVM_kernel': '', 'OCSVM_degree': '',
-                         'OCSVM_gamma': '', 'PCA_n_components': '', 'PCA_n_selected_components': '',
-                         'PCA_contamination': '', 'RGraph_transition_steps': '', 'RGraph_n_nonzero': '',
-                         'RGraph_gamma': '',
-                         'ROD_contamination': '', 'ROD_parallel_execution': '', 'Sampling_contamination': '',
-                         'Sampling_subset_size': '', 'Sampling_metric': '', 'x': '68', 'y': '15'}
-
-        self.wrong_data = {'operation_model_options': '1', 'operation_except': '', 'operation_written': '',
-                     'ground_truth_options': '1', 'odms': '1', 'ABOD_contamination': '', 'ABOD_n_neighbors': '',
-                     'ABOD_method': '1', 'CBLOF_n_clusters': '', 'CBLOF_contamination': '',
-                     'CBLOF_clustering_estimator': '', 'COF_contamination': '', 'COF_n_neighbors': '', 'COF_method': '',
-                     'COPOD_contamination': '', 'COPOD_n_jobs': '', 'ECOD_contamination': '', 'ECOD_n_jobs': '',
-                     'FeatureBagging_base_estimator': '', 'FeatureBagging_n_estimators': '',
-                     'FeatureBagging_contamination': '', 'GMM_n_components': '', 'GMM_covariance_type': '',
-                     'GMM_tol': '', 'HBOS_n_bins': '', 'HBOS_alpha': '', 'HBOS_tol': '', 'IForest_n_estimators': '',
-                     'IForest_max_samples': '', 'IForest_contamination': '', 'INNE_n_estimators': '',
-                     'INNE_max_samples': '', 'INNE_contamination': '', 'KDE_contamination': '', 'KDE_bandwidth': '',
-                     'KDE_algorithm': '', 'KPCA_contamination': '', 'KPCA_n_components': '',
-                     'KPCA_n_selected_components': '', 'LMDD_contamination': '', 'LMDD_n_iter': '',
-                     'LMDD_dis_measure': '', 'LODA_contamination': '', 'LODA_n_bins': '', 'LODA_n_random_cuts': '',
-                     'LOF_n_neighbors': '', 'LOF_algorithm': '', 'LOF_leaf_size': '', 'LOCI_contamination': '',
-                     'LOCI_alpha': '', 'LOCI_k': '', 'LUNAR_model_type': '', 'LUNAR_n_neighbours': '',
-                     'LUNAR_negative_sampling': '', 'MAD_threshold': '', 'MCD_contamination': '',
-                     'MCD_store_precision': '', 'MCD_assume_centered': '', 'OCSVM_kernel': '', 'OCSVM_degree': '',
-                     'OCSVM_gamma': '', 'PCA_n_components': '', 'PCA_n_selected_components': '',
-                     'PCA_contamination': '', 'RGraph_transition_steps': '', 'RGraph_n_nonzero': '', 'RGraph_gamma': '',
-                     'ROD_contamination': '', 'ROD_parallel_execution': '', 'Sampling_contamination': '',
-                     'Sampling_subset_size': '', 'Sampling_metric': '', 'x': '68', 'y': '15'}
-
-        self.invalid_data_op2 = {'operation_model_options': '2', 'operation_except': 'abc', 'operation_written': '',
-                         'ground_truth_options': '1', 'odms': '1', 'ABOD_contamination': '', 'ABOD_n_neighbors': '',
-                         'ABOD_method': '', 'CBLOF_n_clusters': '', 'CBLOF_contamination': '',
-                         'CBLOF_clustering_estimator': '', 'COF_contamination': '', 'COF_n_neighbors': '',
-                         'COF_method': '',
-                         'COPOD_contamination': '', 'COPOD_n_jobs': '', 'ECOD_contamination': '', 'ECOD_n_jobs': '',
-                         'FeatureBagging_base_estimator': '', 'FeatureBagging_n_estimators': '',
-                         'FeatureBagging_contamination': '', 'GMM_n_components': '', 'GMM_covariance_type': '',
-                         'GMM_tol': '', 'HBOS_n_bins': '', 'HBOS_alpha': '', 'HBOS_tol': '', 'IForest_n_estimators': '',
-                         'IForest_max_samples': '', 'IForest_contamination': '', 'INNE_n_estimators': '',
-                         'INNE_max_samples': '', 'INNE_contamination': '', 'KDE_contamination': '', 'KDE_bandwidth': '',
-                         'KDE_algorithm': '', 'KPCA_contamination': '', 'KPCA_n_components': '',
-                         'KPCA_n_selected_components': '', 'LMDD_contamination': '', 'LMDD_n_iter': '',
-                         'LMDD_dis_measure': '', 'LODA_contamination': '', 'LODA_n_bins': '', 'LODA_n_random_cuts': '',
-                         'LOF_n_neighbors': '', 'LOF_algorithm': '', 'LOF_leaf_size': '', 'LOCI_contamination': '',
-                         'LOCI_alpha': '', 'LOCI_k': '', 'LUNAR_model_type': '', 'LUNAR_n_neighbours': '',
-                         'LUNAR_negative_sampling': '', 'MAD_threshold': '', 'MCD_contamination': '',
-                         'MCD_store_precision': '', 'MCD_assume_centered': '', 'OCSVM_kernel': '', 'OCSVM_degree': '',
-                         'OCSVM_gamma': '', 'PCA_n_components': '', 'PCA_n_selected_components': '',
-                         'PCA_contamination': '', 'RGraph_transition_steps': '', 'RGraph_n_nonzero': '',
-                         'RGraph_gamma': '',
-                         'ROD_contamination': '', 'ROD_parallel_execution': '', 'Sampling_contamination': '',
-                         'Sampling_subset_size': '', 'Sampling_metric': '', 'x': '68', 'y': '15'}
-
-        self.invalid_data_op3 = {'operation_model_options': '3', 'operation_except': '', 'operation_written': 'abc',
-                                 'ground_truth_options': '1', 'odms': '1', 'ABOD_contamination': '',
-                                 'ABOD_n_neighbors': '',
-                                 'ABOD_method': '', 'CBLOF_n_clusters': '', 'CBLOF_contamination': '',
-                                 'CBLOF_clustering_estimator': '', 'COF_contamination': '', 'COF_n_neighbors': '',
-                                 'COF_method': '',
-                                 'COPOD_contamination': '', 'COPOD_n_jobs': '', 'ECOD_contamination': '',
-                                 'ECOD_n_jobs': '',
-                                 'FeatureBagging_base_estimator': '', 'FeatureBagging_n_estimators': '',
-                                 'FeatureBagging_contamination': '', 'GMM_n_components': '', 'GMM_covariance_type': '',
-                                 'GMM_tol': '', 'HBOS_n_bins': '', 'HBOS_alpha': '', 'HBOS_tol': '',
-                                 'IForest_n_estimators': '',
-                                 'IForest_max_samples': '', 'IForest_contamination': '', 'INNE_n_estimators': '',
-                                 'INNE_max_samples': '', 'INNE_contamination': '', 'KDE_contamination': '',
-                                 'KDE_bandwidth': '',
-                                 'KDE_algorithm': '', 'KPCA_contamination': '', 'KPCA_n_components': '',
-                                 'KPCA_n_selected_components': '', 'LMDD_contamination': '', 'LMDD_n_iter': '',
-                                 'LMDD_dis_measure': '', 'LODA_contamination': '', 'LODA_n_bins': '',
-                                 'LODA_n_random_cuts': '',
-                                 'LOF_n_neighbors': '', 'LOF_algorithm': '', 'LOF_leaf_size': '',
-                                 'LOCI_contamination': '',
-                                 'LOCI_alpha': '', 'LOCI_k': '', 'LUNAR_model_type': '', 'LUNAR_n_neighbours': '',
-                                 'LUNAR_negative_sampling': '', 'MAD_threshold': '', 'MCD_contamination': '',
-                                 'MCD_store_precision': '', 'MCD_assume_centered': '', 'OCSVM_kernel': '',
-                                 'OCSVM_degree': '',
-                                 'OCSVM_gamma': '', 'PCA_n_components': '', 'PCA_n_selected_components': '',
-                                 'PCA_contamination': '', 'RGraph_transition_steps': '', 'RGraph_n_nonzero': '',
-                                 'RGraph_gamma': '',
-                                 'ROD_contamination': '', 'ROD_parallel_execution': '', 'Sampling_contamination': '',
-                                 'Sampling_subset_size': '', 'Sampling_metric': '', 'x': '68', 'y': '15'}
+        self.data = {'operation_model_options': ['1'], 'operation_except': [''], 'operation_written': [''],
+                     'ground_truth_options': ['1'], 'odms': ['1'], 'ABOD_contamination': [''],
+                     'ABOD_n_neighbors': [''], 'ABOD_method': [''], 'CBLOF_n_clusters': [''],
+                     'CBLOF_contamination': [''], 'CBLOF_clustering_estimator': [''], 'CBLOF_alpha': [''],
+                     'CBLOF_beta': [''], 'CBLOF_use_weights': [''], 'CBLOF_check_estimator': [''],
+                     'CBLOF_random_state': [''], 'CBLOF_n_jobs': [''], 'COF_contamination': [''],
+                     'COF_n_neighbors': [''], 'COF_method': [''], 'COPOD_contamination': [''], 'COPOD_n_jobs': [''],
+                     'ECOD_contamination': [''], 'ECOD_n_jobs': [''], 'FeatureBagging_base_estimator': [''],
+                     'FeatureBagging_n_estimators': [''], 'FeatureBagging_contamination': [''],
+                     'FeatureBagging_max_features': [''], 'FeatureBagging_bootstrap_features': [''],
+                     'FeatureBagging_check_detector': [''], 'FeatureBagging_check_estimator': [''],
+                     'FeatureBagging_n_jobs': [''], 'FeatureBagging_random_state': [''],
+                     'FeatureBagging_combination': [''], 'FeatureBagging_verbose': [''],
+                     'FeatureBagging_estimator_params': [''], 'GMM_n_components': [''],
+                     'GMM_covariance_type': [''], 'GMM_tol': [''], 'GMM_reg_covar': [''], 'GMM_max_iter': [''],
+                     'GMM_n_init': [''], 'GMM_init_params': [''], 'GMM_weights_init': [''], 'GMM_means_init': [''],
+                     'GMM_precisions_init': [''], 'GMM_random_state': [''], 'GMM_warm_start': [''],
+                     'GMM_contamination': [''], 'HBOS_n_bins': [''], 'HBOS_alpha': [''], 'HBOS_tol': [''],
+                     'HBOS_contamination': [''], 'IForest_n_estimators': [''], 'IForest_max_samples': [''],
+                     'IForest_contamination': [''], 'IForest_max_features': [''], 'IForest_bootstrap': [''],
+                     'IForest_n_jobs': [''], 'IForest_behaviour': [''], 'IForest_random_state': [''],
+                     'IForest_verbose': [''], 'INNE_n_estimators': [''], 'INNE_max_samples': [''],
+                     'INNE_contamination': [''], 'INNE_random_state': [''], 'KDE_contamination': [''],
+                     'KDE_bandwidth': [''], 'KDE_algorithm': [''], 'KDE_leaf_size': [''], 'KDE_metric': [''],
+                     'KDE_metric_params': [''], 'KPCA_contamination': [''], 'KPCA_n_components': [''],
+                     'KPCA_n_selected_components': [''], 'KPCA_kernel': [''], 'KPCA_gamma': [''], 'KPCA_degree': [''],
+                     'KPCA_coef0': [''], 'KPCA_kernel_params': [''], 'KPCA_alpha': [''], 'KPCA_eigen_solver': [''],
+                     'KPCA_tol': [''], 'KPCA_max_iter': [''], 'KPCA_remove_zero_eig': [''], 'KPCA_copy_X': [''],
+                     'KPCA_n_jobs': [''], 'KPCA_sampling': [''], 'KPCA_subset_size': [''], 'KPCA_random_state': [''],
+                     'LMDD_contamination': [''], 'LMDD_n_iter': [''], 'LMDD_dis_measure': [''],
+                     'LMDD_random_state': [''], 'LODA_contamination': [''], 'LODA_n_bins': [''],
+                     'LODA_n_random_cuts': [''], 'LOF_n_neighbors': [''], 'LOF_algorithm': [''], 'LOF_leaf_size': [''],
+                     'LOF_metric': [''], 'LOF_p': [''], 'LOF_metric_params': [''], 'LOF_contamination': [''],
+                     'LOF_n_jobs': [''], 'LOF_novelty': [''], 'LOCI_contamination': [''], 'LOCI_alpha': [''],
+                     'LOCI_k': [''], 'LUNAR_model_type': [''], 'LUNAR_n_neighbours': [''],
+                     'LUNAR_negative_sampling': [''], 'LUNAR_val_size': [''], 'LUNAR_scaler': [''],
+                     'LUNAR_epsilon': [''], 'LUNAR_proportion': [''], 'LUNAR_n_epochs': [''], 'LUNAR_lr': [''],
+                     'LUNAR_wd': [''], 'LUNAR_verbose': [''], 'MAD_threshold': [''], 'MCD_contamination': [''],
+                     'MCD_store_precision': [''], 'MCD_assume_centered': [''], 'MCD_support_fraction': [''],
+                     'MCD_random_state': [''], 'OCSVM_kernel': [''], 'OCSVM_degree': [''], 'OCSVM_gamma': [''],
+                     'OCSVM_coef0': [''], 'OCSVM_tol': [''], 'OCSVM_nu': [''], 'OCSVM_shrinking': [''],
+                     'OCSVM_cache_size': [''], 'OCSVM_verbose': [''], 'OCSVM_max_iter': [''],
+                     'OCSVM_contamination': [''], 'PCA_n_components': [''], 'PCA_n_selected_components': [''],
+                     'PCA_contamination': [''], 'PCA_copy': [''], 'PCA_whiten': [''], 'PCA_svd_solver': [''],
+                     'PCA_tol': [''], 'PCA_iterated_power': [''], 'PCA_random_state': [''], 'PCA_weighted': [''],
+                     'PCA_standardization': [''], 'RGraph_transition_steps': [''], 'RGraph_n_nonzero': [''],
+                     'RGraph_gamma': [''], 'RGraph_gamma_nz': [''], 'RGraph_algorithm': [''], 'RGraph_tau': [''],
+                     'RGraph_maxiter_lasso': [''], 'RGraph_preprocessing': [''], 'RGraph_contamination': [''],
+                     'RGraph_blocksize_test_data': [''], 'RGraph_support_init': [''], 'RGraph_maxiter': [''],
+                     'RGraph_support_size': [''], 'RGraph_active_support': [''], 'RGraph_fit_intercept_LR': [''],
+                     'RGraph_verbose': [''], 'ROD_contamination': [''], 'ROD_parallel_execution': [''],
+                     'Sampling_contamination': [''], 'Sampling_subset_size': [''], 'Sampling_metric': [''],
+                     'Sampling_metric_params': [''], 'Sampling_random_state': [''], 'x': ['150'], 'y': ['29']}
 
     '''--------------------------- Test Fixture Loading ---------------------------'''
 
@@ -476,9 +408,10 @@ class ConfigurationTest(TransactionTestCase):
         self.assertIsNotNone(response_get.context['odms'])
 
     def test_get_failed_experiment(self):
-        params = {'id': self.exp.id}
-        query_string = urlencode(params)
-        response_post = self.client.post(self.url + f'?{query_string}', data=self.wrong_data)
+        data = self.data.copy()
+        data['ABOD_contamination'] = '100000'
+        query_string = urlencode({'id': self.exp.id})
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
         self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
 
         # Wait for the end of the detector thread
@@ -499,9 +432,9 @@ class ConfigurationTest(TransactionTestCase):
 
     '''---------------------------   Basic URL tests for POST with valid form   ---------------------------'''
 
-    def test_post_valid_for_with_subspace_option_1(self):
+    def test_post_valid_form_with_subspace_option_1(self):
         query_string = urlencode({'id': self.exp.id})
-        response_post = self.client.post(self.url + f'?{query_string}', data=self.data_op1)
+        response_post = self.client.post(self.url + f'?{query_string}', data=self.data)
         self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
 
         # Wait for the end of the detector thread
@@ -511,8 +444,11 @@ class ConfigurationTest(TransactionTestCase):
         self.assertEqual(exp.operation_option, "1")
 
     def test_post_valid_form_with_subspace_option_2(self):
+        data = self.data.copy()
+        data['operation_model_options'] = '2'
+        data['operation_except'] = '1'
         query_string = urlencode({'id': self.exp.id})
-        response_post = self.client.post(self.url + f'?{query_string}', data=self.data_op2)
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
         self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
 
         # Wait for the end of the detector thread
@@ -522,8 +458,11 @@ class ConfigurationTest(TransactionTestCase):
         self.assertEqual(exp.operation_option, "2")
 
     def test_post_valid_form_with_subspace_option_3(self):
+        data = self.data.copy()
+        data['operation_model_options'] = '3'
+        data['operation_written'] = '{1,2}'
         query_string = urlencode({'id': self.exp.id})
-        response_post = self.client.post(self.url + f'?{query_string}', data=self.data_op3)
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
         self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
 
         # Wait for the end of the detector thread
@@ -533,7 +472,7 @@ class ConfigurationTest(TransactionTestCase):
         self.assertEqual(exp.operation_option, "3")
 
     def test_post_valid_form_with_gt_file(self):
-        data = self.data_op1.copy()
+        data = self.data.copy()
         data["ground_truth"] = SimpleUploadedFile("test_data.csv", b"ground_truth\n1\n0\n")
         query_string = urlencode({'id': self.exp.id})
         response_post = self.client.post(self.url + f'?{query_string}', data=data)
@@ -547,7 +486,7 @@ class ConfigurationTest(TransactionTestCase):
         self.assertTrue(exp.has_ground_truth)
 
     def test_post_valid_form_with_add_file(self):
-        data = self.data_op1.copy()
+        data = self.data.copy()
         data["generated_file"] = SimpleUploadedFile("test_data.csv", b"column1,column2,column3\n1,2,3\n4,5,6\n")
         query_string = urlencode({'id': self.exp.id})
         response_post = self.client.post(self.url + f'?{query_string}', data=data)
@@ -578,7 +517,8 @@ class ConfigurationTest(TransactionTestCase):
         self.assertIn('This field is required.', response_post.context['form'].errors['operation_model_options'])
 
     def test_post_invalid_form_with_subspace_option_2_but_no_operation(self):
-        data = self.invalid_data_op2.copy()
+        data = self.data.copy()
+        data['operation_model_options'] = '2'
         data['operation_except'] = ''
         query_string = urlencode({'id': self.exp.id})
         response_post = self.client.post(self.url + f'?{query_string}', data=data)
@@ -593,8 +533,11 @@ class ConfigurationTest(TransactionTestCase):
         self.assertIn('Please enter your excluded subspaces.', response_post.context['form'].errors['operation_except'])
 
     def test_post_invalid_form_with_subspace_option_2_but_invalid_operation(self):
+        data = self.data.copy()
+        data['operation_model_options'] = '2'
+        data['operation_except'] = 'abc'
         query_string = urlencode({'id': self.exp.id})
-        response_post = self.client.post(self.url + f'?{query_string}', data=self.invalid_data_op2)
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
         self.assertTemplateUsed(response_post, "configuration.html")
 
         # Wait for the end of the detector thread
@@ -607,7 +550,8 @@ class ConfigurationTest(TransactionTestCase):
         self.assertIn('Please enter your excluded subspaces in correct format.', response_post.context['form'].errors['operation_except'])
 
     def test_post_invalid_form_with_subspace_option_3_but_no_operation(self):
-        data = self.invalid_data_op3.copy()
+        data = self.data.copy()
+        data['operation_model_options'] = '3'
         data['operation_written'] = ''
         query_string = urlencode({'id': self.exp.id})
         response_post = self.client.post(self.url + f'?{query_string}', data=data)
@@ -623,8 +567,11 @@ class ConfigurationTest(TransactionTestCase):
         self.assertIn("Please enter your subspace combination.", response_post.context['form'].errors["operation_written"])
 
     def test_post_invalid_form_with_subspace_option_3_but_invalid_operation(self):
+        data = self.data.copy()
+        data['operation_model_options'] = '3'
+        data['operation_written'] = 'abc'
         query_string = urlencode({'id': self.exp.id})
-        response_post = self.client.post(self.url + f'?{query_string}', data=self.invalid_data_op3)
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
         self.assertTemplateUsed(response_post, "configuration.html")
 
         # Wait for the end of the detector thread
@@ -634,8 +581,8 @@ class ConfigurationTest(TransactionTestCase):
         self.assertIsNone(exp.operation_option)
 
     def test_post_invalid_form_with_wrong_parameter_type(self):
-        data = self.data_op1.copy()
-        data['ABOD_n_neighbors'] = 'abd'
+        data = self.data.copy()
+        data['ABOD_n_neighbors'] = 'abc'
         query_string = urlencode({'id': self.exp.id})
         response_post = self.client.post(self.url + f'?{query_string}', data=data)
         self.assertTemplateUsed(response_post, "configuration.html")
@@ -647,11 +594,11 @@ class ConfigurationTest(TransactionTestCase):
         self.assertIsNone(exp.operation_option)
         self.assertTrue(response_post.context['form'].errors)
         print("response_post.context['form'].errors: ", response_post.context['form'].errors)
-        self.assertIn("Input error by ABOD_n_neighbors: invalid literal for int() with base 10: 'abd'",
+        self.assertIn("Input error by ABOD_n_neighbors: invalid literal for int() with base 10: 'abc'",
                       response_post.context['form'].errors['__all__'])
 
     def test_post_invalid_form_with_invalid_parameter(self):
-        data = self.data_op1.copy()
+        data = self.data.copy()
         data['ABOD_contamination'] = '100000'
         query_string = urlencode({'id': self.exp.id})
         response_post = self.client.post(self.url + f'?{query_string}', data=data)
@@ -670,6 +617,89 @@ class ConfigurationTest(TransactionTestCase):
                       "Please check the column you want to execute to ensure "
                       "that there are no null values or uncalculated values.",
                       exp.error)
+
+    '''---------------------------   Basic URL tests for POST with all odms   ---------------------------'''
+
+    def test_setting_for_all_odms(self, odm_name):
+        odms = get_odm_dict()
+        index = list(odms.keys()).index(odm_name)+1
+
+        # In order to meet the default parameters of Sampling, the number of data points must be greater than 20.
+        with open('test_data.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['x', 'y', 'z'])
+            writer.writerow(['10', '25', '30'])
+            writer.writerow(['20', '30', '40'])
+            writer.writerow(['30', '35', '50'])
+            writer.writerow(['40', '40', '60'])
+            writer.writerow(['5', '45', '70'])
+            writer.writerow(['6', '50', '80'])
+            writer.writerow(['7', '55', '90'])
+            writer.writerow(['8', '60', '100'])
+            writer.writerow(['10', '2', '30'])
+            writer.writerow(['20', '3', '40'])
+            writer.writerow(['30', '4', '50'])
+            writer.writerow(['40', '5', '60'])
+            writer.writerow(['5', '45', '7'])
+            writer.writerow(['6', '50', '8'])
+            writer.writerow(['7', '55', '9'])
+            writer.writerow(['8', '60', '10'])
+            writer.writerow(['50', '45', '7'])
+            writer.writerow(['60', '50', '8'])
+            writer.writerow(['70', '55', '9'])
+            writer.writerow(['80', '60', '10'])
+
+        with open('test_data.csv', 'rb') as file:
+            csv_file = SimpleUploadedFile(file.name, file.read(), content_type='text/csv')
+
+        data = {
+            'run_name': 'New Experiment',
+            'main_file': csv_file,
+        }
+        url = reverse('main')
+        response = self.client.post(url, data, follow=True)
+        self.exp = PendingExperiments.objects.filter(run_name='New Experiment').first()
+        self.assertJSONEqual(str(response.content, encoding='utf8'), {"status": True, "id": self.exp.id})
+
+        data = self.data.copy()
+        data['odms'] = str(index)
+        data['operation_model_options'] = '3'
+        if odm_name == "MAD":
+            data['operation_written'] = '{1}'
+        else:
+            data['operation_written'] = '{1,2}'
+        query_string = urlencode({'id': self.exp.id})
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
+        self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
+
+    def test_post_valid_form_with_all_odms(self):
+        for odm in get_odm_dict().keys():
+            self.test_setting_for_all_odms(odm)
+            # Wait for the end of the detector thread
+            time.sleep(3)
+            exp = FinishedExperiments.objects.get(id=self.exp.id)
+            self.assertEqual(exp.state, Experiment_state.finished)
+            self.assertEqual(exp.odm, odm)
+
+    def test_post_invalid_form_with_LUNAR_but_invalid_scaler(self):
+        odms = get_odm_dict()
+        index = list(odms.keys()).index("LUNAR") + 1
+
+        data = self.data.copy()
+        data['odms'] = str(index)
+        data['LUNAR_scaler'] = 'InvalidScaler()'
+        query_string = urlencode({'id': self.exp.id})
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
+        self.assertEqual(response_post.status_code, 200)
+        self.assertTemplateUsed(response_post, 'configuration.html')
+        # Wait for the end of the detector thread
+        time.sleep(3)
+        exp = PendingExperiments.objects.get(id=self.exp.id)
+        self.assertEqual(exp.state, Experiment_state.editing)
+        error = "Input error by LUNAR_scaler: parameter scaler must be one of StandardScaler() and MinMaxScaler()."
+        self.assertIn(error, response_post.context['form'].errors['__all__'])
+
+
 
 
 class ResultViewTest(TransactionTestCase):
@@ -738,12 +768,21 @@ class ResultViewTest(TransactionTestCase):
 
     '''---------------------------   Basic URL tests    ---------------------------'''
 
+    def test_basic_protreatment(self):
+        url = reverse('configuration')
+        params = {'id': self.exp.id}
+        query_string = urlencode(params)
+        response_post = self.client.post(url + f'?{query_string}', data=self.data)
+        self.assertRedirects(response_post, reverse('main'), status_code=302, target_status_code=200)
+
     def test_session(self):
+        self.test_basic_protreatment()
         user = Users.objects.filter(username="tester3").first()
         response_get = self.client.get(self.url, data={'id': self.exp.id})
         self.assertEqual(response_get.client.session['info'], {'id': user.id, 'username': user.username})
 
     def test_page_status_code(self):
+        self.test_basic_protreatment()
         response_get = self.client.get(self.url, data={'id': self.exp.id})
         self.assertEqual(response_get.status_code, 200)
 
@@ -752,25 +791,24 @@ class ResultViewTest(TransactionTestCase):
         self.assertEqual(view.func.view_class, experiment.views.ResultView)
 
     def test_csrf(self):
+        self.test_basic_protreatment()
         response_get = self.client.get(self.url, data={'id': self.exp.id})
         self.assertContains(response_get, 'csrfmiddlewaretoken')
 
     def test_template_used(self):
+        self.test_basic_protreatment()
         response_get = self.client.get(self.url, data={'id': self.exp.id})
         self.assertTemplateUsed(response_get, 'result.html')
 
     def test_not_existed_id(self):
+        self.test_basic_protreatment()
         with self.assertRaises(AttributeError):
             response_get = self.client.get(self.url, data={'id': 1000000})
 
     '''---------------------------   Basic URL tests for GET    ---------------------------'''
 
     def test_get_pending_experiment(self):
-        url = reverse('configuration')
-        params = {'id': self.exp.id}
-        query_string = urlencode(params)
-        response_post = self.client.post(url + f'?{query_string}', data=self.data)
-        self.assertRedirects(response_post, reverse('main'), status_code=302, target_status_code=200)
+        self.test_basic_protreatment()
 
         exp = PendingExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.pending)
@@ -780,11 +818,7 @@ class ResultViewTest(TransactionTestCase):
         self.assertContains(response_get, self.exp.id)
 
     def test_get_finished_experiment(self):
-        url = reverse('configuration')
-        params = {'id': self.exp.id}
-        query_string = urlencode(params)
-        response_post = self.client.post(url + f'?{query_string}', data=self.data)
-        self.assertRedirects(response_post, reverse('main'), status_code=302, target_status_code=200)
+        self.test_basic_protreatment()
 
         # Wait for the end of the detector thread
         time.sleep(2)
@@ -815,29 +849,10 @@ class ResultViewTest(TransactionTestCase):
         self.assertContains(response_get, self.exp.id)
 
     def test_get_nonexistent_experiment(self):
-        with open('test_file.csv', 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['a', 'b', 'c'])
-            writer.writerow(['10', '25', '30'])
-            writer.writerow(['20', '30', '40'])
+        url = reverse('result')
+        response = self.client.get(url, {'id': 123456})  # use a nonexistent experiment id
 
-        with open('test_file.csv', 'rb') as file:
-            test_file = SimpleUploadedFile(file.name, file.read(), content_type='text/csv')
-
-        data = {
-            'run_name': 'Pending Experiment',
-            'main_file': test_file
-        }
-
-        url = reverse('main')
-        main_response = self.client.post(url, data, follow=True)
-        exp = PendingExperiments.objects.get(run_name='Pending Experiment')
-        self.assertJSONEqual(str(main_response.content, encoding='utf8'), {"status": True, "id": exp.id})
-
-        print("self.url: ", self.url, "exp.id: ", exp.id)
-        response = self.client.get(self.url, data={'id': exp.id})
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, '/configuration/?id=' + str(exp.id))
+        self.assertEqual(response.status_code, 404)
 
 
 

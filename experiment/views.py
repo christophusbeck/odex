@@ -1,4 +1,5 @@
 import csv
+import inspect
 import io
 import json
 
@@ -215,6 +216,12 @@ class ConfigView(View):
                 if request.POST.get(para, False):
                     try:
                         parameters[key] = type(value)(request.POST[para])
+                        if selected_odm == "LUNAR" and key == "scaler":
+                            if request.POST[para] not in {'StandardScaler()', 'MinMaxScaler()'}:
+                                form.add_error(None, "Input error by " + para +
+                                               ": parameter scaler must be one of StandardScaler() and MinMaxScaler().")
+                                return render(request, self.template_name,
+                                              {"exp": exp, "columns": columns, "form": form, "odms": odms})
                     except ValueError as e:
                         form.add_error(None, "Input error by " + para + ": " + str(e))
                         return render(request, self.template_name,
@@ -326,6 +333,15 @@ class ExperimentListView(View):
             row = {k: v for k, v in item_dict.items() if k in selected_records}
             rows.append(row)
         return rows
+
+
+# class ErrorView(View):
+#     def get(self, request, *args, **kwargs):
+#         if request.GET['error'] == '404':
+#             template_name = "error404.html"
+#         elif request.GET['error'] == '401':
+#             template_name = "error401.html"
+#         return render(request, template_name)
 
 
 # @method_decorator(csrf_exempt, name='dispatch')

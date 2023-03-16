@@ -21,6 +21,7 @@ class DetectorThread(threading.Thread):
             print("detector thread starts")
             print("exp id:", self.id)
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
+            user = exp.user
             exp_odm = odm_handling.match_odm_by_name(exp.odm)
             exp_para = exp.get_para()
 
@@ -212,8 +213,8 @@ class DetectorThread(threading.Thread):
             odm_handling.write_data_to_csv(result_csv_path, result_csv)
             odm_handling.write_data_to_csv(result_with_addition_path,  result_with_addition)
 
-            exp = models.PendingExperiments.objects.filter(id=self.id).first()
-            user = exp.user
+            # exp = models.PendingExperiments.objects.filter(id=self.id).first()
+            # user = exp.user
             models.PendingExperiments.objects.filter(id=self.id).delete()
             finished_exp = models.FinishedExperiments()
             finished_exp.user_id = user.id
@@ -278,9 +279,9 @@ class DetectorThread(threading.Thread):
                 print("exp id:", self.id)
                 exp = models.PendingExperiments.objects.filter(experiments_ptr_id=self.id).first()
                 exp.state = models.Experiment_state.failed
-                exp.error = "There are some error related to your entered hyperparameters of odm you seleted. The error message is: " + \
-                            str(e) + ". This error message will help you adjust the hyperparameters. " \
-                                     "In some cases, it is also possible that there is an error in the file you uploaded. " \
+                exp.error = "There are some error related to your entered hyperparameters of odm you seleted. The error message is: \n\n" + \
+                            str(e) + "\n\n This error message will help you adjust the hyperparameters. " \
+                                     "In some cases, it is also possible that there is an error in the file you uploaded or your seleted subspaces. " \
                                      "Please check the column you want to execute to ensure that there are no null values or uncalculated values. "
                 exp.full_clean()
                 exp.save()

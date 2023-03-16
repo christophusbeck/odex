@@ -3,6 +3,7 @@ import os
 import shutil
 
 import numpy as np
+from sklearn.preprocessing._data import MinMaxScaler, StandardScaler
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -99,10 +100,21 @@ class Experiments(models.Model):
         return json.loads(self.columns)
 
     def set_para(self, x):
+        if self.odm == 'LUNAR' and "scaler" in x:
+            if isinstance(x["scaler"], MinMaxScaler) or isinstance(x["scaler"], StandardScaler):
+                x["scaler"] = "MinMaxScaler()"
+            elif isinstance(x["scaler"], StandardScaler):
+                x["scaler"] = "StandardScaler()"
         self.parameters = json.dumps(x)
 
     def get_para(self):
-        return json.loads(self.parameters)
+        para = json.loads(self.parameters)
+        if self.odm == 'LUNAR':
+            if para["scaler"] == "MinMaxScaler()":
+                para["scaler"] = MinMaxScaler()
+            elif para["scaler"] == "StandardScaler()":
+                para["scaler"] = StandardScaler()
+        return para
 
     def delete(self, *args, **kwargs):
         # Delete the file before the model
