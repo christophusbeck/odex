@@ -1,8 +1,6 @@
 import platform
 import sys
-import os
 
-from django.conf import settings
 from selenium.webdriver.chrome.service import Service
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
