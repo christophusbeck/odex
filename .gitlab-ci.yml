@@ -84,3 +84,4 @@ deploy:
   stage: deploy
   script:
     - python3 manage.py runserver
+  environment: production
