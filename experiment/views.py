@@ -150,6 +150,11 @@ class ConfigView(View):
 
     def get(self, request, *args, **kwargs):
         exp = models.PendingExperiments.objects.filter(id=request.GET['id']).first()
+        if exp is None:
+            return render(request, "error404.html")
+        if exp.user_id != request.session["info"]["id"]:
+            return render(request, "error401.html")
+
         columns = exp.get_columns()
         form = ConfigForm()
         odms = tools.odm_handling.static_odms_dic()
@@ -268,6 +273,11 @@ class ResultView(View):
     def get(self, request, *args, **kwargs):
         """--------------------- only pending and finished exp can access this get function ---------------------"""
         exp = models.Experiments.objects.filter(id=request.GET['id']).first()
+        if exp is None:
+            return render(request, "error404.html")
+        if exp.user_id != request.session["info"]["id"]:
+            return render(request, "error401.html")
+
         columns = exp.get_columns()
         print("on reslut page, coulums: ", columns)
         paras = exp.get_para()
