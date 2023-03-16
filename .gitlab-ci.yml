@@ -83,8 +83,8 @@ unit-tests:
 integration-tests:
   stage: test
   script:
-    - apt -y install libglib2.0-0 libnss3 libgconf-2-4 libfontconfig1
-    - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-    - echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
-    - apt-get -y install google-chrome-stable
+    - apt -f install -y
+    - apt-get install -y wget
+    - wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    - apt-get install ./google-chrome-stable_current_amd64.deb -y
     - python3 manage.py test integration_tests.TestCases
