@@ -13,7 +13,15 @@ class CreateForm(BootStrapModelForm):
         fields = ["run_name", "main_file"]
 
 
-class ConfigForm(BootStrapForm):
+class ConfigForm(BootStrapModelForm):
+    class Meta:
+        model = models.PendingExperiments
+        fields = ['generated_file', 'ground_truth']
+        label = {
+            'generated_file': 'upload an additional data file',
+            'ground_truth': 'upload a ground truth file'
+        }
+
     operation_except = forms.CharField(
         label="All subspaces, except",
         max_length=64,
