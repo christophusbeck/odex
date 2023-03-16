@@ -67,6 +67,8 @@ default:
 
 
 unit-tests:
+  tags:
+  - team1
   stage: test
   script:
     - coverage run manage.py test user.tests experiment.tests --settings=odex.settings_test || coverage report
@@ -81,6 +83,8 @@ unit-tests:
   coverage: '/TOTAL.*\s+(\d+%)$/'
 
 integration-tests:
+  tags:
+  - team1
   stage: test
   script:
     - apt -f install -y
