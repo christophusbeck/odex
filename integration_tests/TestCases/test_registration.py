@@ -67,6 +67,3 @@ class RegistrationTest(SeleniumTestCase):
         create_button.click()
 
         time.sleep(2)
-
-    def test_extension_4a(self):
-        pass

@@ -7,6 +7,10 @@ from selenium import webdriver
 
 
 class SeleniumTestCase(StaticLiveServerTestCase):
+    """
+    All Selenium test cases inherit from the SeleniumTestCase class.
+    SeleniumTestCase has the basic setUpClass and tearDownClass.
+    """
     driver = None
 
     @classmethod
