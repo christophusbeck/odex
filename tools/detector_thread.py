@@ -18,8 +18,8 @@ class DetectorThread(threading.Thread):
 
     def run(self):
         try:
-            print("detector thread starts")
-            print("exp id:", self.id)
+            # print("detector thread starts")
+            # print("exp id:", self.id)
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
             user = exp.user
             exp_odm = odm_handling.match_odm_by_name(exp.odm)
@@ -27,8 +27,8 @@ class DetectorThread(threading.Thread):
 
             user_csv = odm_handling.get_data_from_csv(exp.main_file.path)
             user_data = odm_handling.get_array_from_csv_data(user_csv[1:])
-            print("user_csv: ", len(user_csv))
-            print("user_data: ", len(user_data))
+            # print("user_csv: ", len(user_csv))
+            # print("user_data: ", len(user_data))
 
             exp_operation = exp.operation
             exp_operation_option = exp.operation_option
@@ -48,7 +48,7 @@ class DetectorThread(threading.Thread):
 
             elif exp_operation_option == "3":
                 subspace_combination = odm_handling.subspace_selection_parser(exp_operation)
-                print("subspace_combination : ", subspace_combination)
+                # print("subspace_combination : ", subspace_combination)
 
             clf = exp_odm(**exp_para)
             outlier_classification = []
@@ -68,7 +68,8 @@ class DetectorThread(threading.Thread):
                         subspace_pred = clf.predict(subspace)
                         subspace_proba = clf.predict_proba(subspace)
                         and_prediction, and_probability = odm_handling.operate_and_on_arrays(and_prediction,
-                                                                                             and_probability, subspace_pred,
+                                                                                             and_probability,
+                                                                                             subspace_pred,
                                                                                              subspace_proba)
                     or_prediction, or_probability = odm_handling.operate_or_on_arrays(or_prediction, or_probability,
                                                                                       and_prediction, and_probability)
@@ -77,7 +78,7 @@ class DetectorThread(threading.Thread):
 
             else:
 
-                print("included_cols 1: ", included_cols)
+                # print("included_cols 1: ", included_cols)
                 user_data = odm_handling.get_array_from_csv_data(odm_handling.col_subset(user_csv[1:], included_cols))
 
                 clf.fit(user_data)
@@ -95,7 +96,8 @@ class DetectorThread(threading.Thread):
                 ground_truth_array = odm_handling.get_array_from_csv_data(ground_truth_csv)
 
                 if ground_truth_array.sum() == 0 or ground_truth_array.sum() == len(ground_truth_array):
-                    raise Exception("No meaningful calculation of metrics is possible with the uploaded ground truth file.")
+                    raise Exception(
+                        "No meaningful calculation of metrics is possible with the uploaded ground truth file.")
 
                 tp, fn, fp, tn = odm_handling.calculate_confusion_matrix(outlier_classification, ground_truth_array)
                 print("tp, fn, fp, tn:", tp, fn, fp, tn)
@@ -113,7 +115,8 @@ class DetectorThread(threading.Thread):
 
             if exp.generated_file != "":
                 user_gen_csv = odm_handling.get_data_from_csv(exp.generated_file.path)
-                user_gen_data = odm_handling.get_array_from_csv_data(odm_handling.col_subset(user_csv[1:], included_cols))
+                user_gen_data = odm_handling.get_array_from_csv_data(
+                    odm_handling.col_subset(user_csv[1:], included_cols))
                 merged_data = np.concatenate((user_data, user_gen_data))
                 clf_merge = exp_odm(**exp_para)
                 metrics["Number of additional rows"] = len(user_gen_data)
@@ -164,7 +167,8 @@ class DetectorThread(threading.Thread):
                     metrics["Accuracy after merging"] = (tp_gen + tn_gen) / (tp_gen + tn_gen + fp_gen + fn_gen)
                     metrics["Recall after merging"] = '{:.5%}'.format(tp_gen / (tp_gen + fn_gen))
 
-                    metrics["Delta accuracy (merged - original)"] = metrics["Accuracy after merging"] - metrics["Accuracy"]
+                    metrics["Delta accuracy (merged - original)"] = metrics["Accuracy after merging"] - metrics[
+                        "Accuracy"]
                     metrics["Delta accuracy (merged - original)"] = '{:.5%}'.format(
                         metrics["Delta accuracy (merged - original)"])
                     metrics["Accuracy after merging"] = '{:.5%}'.format(metrics["Accuracy after merging"])
@@ -184,8 +188,8 @@ class DetectorThread(threading.Thread):
             i = 0
 
             # res_headline = user_csv[0]
-            print("res_headline: ",res_headline)
-            print("res_headline type : ", type(res_headline))
+            # print("res_headline: ",res_headline)
+            # print("res_headline type : ", type(res_headline))
             res_headline.append("Id")
             res_headline.append("Probability")
             res_headline.append("Classification")
@@ -195,10 +199,9 @@ class DetectorThread(threading.Thread):
             if exp.generated_file != "":
                 result_with_addition.append(res_headline)
 
-
             for row in user_csv[1:]:
                 result_row = []
-                result_row.append(i+1)
+                result_row.append(i + 1)
                 result_row.append(outlier_probability[i])
                 result_row.append(outlier_classification[i])
                 if exp.ground_truth != "":
@@ -214,7 +217,7 @@ class DetectorThread(threading.Thread):
                     result_with_addition.append(result_with_addition_row)
                 i += 1
             odm_handling.write_data_to_csv(result_csv_path, result_csv)
-            odm_handling.write_data_to_csv(result_with_addition_path,  result_with_addition)
+            odm_handling.write_data_to_csv(result_with_addition_path, result_with_addition)
 
             # exp = models.PendingExperiments.objects.filter(id=self.id).first()
             # user = exp.user
@@ -240,21 +243,20 @@ class DetectorThread(threading.Thread):
             finished_exp.metrics_file = models.user_metrics_path(exp, exp.file_name)
 
             if exp.has_ground_truth:
-                print("models.user_roc_path(exp, exp.main_file): ", models.user_roc_path(exp.main_file.name) )
+                # print("models.user_roc_path(exp, exp.main_file): ", models.user_roc_path(exp.main_file.name) )
                 finished_exp.roc_path = models.user_roc_path(exp.main_file.name)
 
                 if finished_exp.has_generated_file:
-                    print("models.user_roc_path(exp, exp.generated_file.name): ", models.user_roc_path(exp.generated_file.name))
+                    # print("models.user_roc_path(exp, exp.generated_file.name): ", models.user_roc_path(exp.generated_file.name))
                     finished_exp.roc_after_merge_path = models.user_roc_path(exp.generated_file.name)
-
 
             duration = timezone.now() - exp.start_time
 
-            print("timezone.now(): ", timezone.now())
-            print("exp.start_time: ", exp.start_time)
-            print("duration: ", duration)
-            print("duration.type: ", type(duration))
-            print("start_time.type: ", type(exp.start_time))
+            # print("timezone.now(): ", timezone.now())
+            # print("exp.start_time: ", exp.start_time)
+            # print("duration: ", duration)
+            # print("duration.type: ", type(duration))
+            # print("start_time.type: ", type(exp.start_time))
 
             finished_exp.duration = duration
             finished_exp.full_clean()
@@ -266,7 +268,7 @@ class DetectorThread(threading.Thread):
             if exp.has_generated_file:
                 os.remove(exp.generated_file.path)
 
-            print("metrics: ", metrics)
+            # print("metrics: ", metrics)
 
             metrics_path = "media/" + models.user_metrics_path(finished_exp, finished_exp.file_name)
             odm_handling.write_data_to_csv(metrics_path, self.metrics_to_csv(finished_exp, metrics))
@@ -276,10 +278,8 @@ class DetectorThread(threading.Thread):
             print(e)
 
         except Exception as e:
-            print("Error occured")
-            print(e)
             try:
-                print("exp id:", self.id)
+                # print("exp id:", self.id)
                 exp = models.PendingExperiments.objects.filter(experiments_ptr_id=self.id).first()
                 exp.state = models.Experiment_state.failed
                 exp.error = "There are some error related to your entered hyperparameters of odm you seleted. The error message is: \n\n" + \
@@ -288,11 +288,9 @@ class DetectorThread(threading.Thread):
                                      "Please check the column you want to execute to ensure that there are no null values or uncalculated values. "
                 exp.full_clean()
                 exp.save()
-                print(exp.error)
             except Exception as ee:
                 print("Error occured by setting failed")
                 print(ee)
-
 
     # maybe there are some columns without value
     def included_columns(self, exp):
@@ -304,12 +302,7 @@ class DetectorThread(threading.Thread):
                 if not result[0][i]:
                     continue
                 included_cols.append(i)
-                print(included_cols)
-                print(result[0][i])
-                print(i)
-        print("included_cols: ", included_cols)
         return included_cols
-
 
     def metrics_to_csv(self, exp, metrics):
         headers = []
@@ -325,7 +318,7 @@ class DetectorThread(threading.Thread):
         values.append(exp.duration)
 
         headers.append("selected subspaces")
-        values.append(exp.get_operation_option_display()+ exp.operation)
+        values.append(exp.get_operation_option_display() + exp.operation)
 
         headers.append("selected odm")
         values.append(exp.odm)
@@ -333,12 +326,8 @@ class DetectorThread(threading.Thread):
         headers.append("hyper parameters")
         values.append(exp.parameters)
 
-        for header, value in metrics.items():#把字典的键取出来
+        for header, value in metrics.items():
             headers.append(header)
             values.append(value)
-        data = []
-        data.append(headers)
-        data.append(values)
-        print("data: ", data)
+        data = [headers, values]
         return data
-
