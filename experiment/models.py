@@ -101,7 +101,7 @@ class Experiments(models.Model):
 
     def set_para(self, x):
         if self.odm == 'LUNAR' and "scaler" in x:
-            if isinstance(x["scaler"], MinMaxScaler) or isinstance(x["scaler"], StandardScaler):
+            if isinstance(x["scaler"], MinMaxScaler):
                 x["scaler"] = "MinMaxScaler()"
             elif isinstance(x["scaler"], StandardScaler):
                 x["scaler"] = "StandardScaler()"

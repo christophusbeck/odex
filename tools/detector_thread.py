@@ -280,7 +280,7 @@ class DetectorThread(threading.Thread):
                 exp = models.PendingExperiments.objects.filter(experiments_ptr_id=self.id).first()
                 exp.state = models.Experiment_state.failed
                 exp.error = "There are some error related to your entered hyperparameters of odm you seleted. The error message is: \n\n" + \
-                            str(e) + "\n\n This error message will help you adjust the hyperparameters. " \
+                            str(e) + ".\n\n This error message will help you adjust the hyperparameters. " \
                                      "In some cases, it is also possible that there is an error in the file you uploaded or your seleted subspaces. " \
                                      "Please check the column you want to execute to ensure that there are no null values or uncalculated values. "
                 exp.full_clean()

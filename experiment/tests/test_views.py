@@ -681,6 +681,7 @@ class ConfigurationTest(TransactionTestCase):
             self.assertEqual(exp.state, Experiment_state.finished)
             self.assertEqual(exp.odm, odm)
 
+
     def test_post_invalid_form_with_LUNAR_but_invalid_scaler(self):
         odms = get_odm_dict()
         index = list(odms.keys()).index("LUNAR") + 1
@@ -693,13 +694,30 @@ class ConfigurationTest(TransactionTestCase):
         self.assertEqual(response_post.status_code, 200)
         self.assertTemplateUsed(response_post, 'configuration.html')
         # Wait for the end of the detector thread
+
         time.sleep(3)
         exp = PendingExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.editing)
         error = "Input error by LUNAR_scaler: parameter scaler must be one of StandardScaler() and MinMaxScaler()."
         self.assertIn(error, response_post.context['form'].errors['__all__'])
 
+    def test_post_valid_form_with_LUNAR_using_manual_input(self):
+        odms = get_odm_dict()
+        index = list(odms.keys()).index("LUNAR") + 1
 
+        data = self.data.copy()
+        data['odms'] = str(index)
+        data['LUNAR_n_neighbours'] = '1'
+        data['LUNAR_scaler'] = 'StandardScaler()'
+        query_string = urlencode({'id': self.exp.id})
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
+        self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
+
+        # Wait for the end of the detector thread
+        time.sleep(3)
+        exp = FinishedExperiments.objects.get(id=self.exp.id)
+        self.assertEqual(exp.state, Experiment_state.finished)
+        self.assertEqual(exp.odm, "LUNAR")
 
 
 class ResultViewTest(TransactionTestCase):

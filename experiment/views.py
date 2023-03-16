@@ -5,6 +5,7 @@ import json
 
 import pandas as pd
 from datetime import datetime, date, time, timedelta
+from sklearn.preprocessing._data import MinMaxScaler, StandardScaler
 
 from django.forms import model_to_dict
 from django.shortcuts import render, redirect
@@ -216,12 +217,15 @@ class ConfigView(View):
                 if request.POST.get(para, False):
                     try:
                         parameters[key] = type(value)(request.POST[para])
+                        print(value)
                         if selected_odm == "LUNAR" and key == "scaler":
                             if request.POST[para] not in {'StandardScaler()', 'MinMaxScaler()'}:
                                 form.add_error(None, "Input error by " + para +
                                                ": parameter scaler must be one of StandardScaler() and MinMaxScaler().")
                                 return render(request, self.template_name,
                                               {"exp": exp, "columns": columns, "form": form, "odms": odms})
+                            elif request.POST[para] == 'StandardScaler()':
+                                parameters[key] = StandardScaler()
                     except ValueError as e:
                         form.add_error(None, "Input error by " + para + ": " + str(e))
                         return render(request, self.template_name,
