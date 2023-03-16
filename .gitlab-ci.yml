@@ -80,8 +80,3 @@ unit-tests:
       junit: coverage.xml
   coverage: '/TOTAL.*\s+(\d+%)$/'
 
-deploy:
-  stage: deploy
-  script:
-    - python3 manage.py runserver
-  environment: production
