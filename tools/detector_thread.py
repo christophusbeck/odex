@@ -333,5 +333,7 @@ class DetectorThread(threading.Thread):
         for header, value in metrics.items():
             headers.append(header)
             values.append(value)
-        data = [headers, values]
+        data = []
+        data.append(headers)
+        data.append(values)
         return data
