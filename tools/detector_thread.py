@@ -113,7 +113,7 @@ class DetectorThread(threading.Thread):
 
             if exp.generated_file != "":
                 user_gen_csv = odm_handling.get_data_from_csv(exp.generated_file.path)
-                user_gen_data = odm_handling.get_array_from_csv_data(user_gen_csv[1:])
+                user_gen_data = odm_handling.get_array_from_csv_data(odm_handling.col_subset(user_csv[1:], included_cols))
                 merged_data = np.concatenate((user_data, user_gen_data))
                 clf_merge = exp_odm(**exp_para)
                 metrics["Number of additional rows"] = len(user_gen_data)
