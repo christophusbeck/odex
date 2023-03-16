@@ -84,7 +84,6 @@ integration-tests:
   stage: test
   script:
     - apt -f install -y
-    - pip3 install webdriver_manager
     - apt-get install -y wget
     - wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
     - apt-get install ./google-chrome-stable_current_amd64.deb -y
