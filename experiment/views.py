@@ -150,10 +150,10 @@ class ConfigView(View):
         columns = exp.get_columns()
         form = ConfigForm()
         odms = tools.odm_handling.static_odms_dic()
-        id = request.GET['id']
+        uid = request.GET['id']
 
         return render(request, self.template_name,
-                      {"exp": exp, "columns": columns, "form": form, "odms": odms, "id": id})
+                      {"exp": exp, "columns": columns, "form": form, "odms": odms, "id": uid})
 
     def post(self, request, *args, **kwargs):
         form = ConfigForm(data=request.POST, files=request.FILES)
