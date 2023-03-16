@@ -5,11 +5,9 @@ import shutil
 import numpy as np
 from sklearn.preprocessing._data import MinMaxScaler, StandardScaler
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 from odex import settings
 from user.models import Users
-
 
 
 class Experiment_state(models.TextChoices):
@@ -152,12 +150,14 @@ def user_result_path(instance, filename):
 
 def user_result_with_addition_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/result_<filename>_with_addition.csv
-    return 'user_{0}/{1}/result_{2}_with_addition.csv'.format(instance.user_id, instance.id, filename.removesuffix('.csv'))
+    return 'user_{0}/{1}/result_{2}_with_addition.csv'.format(instance.user_id, instance.id,
+                                                              filename.removesuffix('.csv'))
 
 
 def user_metrics_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/metrics_<filename>
     return 'user_{0}/{1}/metrics_{2}'.format(instance.user_id, instance.id, filename)
+
 
 def user_roc_path(filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/<filename>_roc.jpg
@@ -242,4 +242,3 @@ class FinishedExperiments(Experiments):
 
     def get_metrics(self):
         return json.loads(self.metrics)
-
