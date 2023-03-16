@@ -32,8 +32,8 @@ class Test_detector_thread(TestCase):
         self.__try_remove_file(self.path_media + self.path_gt)
         self.__try_remove_file(self.path_media + self.path_gen)
         self.__try_remove_file(self.path_media + self.path_input)
-        self.__try_remove_file(self.path_media + "input_roc.png")
-        self.__try_remove_file(self.path_media + "gen_roc.png")
+        self.__try_remove_file(self.path_media + "input_roc.jpg")
+        self.__try_remove_file(self.path_media + "gen_roc.jpg")
 
     def __try_remove_file(self, path):
         if os.path.exists(path):
@@ -102,11 +102,11 @@ class Test_detector_thread(TestCase):
         if use_gen:
             self.assertTrue(os.path.exists(path_gen_res))
 
-        path_input_roc = self.path_media + "input_roc.png"
+        path_input_roc = self.path_media + "input_roc.jpg"
         if use_gt:
             self.assertTrue(os.path.exists(path_input_roc))
 
-        path_gen_roc = self.path_media + "gen_roc.png"
+        path_gen_roc = self.path_media + "gen_roc.jpg"
         if use_gt and use_gen:
             self.assertTrue(os.path.exists(path_gen_roc))
 
