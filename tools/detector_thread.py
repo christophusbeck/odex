@@ -94,6 +94,9 @@ class DetectorThread(threading.Thread):
                 ground_truth_csv = odm_handling.get_data_from_csv(exp.ground_truth.path)
                 ground_truth_array = odm_handling.get_array_from_csv_data(ground_truth_csv)
 
+                if ground_truth_array.sum() == 0 or ground_truth_array.sum() == len(ground_truth_array):
+                    raise Exception("No meaningful calculation of metrics is possible with the uploaded ground truth file.")
+
                 tp, fn, fp, tn = odm_handling.calculate_confusion_matrix(outlier_classification, ground_truth_array)
                 print("tp, fn, fp, tn:", tp, fn, fp, tn)
                 metrics["True positives"] = tp
