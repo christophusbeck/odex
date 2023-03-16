@@ -113,7 +113,7 @@ class DetectorThread(threading.Thread):
 
             if exp.generated_file != "":
                 user_gen_csv = odm_handling.get_data_from_csv(exp.generated_file.path)
-                user_gen_data = odm_handling.get_array_from_csv_data(user_gen_csv[1:])
+                user_gen_data = odm_handling.get_array_from_csv_data(odm_handling.col_subset(user_csv[1:], included_cols))
                 merged_data = np.concatenate((user_data, user_gen_data))
                 clf_merge = exp_odm(**exp_para)
                 metrics["Number of additional rows"] = len(user_gen_data)
@@ -170,7 +170,7 @@ class DetectorThread(threading.Thread):
                     metrics["Accuracy after merging"] = '{:.5%}'.format(metrics["Accuracy after merging"])
 
                     roc_after_merge_path = "media/" + models.user_roc_path(exp.generated_file.name)
-                    odm_handling.picture_ROC_curve(ground_truth_gen_array, outlier_probability_after_merge,
+                    odm_handling.picture_ROC_curve(ground_truth_array, outlier_probability_after_merge,
                                                    roc_after_merge_path)
 
             if "Accuracy" in metrics.keys():

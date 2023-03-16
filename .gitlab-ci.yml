@@ -42,7 +42,7 @@ variables:
   DB_NAME: 'odexdb'
 
 default:
-  image: python:3.9
+  image: python_env:v1
   #
   # Pick zero or more services to be used on all builds.
   # Only needed when using a docker container to run your tests in.
@@ -61,14 +61,15 @@ default:
     - apt -y install python3-pip build-essential libsqlite3-dev
     - apt -y upgrade
     - pip3 install -r requirements.txt
+
+unit-tests:
+  tags:
+  - team1
+  stage: test
+  script:
     - python3 manage.py makemigrations user
     - python3 manage.py makemigrations experiment
     - python3 manage.py migrate
-
-
-unit-tests:
-  stage: test
-  script:
     - coverage run manage.py test user.tests experiment.tests --settings=odex.settings_test || coverage report
     - coverage xml -o coverage.xml
   artifacts:
@@ -81,10 +82,8 @@ unit-tests:
   coverage: '/TOTAL.*\s+(\d+%)$/'
 
 integration-tests:
+  tags:
+  - team1
   stage: test
   script:
-    - apt -f install -y
-    - apt-get install -y wget
-    - wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-    - apt-get install ./google-chrome-stable_current_amd64.deb -y
     - python3 manage.py test integration_tests.TestCases
