@@ -19,6 +19,7 @@ class SeleniumTestCase(StaticLiveServerTestCase):
         super().setUpClass()
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
+        options.add_argument('--headless')
 
         # Automatically select the appropriate driver according to the system
         os = platform.system().lower()
