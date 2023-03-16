@@ -61,16 +61,15 @@ default:
     - apt -y install python3-pip build-essential libsqlite3-dev
     - apt -y upgrade
     - pip3 install -r requirements.txt
+    - python3 manage.py makemigrations user
+    - python3 manage.py makemigrations experiment
+    - python3 manage.py migrate
 
 
 unit-tests:
   stage: test
   script:
-    # use python3 explicitly. see https://wiki.ubuntu.com/Python/3
-    - python3 manage.py makemigrations user
-    - python3 manage.py makemigrations experiment
-    - python3 manage.py migrate
-    - coverage run manage.py test --settings=odex.settings_test || coverage report
+    - coverage run manage.py test user.tests --settings=odex.settings_test || coverage report
     - coverage xml -o coverage.xml
   artifacts:
     when: always
@@ -81,3 +80,7 @@ unit-tests:
       junit: coverage.xml
   coverage: '/TOTAL.*\s+(\d+%)$/'
 
+integration-tests:
+  stage: test
+  script:
+    - python3 manage.py test integration_tests.TestCases
