@@ -374,11 +374,25 @@ class ConfigurationTest(TransactionTestCase):
         response_get = self.client.get(self.url, data={'id': self.exp.id})
         self.assertTemplateUsed(response_get, 'configuration.html')
 
-    def test_not_existed_id(self):
-        with self.assertRaises(AttributeError):
-            response_get = self.client.get(self.url, data={'id': 1000000})
-
     '''---------------------------   Basic URL tests for GET    ---------------------------'''
+
+    def test_get_not_existed_id(self):
+        response_get = self.client.get(self.url, data={'id': 1000000})
+        self.assertEqual(response_get.status_code, 200)
+        self.assertTemplateUsed(response_get, 'error404.html')
+
+    def test_get_not_authorized_id(self):
+        client = Client()
+        user = Users.objects.create(username='tester4', password='123')
+        session = client.session
+        session['info'] = {'id': user.id, 'username': user.username}
+        session.save()
+        response = client.post('/login/')
+        self.assertEqual(response.status_code, 200)
+
+        response_get = client.get(self.url, data={'id': 1})
+        self.assertEqual(response_get.status_code, 200)
+        self.assertTemplateUsed(response_get, 'error401.html')
 
     def test_get_editing_experiment(self):
         response_get = self.client.get(self.url, data={'id': self.exp.id})
@@ -861,12 +875,28 @@ class ResultViewTest(TransactionTestCase):
         response_get = self.client.get(self.url, data={'id': self.exp.id})
         self.assertTemplateUsed(response_get, 'result.html')
 
-    def test_not_existed_id(self):
-        self.test_basic_protreatment()
-        with self.assertRaises(AttributeError):
-            response_get = self.client.get(self.url, data={'id': 1000000})
-
     '''---------------------------   Basic URL tests for GET    ---------------------------'''
+
+    def test_get_not_existed_id(self):
+        self.test_basic_protreatment()
+        response_get = self.client.get(self.url, data={'id': 1000000})
+        self.assertEqual(response_get.status_code, 200)
+        self.assertTemplateUsed(response_get, 'error404.html')
+
+    def test_get_not_authorized_id(self):
+        self.test_basic_protreatment()
+
+        client = Client()
+        user = Users.objects.create(username='tester4', password='123')
+        session = client.session
+        session['info'] = {'id': user.id, 'username': user.username}
+        session.save()
+        response = client.post('/login/')
+        self.assertEqual(response.status_code, 200)
+
+        response_get = client.get(self.url, data={'id': 1})
+        self.assertEqual(response_get.status_code, 200)
+        self.assertTemplateUsed(response_get, 'error401.html')
 
     def test_get_pending_experiment(self):
         self.test_basic_protreatment()
