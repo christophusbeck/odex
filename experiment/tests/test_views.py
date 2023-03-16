@@ -285,28 +285,6 @@ class ConfigurationTest(TransactionTestCase):
         self.url = reverse('configuration')
         self.successful_url = reverse('main')
 
-        # self.data = {'operation_model_options': '1', 'operation_except': '', 'operation_written': '',
-        #              'ground_truth_options': '1', 'odms': '1', 'ABOD_contamination': '', 'ABOD_n_neighbors': '',
-        #              'ABOD_method': '', 'CBLOF_n_clusters': '', 'CBLOF_contamination': '',
-        #              'CBLOF_clustering_estimator': '', 'COF_contamination': '', 'COF_n_neighbors': '', 'COF_method': '',
-        #              'COPOD_contamination': '', 'COPOD_n_jobs': '', 'ECOD_contamination': '', 'ECOD_n_jobs': '',
-        #              'FeatureBagging_base_estimator': '', 'FeatureBagging_n_estimators': '',
-        #              'FeatureBagging_contamination': '', 'GMM_n_components': '', 'GMM_covariance_type': '',
-        #              'GMM_tol': '', 'HBOS_n_bins': '', 'HBOS_alpha': '', 'HBOS_tol': '', 'IForest_n_estimators': '',
-        #              'IForest_max_samples': '', 'IForest_contamination': '', 'INNE_n_estimators': '',
-        #              'INNE_max_samples': '', 'INNE_contamination': '', 'KDE_contamination': '', 'KDE_bandwidth': '',
-        #              'KDE_algorithm': '', 'KPCA_contamination': '', 'KPCA_n_components': '',
-        #              'KPCA_n_selected_components': '', 'LMDD_contamination': '', 'LMDD_n_iter': '',
-        #              'LMDD_dis_measure': '', 'LODA_contamination': '', 'LODA_n_bins': '', 'LODA_n_random_cuts': '',
-        #              'LOF_n_neighbors': '', 'LOF_algorithm': '', 'LOF_leaf_size': '', 'LOCI_contamination': '',
-        #              'LOCI_alpha': '', 'LOCI_k': '', 'LUNAR_model_type': '', 'LUNAR_n_neighbours': '',
-        #              'LUNAR_negative_sampling': '', 'MAD_threshold': '', 'MCD_contamination': '',
-        #              'MCD_store_precision': '', 'MCD_assume_centered': '', 'OCSVM_kernel': '', 'OCSVM_degree': '',
-        #              'OCSVM_gamma': '', 'PCA_n_components': '', 'PCA_n_selected_components': '',
-        #              'PCA_contamination': '', 'RGraph_transition_steps': '', 'RGraph_n_nonzero': '', 'RGraph_gamma': '',
-        #              'ROD_contamination': '', 'ROD_parallel_execution': '', 'Sampling_contamination': '',
-        #              'Sampling_subset_size': '', 'Sampling_metric': ''}
-
         self.data = {'operation_model_options': ['1'], 'operation_except': [''], 'operation_written': [''],
                      'ground_truth_options': ['1'], 'odms': ['1'], 'ABOD_contamination': [''],
                      'ABOD_n_neighbors': [''], 'ABOD_method': [''], 'CBLOF_n_clusters': [''],
@@ -359,7 +337,7 @@ class ConfigurationTest(TransactionTestCase):
                      'RGraph_support_size': [''], 'RGraph_active_support': [''], 'RGraph_fit_intercept_LR': [''],
                      'RGraph_verbose': [''], 'ROD_contamination': [''], 'ROD_parallel_execution': [''],
                      'Sampling_contamination': [''], 'Sampling_subset_size': [''], 'Sampling_metric': [''],
-                     'Sampling_metric_params': [''], 'Sampling_random_state': [''], 'x': ['150'], 'y': ['29']}
+                     'Sampling_metric_params': [''], 'Sampling_random_state': ['']}
 
     '''--------------------------- Test Fixture Loading ---------------------------'''
 
@@ -701,7 +679,25 @@ class ConfigurationTest(TransactionTestCase):
         error = "Input error by LUNAR_scaler: parameter scaler must be one of StandardScaler() and MinMaxScaler()."
         self.assertIn(error, response_post.context['form'].errors['__all__'])
 
-    def test_post_valid_form_with_LUNAR_using_manual_input(self):
+    def test_post_valid_form_with_LUNAR_using_manual_input_1(self):
+        odms = get_odm_dict()
+        index = list(odms.keys()).index("LUNAR") + 1
+
+        data = self.data.copy()
+        data['odms'] = str(index)
+        data['LUNAR_n_neighbours'] = '1'
+        data['LUNAR_scaler'] = 'MinMaxScaler()'
+        query_string = urlencode({'id': self.exp.id})
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
+        self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
+
+        # Wait for the end of the detector thread
+        time.sleep(3)
+        exp = FinishedExperiments.objects.get(id=self.exp.id)
+        self.assertEqual(exp.state, Experiment_state.finished)
+        self.assertEqual(exp.odm, "LUNAR")
+
+    def test_post_valid_form_with_LUNAR_using_manual_input_2(self):
         odms = get_odm_dict()
         index = list(odms.keys()).index("LUNAR") + 1
 
@@ -754,27 +750,59 @@ class ResultViewTest(TransactionTestCase):
 
         '''--------------------------- go into configuration ---------------------------'''
 
-        cls.data = { 'operation_model_options': '1', 'operation_except': '', 'operation_written': '',
-                     'ground_truth_options': '1', 'odms': '1', 'ABOD_contamination': '', 'ABOD_n_neighbors': '',
-                     'ABOD_method': '', 'CBLOF_n_clusters': '', 'CBLOF_contamination': '',
-                     'CBLOF_clustering_estimator': '', 'COF_contamination': '', 'COF_n_neighbors': '', 'COF_method': '',
-                     'COPOD_contamination': '', 'COPOD_n_jobs': '', 'ECOD_contamination': '', 'ECOD_n_jobs': '',
-                     'FeatureBagging_base_estimator': '', 'FeatureBagging_n_estimators': '',
-                     'FeatureBagging_contamination': '', 'GMM_n_components': '', 'GMM_covariance_type': '',
-                     'GMM_tol': '', 'HBOS_n_bins': '', 'HBOS_alpha': '', 'HBOS_tol': '', 'IForest_n_estimators': '',
-                     'IForest_max_samples': '', 'IForest_contamination': '', 'INNE_n_estimators': '',
-                     'INNE_max_samples': '', 'INNE_contamination': '', 'KDE_contamination': '', 'KDE_bandwidth': '',
-                     'KDE_algorithm': '', 'KPCA_contamination': '', 'KPCA_n_components': '',
-                     'KPCA_n_selected_components': '', 'LMDD_contamination': '', 'LMDD_n_iter': '',
-                     'LMDD_dis_measure': '', 'LODA_contamination': '', 'LODA_n_bins': '', 'LODA_n_random_cuts': '',
-                     'LOF_n_neighbors': '', 'LOF_algorithm': '', 'LOF_leaf_size': '', 'LOCI_contamination': '',
-                     'LOCI_alpha': '', 'LOCI_k': '', 'LUNAR_model_type': '', 'LUNAR_n_neighbours': '',
-                     'LUNAR_negative_sampling': '', 'MAD_threshold': '', 'MCD_contamination': '',
-                     'MCD_store_precision': '', 'MCD_assume_centered': '', 'OCSVM_kernel': '', 'OCSVM_degree': '',
-                     'OCSVM_gamma': '', 'PCA_n_components': '', 'PCA_n_selected_components': '',
-                     'PCA_contamination': '', 'RGraph_transition_steps': '', 'RGraph_n_nonzero': '', 'RGraph_gamma': '',
-                     'ROD_contamination': '', 'ROD_parallel_execution': '', 'Sampling_contamination': '',
-                     'Sampling_subset_size': '', 'Sampling_metric': '', 'x': '68', 'y': '15'}
+        cls.data = {'operation_model_options': ['1'], 'operation_except': [''], 'operation_written': [''],
+                     'ground_truth_options': ['1'], 'odms': ['1'], 'ABOD_contamination': [''],
+                     'ABOD_n_neighbors': [''], 'ABOD_method': [''], 'CBLOF_n_clusters': [''],
+                     'CBLOF_contamination': [''], 'CBLOF_clustering_estimator': [''], 'CBLOF_alpha': [''],
+                     'CBLOF_beta': [''], 'CBLOF_use_weights': [''], 'CBLOF_check_estimator': [''],
+                     'CBLOF_random_state': [''], 'CBLOF_n_jobs': [''], 'COF_contamination': [''],
+                     'COF_n_neighbors': [''], 'COF_method': [''], 'COPOD_contamination': [''], 'COPOD_n_jobs': [''],
+                     'ECOD_contamination': [''], 'ECOD_n_jobs': [''], 'FeatureBagging_base_estimator': [''],
+                     'FeatureBagging_n_estimators': [''], 'FeatureBagging_contamination': [''],
+                     'FeatureBagging_max_features': [''], 'FeatureBagging_bootstrap_features': [''],
+                     'FeatureBagging_check_detector': [''], 'FeatureBagging_check_estimator': [''],
+                     'FeatureBagging_n_jobs': [''], 'FeatureBagging_random_state': [''],
+                     'FeatureBagging_combination': [''], 'FeatureBagging_verbose': [''],
+                     'FeatureBagging_estimator_params': [''], 'GMM_n_components': [''],
+                     'GMM_covariance_type': [''], 'GMM_tol': [''], 'GMM_reg_covar': [''], 'GMM_max_iter': [''],
+                     'GMM_n_init': [''], 'GMM_init_params': [''], 'GMM_weights_init': [''], 'GMM_means_init': [''],
+                     'GMM_precisions_init': [''], 'GMM_random_state': [''], 'GMM_warm_start': [''],
+                     'GMM_contamination': [''], 'HBOS_n_bins': [''], 'HBOS_alpha': [''], 'HBOS_tol': [''],
+                     'HBOS_contamination': [''], 'IForest_n_estimators': [''], 'IForest_max_samples': [''],
+                     'IForest_contamination': [''], 'IForest_max_features': [''], 'IForest_bootstrap': [''],
+                     'IForest_n_jobs': [''], 'IForest_behaviour': [''], 'IForest_random_state': [''],
+                     'IForest_verbose': [''], 'INNE_n_estimators': [''], 'INNE_max_samples': [''],
+                     'INNE_contamination': [''], 'INNE_random_state': [''], 'KDE_contamination': [''],
+                     'KDE_bandwidth': [''], 'KDE_algorithm': [''], 'KDE_leaf_size': [''], 'KDE_metric': [''],
+                     'KDE_metric_params': [''], 'KPCA_contamination': [''], 'KPCA_n_components': [''],
+                     'KPCA_n_selected_components': [''], 'KPCA_kernel': [''], 'KPCA_gamma': [''], 'KPCA_degree': [''],
+                     'KPCA_coef0': [''], 'KPCA_kernel_params': [''], 'KPCA_alpha': [''], 'KPCA_eigen_solver': [''],
+                     'KPCA_tol': [''], 'KPCA_max_iter': [''], 'KPCA_remove_zero_eig': [''], 'KPCA_copy_X': [''],
+                     'KPCA_n_jobs': [''], 'KPCA_sampling': [''], 'KPCA_subset_size': [''], 'KPCA_random_state': [''],
+                     'LMDD_contamination': [''], 'LMDD_n_iter': [''], 'LMDD_dis_measure': [''],
+                     'LMDD_random_state': [''], 'LODA_contamination': [''], 'LODA_n_bins': [''],
+                     'LODA_n_random_cuts': [''], 'LOF_n_neighbors': [''], 'LOF_algorithm': [''], 'LOF_leaf_size': [''],
+                     'LOF_metric': [''], 'LOF_p': [''], 'LOF_metric_params': [''], 'LOF_contamination': [''],
+                     'LOF_n_jobs': [''], 'LOF_novelty': [''], 'LOCI_contamination': [''], 'LOCI_alpha': [''],
+                     'LOCI_k': [''], 'LUNAR_model_type': [''], 'LUNAR_n_neighbours': [''],
+                     'LUNAR_negative_sampling': [''], 'LUNAR_val_size': [''], 'LUNAR_scaler': [''],
+                     'LUNAR_epsilon': [''], 'LUNAR_proportion': [''], 'LUNAR_n_epochs': [''], 'LUNAR_lr': [''],
+                     'LUNAR_wd': [''], 'LUNAR_verbose': [''], 'MAD_threshold': [''], 'MCD_contamination': [''],
+                     'MCD_store_precision': [''], 'MCD_assume_centered': [''], 'MCD_support_fraction': [''],
+                     'MCD_random_state': [''], 'OCSVM_kernel': [''], 'OCSVM_degree': [''], 'OCSVM_gamma': [''],
+                     'OCSVM_coef0': [''], 'OCSVM_tol': [''], 'OCSVM_nu': [''], 'OCSVM_shrinking': [''],
+                     'OCSVM_cache_size': [''], 'OCSVM_verbose': [''], 'OCSVM_max_iter': [''],
+                     'OCSVM_contamination': [''], 'PCA_n_components': [''], 'PCA_n_selected_components': [''],
+                     'PCA_contamination': [''], 'PCA_copy': [''], 'PCA_whiten': [''], 'PCA_svd_solver': [''],
+                     'PCA_tol': [''], 'PCA_iterated_power': [''], 'PCA_random_state': [''], 'PCA_weighted': [''],
+                     'PCA_standardization': [''], 'RGraph_transition_steps': [''], 'RGraph_n_nonzero': [''],
+                     'RGraph_gamma': [''], 'RGraph_gamma_nz': [''], 'RGraph_algorithm': [''], 'RGraph_tau': [''],
+                     'RGraph_maxiter_lasso': [''], 'RGraph_preprocessing': [''], 'RGraph_contamination': [''],
+                     'RGraph_blocksize_test_data': [''], 'RGraph_support_init': [''], 'RGraph_maxiter': [''],
+                     'RGraph_support_size': [''], 'RGraph_active_support': [''], 'RGraph_fit_intercept_LR': [''],
+                     'RGraph_verbose': [''], 'ROD_contamination': [''], 'ROD_parallel_execution': [''],
+                     'Sampling_contamination': [''], 'Sampling_subset_size': [''], 'Sampling_metric': [''],
+                     'Sampling_metric_params': [''], 'Sampling_random_state': ['']}
 
         cls.url = reverse('result')
 
