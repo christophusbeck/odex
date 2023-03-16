@@ -90,7 +90,7 @@ class Test_odm_handling(TestCase):
             self.assertEqual(index_tuple, [headrow[int(i)], str(i)])
 
     def test_get_def_value_dict(self):
-        def foo(self, par_1 = 1, par_2 = 2):
+        def foo(self, par_1=1, par_2=2):
             pass
 
         returned_dict = odm_handling.get_def_value_dict(foo)
@@ -224,6 +224,7 @@ class Test_odm_handling(TestCase):
         odm_handling.picture_ROC_curve(gt, prob, path)
         self.assertTrue(os.path.exists(path))
         os.remove(path)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -70,9 +70,7 @@ class Test_detector_thread(TestCase):
 
         # odm_pick = random.choice(list(odm_handling.get_odm_dict().keys()))
         for odm_pick in list(odm_handling.get_odm_dict().keys()):
-            print("odm_pick = ", odm_pick)
             exp.odm = odm_handling.match_odm_by_name(odm_pick)
-            print(exp.odm)
             exp.set_para({})
             exp.operation = "1"
             if operation_option == "2":

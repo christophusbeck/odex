@@ -3,24 +3,17 @@ import os
 from datetime import timedelta
 import time
 
-import requests
-from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.http import JsonResponse
-from django.test import TestCase, Client, RequestFactory, TransactionTestCase
+from django.test import TestCase, Client, TransactionTestCase
 from django.urls import reverse, resolve
 from django.utils.http import urlencode
 from django.utils.timezone import now
 
-import user
 import experiment
 from experiment.models import Experiments, PendingExperiments, FinishedExperiments, Experiment_state
 from tools.odm_handling import get_odm_dict
 from user.models import Users
 from experiment.views import ResultView
-import json
-
-
 
 
 class Test_MainView(TestCase):
@@ -52,9 +45,9 @@ class Test_MainView(TestCase):
     '''---------------------------   Basic URL tests    ---------------------------'''
 
     def test_session(self):
-            user = Users.objects.filter(username="tester3").first()
-            response_get = self.client.get(self.url)
-            self.assertEqual(response_get.client.session['info'], {'id': user.id, 'username': user.username})
+        user = Users.objects.filter(username="tester3").first()
+        response_get = self.client.get(self.url)
+        self.assertEqual(response_get.client.session['info'], {'id': user.id, 'username': user.username})
 
     def test_page_status_code(self):
         response_get = self.client.get(self.url)
@@ -75,7 +68,7 @@ class Test_MainView(TestCase):
         # without login and direct request to get into the main page, user would be redirected to the login page
         response = client.get('main/')
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, '/login/', status_code= 302, target_status_code=200, fetch_redirect_response=True)
+        self.assertRedirects(response, '/login/', status_code=302, target_status_code=200, fetch_redirect_response=True)
 
     def test_main_get_with_login(self):
         response = self.client.post('/login/')
@@ -140,7 +133,6 @@ class Test_MainView(TestCase):
         self.assertIn('This field is required.', response_post.json()['error']['run_name'])
         self.assertIn('This field is required.', response_post.json()['error']['main_file'])
 
-
     def test_post_invalid_form_with_non_csv_file(self):
         data = {
             'run_name': 'Test Experiment',
@@ -192,10 +184,9 @@ class Test_DeleteView(TestCase):
         with open('test_data.csv', 'rb') as file:
             self.csv_file = SimpleUploadedFile(file.name, file.read(), content_type='text/csv')
 
-
         data = {
             'run_name': 'Test Experiment',
-            'main_file':self.csv_file,
+            'main_file': self.csv_file,
         }
         url = reverse('main')
         response_post = self.client.post(url, data, follow=True)
@@ -238,7 +229,6 @@ class Test_ExperimentlistView(TestCase):
         self.assertEqual(response['content-type'], 'application/json')
         self.assertIn('total', response.json())
         self.assertIn('rows', response.json())
-
 
     def test_row_generator(self):
         rows = experiment.views.ExperimentListView().row_generator(Experiments.objects.all())
@@ -541,7 +531,8 @@ class ConfigurationTest(TransactionTestCase):
         self.assertIsNone(exp.operation_option)
         self.assertTrue(response_post.context['form'].errors)
         print("response_post.context['form'].errors: ", response_post.context['form'].errors)
-        self.assertIn('Please enter your excluded subspaces in correct format.', response_post.context['form'].errors['operation_except'])
+        self.assertIn('Please enter your excluded subspaces in correct format.',
+                      response_post.context['form'].errors['operation_except'])
 
     def test_post_invalid_form_with_subspace_option_3_but_no_operation(self):
         data = self.data.copy()
@@ -558,7 +549,8 @@ class ConfigurationTest(TransactionTestCase):
         self.assertIsNone(exp.operation_option)
         self.assertTrue(response_post.context['form'].errors)
         print("response_post.context['form'].errors: ", response_post.context['form'].errors)
-        self.assertIn("Please enter your subspace combination.", response_post.context['form'].errors["operation_written"])
+        self.assertIn("Please enter your subspace combination.",
+                      response_post.context['form'].errors["operation_written"])
 
     def test_post_invalid_form_with_subspace_option_3_but_invalid_operation(self):
         data = self.data.copy()
@@ -616,7 +608,7 @@ class ConfigurationTest(TransactionTestCase):
 
     def test_setting_for_all_odms(self, odm_name):
         odms = get_odm_dict()
-        index = list(odms.keys()).index(odm_name)+1
+        index = list(odms.keys()).index(odm_name) + 1
 
         # In order to meet the default parameters of Sampling, the number of data points must be greater than 20.
         with open('test_data.csv', 'w', newline='') as file:
@@ -766,58 +758,58 @@ class ResultViewTest(TransactionTestCase):
         '''--------------------------- go into configuration ---------------------------'''
 
         cls.data = {'operation_model_options': ['1'], 'operation_except': [''], 'operation_written': [''],
-                     'ground_truth_options': ['1'], 'odms': ['1'], 'ABOD_contamination': [''],
-                     'ABOD_n_neighbors': [''], 'ABOD_method': [''], 'CBLOF_n_clusters': [''],
-                     'CBLOF_contamination': [''], 'CBLOF_clustering_estimator': [''], 'CBLOF_alpha': [''],
-                     'CBLOF_beta': [''], 'CBLOF_use_weights': [''], 'CBLOF_check_estimator': [''],
-                     'CBLOF_random_state': [''], 'CBLOF_n_jobs': [''], 'COF_contamination': [''],
-                     'COF_n_neighbors': [''], 'COF_method': [''], 'COPOD_contamination': [''], 'COPOD_n_jobs': [''],
-                     'ECOD_contamination': [''], 'ECOD_n_jobs': [''], 'FeatureBagging_base_estimator': [''],
-                     'FeatureBagging_n_estimators': [''], 'FeatureBagging_contamination': [''],
-                     'FeatureBagging_max_features': [''], 'FeatureBagging_bootstrap_features': [''],
-                     'FeatureBagging_check_detector': [''], 'FeatureBagging_check_estimator': [''],
-                     'FeatureBagging_n_jobs': [''], 'FeatureBagging_random_state': [''],
-                     'FeatureBagging_combination': [''], 'FeatureBagging_verbose': [''],
-                     'FeatureBagging_estimator_params': [''], 'GMM_n_components': [''],
-                     'GMM_covariance_type': [''], 'GMM_tol': [''], 'GMM_reg_covar': [''], 'GMM_max_iter': [''],
-                     'GMM_n_init': [''], 'GMM_init_params': [''], 'GMM_weights_init': [''], 'GMM_means_init': [''],
-                     'GMM_precisions_init': [''], 'GMM_random_state': [''], 'GMM_warm_start': [''],
-                     'GMM_contamination': [''], 'HBOS_n_bins': [''], 'HBOS_alpha': [''], 'HBOS_tol': [''],
-                     'HBOS_contamination': [''], 'IForest_n_estimators': [''], 'IForest_max_samples': [''],
-                     'IForest_contamination': [''], 'IForest_max_features': [''], 'IForest_bootstrap': [''],
-                     'IForest_n_jobs': [''], 'IForest_behaviour': [''], 'IForest_random_state': [''],
-                     'IForest_verbose': [''], 'INNE_n_estimators': [''], 'INNE_max_samples': [''],
-                     'INNE_contamination': [''], 'INNE_random_state': [''], 'KDE_contamination': [''],
-                     'KDE_bandwidth': [''], 'KDE_algorithm': [''], 'KDE_leaf_size': [''], 'KDE_metric': [''],
-                     'KDE_metric_params': [''], 'KPCA_contamination': [''], 'KPCA_n_components': [''],
-                     'KPCA_n_selected_components': [''], 'KPCA_kernel': [''], 'KPCA_gamma': [''], 'KPCA_degree': [''],
-                     'KPCA_coef0': [''], 'KPCA_kernel_params': [''], 'KPCA_alpha': [''], 'KPCA_eigen_solver': [''],
-                     'KPCA_tol': [''], 'KPCA_max_iter': [''], 'KPCA_remove_zero_eig': [''], 'KPCA_copy_X': [''],
-                     'KPCA_n_jobs': [''], 'KPCA_sampling': [''], 'KPCA_subset_size': [''], 'KPCA_random_state': [''],
-                     'LMDD_contamination': [''], 'LMDD_n_iter': [''], 'LMDD_dis_measure': [''],
-                     'LMDD_random_state': [''], 'LODA_contamination': [''], 'LODA_n_bins': [''],
-                     'LODA_n_random_cuts': [''], 'LOF_n_neighbors': [''], 'LOF_algorithm': [''], 'LOF_leaf_size': [''],
-                     'LOF_metric': [''], 'LOF_p': [''], 'LOF_metric_params': [''], 'LOF_contamination': [''],
-                     'LOF_n_jobs': [''], 'LOF_novelty': [''], 'LOCI_contamination': [''], 'LOCI_alpha': [''],
-                     'LOCI_k': [''], 'LUNAR_model_type': [''], 'LUNAR_n_neighbours': [''],
-                     'LUNAR_negative_sampling': [''], 'LUNAR_val_size': [''], 'LUNAR_scaler': [''],
-                     'LUNAR_epsilon': [''], 'LUNAR_proportion': [''], 'LUNAR_n_epochs': [''], 'LUNAR_lr': [''],
-                     'LUNAR_wd': [''], 'LUNAR_verbose': [''], 'MAD_threshold': [''], 'MCD_contamination': [''],
-                     'MCD_store_precision': [''], 'MCD_assume_centered': [''], 'MCD_support_fraction': [''],
-                     'MCD_random_state': [''], 'OCSVM_kernel': [''], 'OCSVM_degree': [''], 'OCSVM_gamma': [''],
-                     'OCSVM_coef0': [''], 'OCSVM_tol': [''], 'OCSVM_nu': [''], 'OCSVM_shrinking': [''],
-                     'OCSVM_cache_size': [''], 'OCSVM_verbose': [''], 'OCSVM_max_iter': [''],
-                     'OCSVM_contamination': [''], 'PCA_n_components': [''], 'PCA_n_selected_components': [''],
-                     'PCA_contamination': [''], 'PCA_copy': [''], 'PCA_whiten': [''], 'PCA_svd_solver': [''],
-                     'PCA_tol': [''], 'PCA_iterated_power': [''], 'PCA_random_state': [''], 'PCA_weighted': [''],
-                     'PCA_standardization': [''], 'RGraph_transition_steps': [''], 'RGraph_n_nonzero': [''],
-                     'RGraph_gamma': [''], 'RGraph_gamma_nz': [''], 'RGraph_algorithm': [''], 'RGraph_tau': [''],
-                     'RGraph_maxiter_lasso': [''], 'RGraph_preprocessing': [''], 'RGraph_contamination': [''],
-                     'RGraph_blocksize_test_data': [''], 'RGraph_support_init': [''], 'RGraph_maxiter': [''],
-                     'RGraph_support_size': [''], 'RGraph_active_support': [''], 'RGraph_fit_intercept_LR': [''],
-                     'RGraph_verbose': [''], 'ROD_contamination': [''], 'ROD_parallel_execution': [''],
-                     'Sampling_contamination': [''], 'Sampling_subset_size': [''], 'Sampling_metric': [''],
-                     'Sampling_metric_params': [''], 'Sampling_random_state': ['']}
+                    'ground_truth_options': ['1'], 'odms': ['1'], 'ABOD_contamination': [''],
+                    'ABOD_n_neighbors': [''], 'ABOD_method': [''], 'CBLOF_n_clusters': [''],
+                    'CBLOF_contamination': [''], 'CBLOF_clustering_estimator': [''], 'CBLOF_alpha': [''],
+                    'CBLOF_beta': [''], 'CBLOF_use_weights': [''], 'CBLOF_check_estimator': [''],
+                    'CBLOF_random_state': [''], 'CBLOF_n_jobs': [''], 'COF_contamination': [''],
+                    'COF_n_neighbors': [''], 'COF_method': [''], 'COPOD_contamination': [''], 'COPOD_n_jobs': [''],
+                    'ECOD_contamination': [''], 'ECOD_n_jobs': [''], 'FeatureBagging_base_estimator': [''],
+                    'FeatureBagging_n_estimators': [''], 'FeatureBagging_contamination': [''],
+                    'FeatureBagging_max_features': [''], 'FeatureBagging_bootstrap_features': [''],
+                    'FeatureBagging_check_detector': [''], 'FeatureBagging_check_estimator': [''],
+                    'FeatureBagging_n_jobs': [''], 'FeatureBagging_random_state': [''],
+                    'FeatureBagging_combination': [''], 'FeatureBagging_verbose': [''],
+                    'FeatureBagging_estimator_params': [''], 'GMM_n_components': [''],
+                    'GMM_covariance_type': [''], 'GMM_tol': [''], 'GMM_reg_covar': [''], 'GMM_max_iter': [''],
+                    'GMM_n_init': [''], 'GMM_init_params': [''], 'GMM_weights_init': [''], 'GMM_means_init': [''],
+                    'GMM_precisions_init': [''], 'GMM_random_state': [''], 'GMM_warm_start': [''],
+                    'GMM_contamination': [''], 'HBOS_n_bins': [''], 'HBOS_alpha': [''], 'HBOS_tol': [''],
+                    'HBOS_contamination': [''], 'IForest_n_estimators': [''], 'IForest_max_samples': [''],
+                    'IForest_contamination': [''], 'IForest_max_features': [''], 'IForest_bootstrap': [''],
+                    'IForest_n_jobs': [''], 'IForest_behaviour': [''], 'IForest_random_state': [''],
+                    'IForest_verbose': [''], 'INNE_n_estimators': [''], 'INNE_max_samples': [''],
+                    'INNE_contamination': [''], 'INNE_random_state': [''], 'KDE_contamination': [''],
+                    'KDE_bandwidth': [''], 'KDE_algorithm': [''], 'KDE_leaf_size': [''], 'KDE_metric': [''],
+                    'KDE_metric_params': [''], 'KPCA_contamination': [''], 'KPCA_n_components': [''],
+                    'KPCA_n_selected_components': [''], 'KPCA_kernel': [''], 'KPCA_gamma': [''], 'KPCA_degree': [''],
+                    'KPCA_coef0': [''], 'KPCA_kernel_params': [''], 'KPCA_alpha': [''], 'KPCA_eigen_solver': [''],
+                    'KPCA_tol': [''], 'KPCA_max_iter': [''], 'KPCA_remove_zero_eig': [''], 'KPCA_copy_X': [''],
+                    'KPCA_n_jobs': [''], 'KPCA_sampling': [''], 'KPCA_subset_size': [''], 'KPCA_random_state': [''],
+                    'LMDD_contamination': [''], 'LMDD_n_iter': [''], 'LMDD_dis_measure': [''],
+                    'LMDD_random_state': [''], 'LODA_contamination': [''], 'LODA_n_bins': [''],
+                    'LODA_n_random_cuts': [''], 'LOF_n_neighbors': [''], 'LOF_algorithm': [''], 'LOF_leaf_size': [''],
+                    'LOF_metric': [''], 'LOF_p': [''], 'LOF_metric_params': [''], 'LOF_contamination': [''],
+                    'LOF_n_jobs': [''], 'LOF_novelty': [''], 'LOCI_contamination': [''], 'LOCI_alpha': [''],
+                    'LOCI_k': [''], 'LUNAR_model_type': [''], 'LUNAR_n_neighbours': [''],
+                    'LUNAR_negative_sampling': [''], 'LUNAR_val_size': [''], 'LUNAR_scaler': [''],
+                    'LUNAR_epsilon': [''], 'LUNAR_proportion': [''], 'LUNAR_n_epochs': [''], 'LUNAR_lr': [''],
+                    'LUNAR_wd': [''], 'LUNAR_verbose': [''], 'MAD_threshold': [''], 'MCD_contamination': [''],
+                    'MCD_store_precision': [''], 'MCD_assume_centered': [''], 'MCD_support_fraction': [''],
+                    'MCD_random_state': [''], 'OCSVM_kernel': [''], 'OCSVM_degree': [''], 'OCSVM_gamma': [''],
+                    'OCSVM_coef0': [''], 'OCSVM_tol': [''], 'OCSVM_nu': [''], 'OCSVM_shrinking': [''],
+                    'OCSVM_cache_size': [''], 'OCSVM_verbose': [''], 'OCSVM_max_iter': [''],
+                    'OCSVM_contamination': [''], 'PCA_n_components': [''], 'PCA_n_selected_components': [''],
+                    'PCA_contamination': [''], 'PCA_copy': [''], 'PCA_whiten': [''], 'PCA_svd_solver': [''],
+                    'PCA_tol': [''], 'PCA_iterated_power': [''], 'PCA_random_state': [''], 'PCA_weighted': [''],
+                    'PCA_standardization': [''], 'RGraph_transition_steps': [''], 'RGraph_n_nonzero': [''],
+                    'RGraph_gamma': [''], 'RGraph_gamma_nz': [''], 'RGraph_algorithm': [''], 'RGraph_tau': [''],
+                    'RGraph_maxiter_lasso': [''], 'RGraph_preprocessing': [''], 'RGraph_contamination': [''],
+                    'RGraph_blocksize_test_data': [''], 'RGraph_support_init': [''], 'RGraph_maxiter': [''],
+                    'RGraph_support_size': [''], 'RGraph_active_support': [''], 'RGraph_fit_intercept_LR': [''],
+                    'RGraph_verbose': [''], 'ROD_contamination': [''], 'ROD_parallel_execution': [''],
+                    'Sampling_contamination': [''], 'Sampling_subset_size': [''], 'Sampling_metric': [''],
+                    'Sampling_metric_params': [''], 'Sampling_random_state': ['']}
 
         cls.url = reverse('result')
 
@@ -922,11 +914,3 @@ class ResultViewTest(TransactionTestCase):
         response = self.client.get(url, {'id': 123456})  # use a nonexistent experiment id
 
         self.assertEqual(response.status_code, 404)
-
-
-
-
-
-
-
-
