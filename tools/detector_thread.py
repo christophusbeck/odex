@@ -123,11 +123,11 @@ class DetectorThread(threading.Thread):
                 metrics["Number of entities after merging"] = len(merged_data)
 
                 if exp_operation_option == "3":
-                    or_prediction = list([0] * len(user_data))
-                    or_probability = list([[1, 0]] * len(user_data))
+                    or_prediction = list([0] * len(merged_data))
+                    or_probability = list([[1, 0]] * len(merged_data))
                     for or_selection in subspace_combination:
-                        and_prediction = list([1] * len(user_data))
-                        and_probability = list([[0, 1]] * len(user_data))
+                        and_prediction = list([1] * len(merged_data))
+                        and_probability = list([[0, 1]] * len(merged_data))
                         for and_selection in or_selection:
                             subspace = odm_handling.get_array_from_csv_data(odm_handling.col_subset(merged_data[0:],
                                                                                                     and_selection))
@@ -174,7 +174,11 @@ class DetectorThread(threading.Thread):
                     metrics["Accuracy after merging"] = '{:.5%}'.format(metrics["Accuracy after merging"])
 
                     roc_after_merge_path = "media/" + models.user_roc_path(exp.generated_file.name)
-                    odm_handling.picture_ROC_curve(ground_truth_array, outlier_probability_after_merge,
+                    # If additional roc contains the generated data,
+                    # 1st and 2nd argument should be ground_truth_gen_array and outlier_probability_after_merge
+                    # If additional roc does not contain the generated data,
+                    # 1st and 2nd argument should be ground_truth_array and outlier_probability_after_merge[:len(user_data)]
+                    odm_handling.picture_ROC_curve(ground_truth_gen_array, outlier_probability_after_merge,
                                                    roc_after_merge_path)
 
             if "Accuracy" in metrics.keys():
