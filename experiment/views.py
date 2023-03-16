@@ -17,7 +17,7 @@ from tools.detector_thread import DetectorThread
 from experiment.forms import CreateForm, ConfigForm
 from experiment import models
 
-from django.http import JsonResponse, FileResponse, Http404
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
@@ -93,10 +93,8 @@ class MainView(View):
     template_name = "main.html"
 
     def get(self, request, *args, **kwargs):
-        queryset = models.Experiments.objects.filter(user_id=request.session["info"]["id"])
         form = CreateForm()
         return render(request, self.template_name, {"form": form})
-        # return render(request, self.template_name, {"queryset": queryset, "form": form})
 
     def post(self, request, *args, **kwargs):
         form = CreateForm(data=request.POST, files=request.FILES)
@@ -107,7 +105,6 @@ class MainView(View):
             pending.file_name = form.files['main_file'].name
             pending.state = models.Experiment_state.editing
             pending.main_file = form.files['main_file']
-            print("form.files['main_file']: ", form.files['main_file'])
 
             try:
                 csv_file = io.TextIOWrapper(form.files['main_file'].file, encoding='utf-8')
@@ -123,18 +120,13 @@ class MainView(View):
 
             except Exception as e:
                 form.add_error('main_file', "Unsupported file, this .csv file has errors.")
-                print("form.errors: ", form.errors)
                 return JsonResponse({"status": False, 'error': form.errors})
 
             pending.created_time = timezone.now()
             pending.full_clean()
             pending.save()
-            print("columns: ", pending.columns)
-            print("timezone.now().type: ", type(timezone.now()))
-            print("pending.created_time.type: ", type(pending.created_time))
             return JsonResponse({"status": True, "id": pending.id})
 
-        print("form.errors: ", form.errors)
         return JsonResponse({"status": False, 'error': form.errors})
 
 
@@ -160,23 +152,17 @@ class ConfigView(View):
         odms = tools.odm_handling.static_odms_dic()
         id = request.GET['id']
 
-        return render(request, self.template_name, {"exp": exp, "columns": columns, "form": form, "odms": odms, "id": id})
+        return render(request, self.template_name,
+                      {"exp": exp, "columns": columns, "form": form, "odms": odms, "id": id})
 
     def post(self, request, *args, **kwargs):
-        print("request.POST: ", request.POST)
-        print("request.GET: ", request.GET)
-
         form = ConfigForm(data=request.POST, files=request.FILES)
         odms = tools.odm_handling.static_odms_dic()
         exp = models.PendingExperiments.objects.filter(id=request.GET['id']).first()
         columns = exp.get_columns()
 
-
         if form.is_valid():
             '''------------------------ operation_model_options can only be 1, 2 or 3 here ------------------------'''
-            print("form.cleaned_data: ", form.cleaned_data)
-            print("form.files: ", form.files)
-
             if form.cleaned_data['operation_model_options'] == '1':
                 operation = ""
 
@@ -188,7 +174,6 @@ class ConfigView(View):
                 # here parser the subspaces input
                 elif not tools.odm_handling.subspace_exclusion_check(form.cleaned_data['operation_except'],
                                                                      len(columns)):
-                    print("Please enter correct excluded subspaces")
                     form.add_error('operation_except', "Please enter your excluded subspaces in correct format.")
                     return render(request, self.template_name,
                                   {"exp": exp, "columns": columns, "form": form, "odms": odms})
@@ -205,14 +190,12 @@ class ConfigView(View):
                 # here parser the subspaces input
                 elif not tools.odm_handling.subspace_combination_check(form.cleaned_data['operation_written'],
                                                                        len(columns)):
-                    print("Please enter your subspaces")
+
                     form.add_error('operation_written', "Please enter your subspace combination in correct format.")
                     return render(request, self.template_name,
                                   {"exp": exp, "columns": columns, "form": form, "odms": odms})
                 operation = form.cleaned_data['operation_written']
 
-            print("form.cleaned_data: ", form.cleaned_data)
-            print("form.files: ", form.files)
             selected_odm = list(odms.keys())[int(request.POST['odms']) - 1]
 
             # this is specified parameters by user
@@ -222,7 +205,6 @@ class ConfigView(View):
                 if request.POST.get(para, False):
                     try:
                         parameters[key] = type(value)(request.POST[para])
-                        print(value)
                         if selected_odm == "LUNAR" and key == "scaler":
                             if request.POST[para] not in {'StandardScaler()', 'MinMaxScaler()'}:
                                 form.add_error(None, "Input error by " + para +
@@ -237,9 +219,6 @@ class ConfigView(View):
                                       {"exp": exp, "columns": columns, "form": form, "odms": odms})
 
             exp.odm = selected_odm
-            print("parameters: ", parameters)
-            print("parameters_type: ",
-                  " parameters_type: ".join([str(type(value)) for key, value in parameters.items()]))
             exp.set_para(parameters)
             exp.operation = operation
             exp.state = models.Experiment_state.pending
@@ -249,10 +228,8 @@ class ConfigView(View):
 
             if 'ground_truth' in form.files:
                 exp.ground_truth = form.files['ground_truth']
-                print("form.files['ground_truth']: ", form.files['ground_truth'])
             if 'generated_file' in form.files:
                 exp.generated_file = form.files['generated_file']
-                print("form.files['generated_file']: ", form.files['generated_file'])
 
             exp.start_time = timezone.now()
 
@@ -279,9 +256,7 @@ class ResultView(View):
             return render(request, "error401.html")
 
         columns = exp.get_columns()
-        print("on reslut page, coulums: ", columns)
         paras = exp.get_para()
-        print("on result page, paras: ", paras)
         if exp.state == models.Experiment_state.pending:
             exp = models.PendingExperiments.objects.filter(id=request.GET['id']).first()
             return render(request, self.template_name, {"exp": exp, "columns": columns, "paras": paras})
@@ -308,16 +283,10 @@ class ExperimentListView(View):
     def post(self, request, *args, **kwargs):
         uid = request.session["info"]["id"]
         result = models.Experiments.objects.filter(user_id=uid).all().order_by('-id')
-
-        #     .values(
-        #     "id", "run_name", "created_time", "state", "odm", "file_name",
-        #     "operation", "operation_option", "start_time", "duration"
-        # ).order_by('-id')
         total = result.count()
 
         rows = self.row_generator(result)
         data = {'total': total, 'rows': rows}
-        print(data)
         return JsonResponse(data, safe=False)
 
     def encoder(self, o):
@@ -347,7 +316,6 @@ class ExperimentListView(View):
             row = {k: v for k, v in item_dict.items() if k in selected_records}
             rows.append(row)
         return rows
-
 
 # class ErrorView(View):
 #     def get(self, request, *args, **kwargs):

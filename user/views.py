@@ -1,12 +1,10 @@
-from django.core.exceptions import ValidationError
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 
-from user.models import Users, SecurityQuestions, TANs, SecurityAnswers
+from user.models import Users, TANs, SecurityAnswers
 from django.shortcuts import render, redirect
 from django.views import View
 from user.forms import LoginForm, RegisterForm, ChangeNameForm, ResetPasswordForm, \
     InitialResetForm, InitialChangePasswordForm, ChangePasswordForm
-from tools.encrypt import md5
 
 
 class LoginView(View):
@@ -70,10 +68,9 @@ class RegistrationView(View):
 
 
 class ResetPasswordView(View):
-    template_name = "reset_password.html"  # waiting for html file
+    template_name = "reset_password.html"
 
     def get(self, request, *args, **kwargs):
-        print("here")
         initial_form = InitialResetForm()
         form = ResetPasswordForm()
         if request.GET.get('username', False):
