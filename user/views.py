@@ -93,7 +93,7 @@ class ResetPasswordView(View):
         security = SecurityAnswers.objects.get(user=user)
         if form.is_valid():
             if security.answer != form.cleaned_data["answer"]:
-                form.add_error("answer", "Your answer is wrong")
+                form.add_error("answer", "Your answer is wrong.")
                 return render(request, self.template_name,
                               {"security": security, "form": form, "initial_form": initial_form})
             user.password = form.cleaned_data['password']
