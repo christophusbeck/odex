@@ -274,16 +274,20 @@ class DetectorThread(threading.Thread):
         except Exception as e:
             print("Error occured")
             print(e)
-            print("exp id:", self.id)
-            exp = models.PendingExperiments.objects.filter(experiments_ptr_id=self.id).first()
-            exp.state = models.Experiment_state.failed
-            exp.error = "There are some error related to your entered hyperparameters of odm you seleted. The error message is: " + \
-                        str(e) + ". This error message will help you adjust the hyperparameters. " \
-                                 "In some cases, it is also possible that there is an error in the file you uploaded. " \
-                                 "Please check the column you want to execute to ensure that there are no null values or uncalculated values. "
-            exp.full_clean()
-            exp.save()
-            print(exp.error)
+            try:
+                print("exp id:", self.id)
+                exp = models.PendingExperiments.objects.filter(experiments_ptr_id=self.id).first()
+                exp.state = models.Experiment_state.failed
+                exp.error = "There are some error related to your entered hyperparameters of odm you seleted. The error message is: " + \
+                            str(e) + ". This error message will help you adjust the hyperparameters. " \
+                                     "In some cases, it is also possible that there is an error in the file you uploaded. " \
+                                     "Please check the column you want to execute to ensure that there are no null values or uncalculated values. "
+                exp.full_clean()
+                exp.save()
+                print(exp.error)
+            except Exception as ee:
+                print("Error occured by setting failed")
+                print(ee)
 
 
     # maybe there are some columns without value
