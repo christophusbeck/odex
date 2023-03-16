@@ -9,7 +9,7 @@ class test_deleteAccount(SeleniumTestCase):
     def delete(self):
 
         '''--------------------------- login ---------------------------'''
-        login_url = 'http://127.0.0.1:8000/login'
+        login_url = self.live_server_url + "/login/"
 
         self.driver.get(login_url)
 
@@ -26,4 +26,6 @@ class test_deleteAccount(SeleniumTestCase):
 
         self.driver.find_element(By.CLASS_NAME, 'dropdown-toggle').click()
 
-        self.driver.get("http://127.0.0.1:8000/user/delete/")
+        delete_url = self.live_server_url + "/user/delete/"
+
+        self.driver.get(delete_url)

@@ -9,7 +9,7 @@ class test_reset_password(SeleniumTestCase):
     def valid_username(self):
 
         '''--------------------------- login ---------------------------'''
-        login_url = 'http://127.0.0.1:8000/login'
+        login_url = self.live_server_url + "/login/"
 
         self.driver.get(login_url)
 
@@ -26,8 +26,9 @@ class test_reset_password(SeleniumTestCase):
 
         self.driver.find_element(By.CLASS_NAME, 'dropdown-toggle').click()
 
+        change_password_url = self.live_server_url + "/changepassword/"
         # cann't click a tag
-        self.driver.get("http://127.0.0.1:8000/changepassword/")
+        self.driver.get(change_password_url)
 
         old_password = valid_password
 
@@ -45,7 +46,7 @@ class test_reset_password(SeleniumTestCase):
 
         '''--------------------------- retry login ---------------------------'''
         #
-        login_url = 'http://127.0.0.1:8000/login'
+        login_url = self.live_server_url + "/login/"
 
         self.driver.get(login_url)
 
@@ -55,24 +56,8 @@ class test_reset_password(SeleniumTestCase):
 
         self.driver.find_element(By.ID, 'btnLogin').click()
 
-        # now should on the main page
 
-        '''--------------------------- tear down ---------------------------'''
-        self.driver.find_element(By.CLASS_NAME, 'dropdown-toggle').click()
+        main_url = self.live_server_url + "/main/"
 
-        # cann't click a tag
-        self.driver.get("http://127.0.0.1:8000/changepassword/")
-
-        old_password = new_password
-
-        self.driver.find_element(By.NAME, 'old_password').send_keys(old_password)
-        self.driver.find_element(By.ID, 'authenticate').click()
-
-        # now in the secondary page of reset password
-
-        new_password = '123'
-
-        self.driver.find_element(By.NAME, 'new_password').send_keys(new_password)
-        self.driver.find_element(By.NAME, 'repeat_password').send_keys(new_password)
-
-        self.driver.find_element(By.ID, 'create').click()
+        # successful log in with new password
+        assert self.driver.current_url == main_url
