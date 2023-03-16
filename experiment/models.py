@@ -103,7 +103,7 @@ class Experiments(models.Model):
         if self.odm == 'LUNAR' and "scaler" in x:
             if isinstance(x["scaler"], MinMaxScaler):
                 x["scaler"] = "MinMaxScaler()"
-            elif isinstance(x["scaler"], StandardScaler):
+            else:  # isinstance(x["scaler"], StandardScaler)
                 x["scaler"] = "StandardScaler()"
         self.parameters = json.dumps(x)
 
@@ -112,7 +112,7 @@ class Experiments(models.Model):
         if self.odm == 'LUNAR':
             if para["scaler"] == "MinMaxScaler()":
                 para["scaler"] = MinMaxScaler()
-            elif para["scaler"] == "StandardScaler()":
+            else:  # para["scaler"] == "StandardScaler()"
                 para["scaler"] = StandardScaler()
         return para
 
