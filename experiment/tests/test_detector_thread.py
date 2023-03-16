@@ -18,7 +18,6 @@ from tools import odm_handling
 
 
 class Test_detector_thread(TestCase):
-    path_media = "media\\"
     path_input = "input.csv"
     path_gt = "gt.csv"
     path_gen = "gen.csv"
