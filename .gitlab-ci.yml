@@ -69,7 +69,7 @@ default:
 unit-tests:
   stage: test
   script:
-    - coverage run manage.py test user.tests --settings=odex.settings_test || coverage report
+    - coverage run manage.py test user.tests experiment.tests --settings=odex.settings_test || coverage report
     - coverage xml -o coverage.xml
   artifacts:
     when: always
