@@ -35,6 +35,14 @@ class Test_MainView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.url = reverse('main')
 
+    def tearDown(self):
+        path = "test_data.csv"
+        if os.path.exists(path):
+            try:
+                os.remove(path)
+            except Exception as e:
+                pass
+
     '''--------------------------- Test Fixture Loading for user ---------------------------'''
 
     def test_fixtures(self):
@@ -338,6 +346,14 @@ class ConfigurationTest(TransactionTestCase):
                      'RGraph_verbose': [''], 'ROD_contamination': [''], 'ROD_parallel_execution': [''],
                      'Sampling_contamination': [''], 'Sampling_subset_size': [''], 'Sampling_metric': [''],
                      'Sampling_metric_params': [''], 'Sampling_random_state': ['']}
+
+    def tearDown(self):
+        path = "test_data.csv"
+        if os.path.exists(path):
+            try:
+                os.remove(path)
+            except Exception as e:
+                pass
 
     '''--------------------------- Test Fixture Loading ---------------------------'''
 
@@ -654,11 +670,10 @@ class ConfigurationTest(TransactionTestCase):
         for odm in get_odm_dict().keys():
             self.test_setting_for_all_odms(odm)
             # Wait for the end of the detector thread
-            time.sleep(3)
+            time.sleep(4)
             exp = FinishedExperiments.objects.get(id=self.exp.id)
             self.assertEqual(exp.state, Experiment_state.finished)
             self.assertEqual(exp.odm, odm)
-
 
     def test_post_invalid_form_with_LUNAR_but_invalid_scaler(self):
         odms = get_odm_dict()
@@ -805,6 +820,14 @@ class ResultViewTest(TransactionTestCase):
                      'Sampling_metric_params': [''], 'Sampling_random_state': ['']}
 
         cls.url = reverse('result')
+
+    def tearDown(self):
+        path = "test_data.csv"
+        if os.path.exists(path):
+            try:
+                os.remove(path)
+            except Exception as e:
+                pass
 
     '''--------------------------- Test Fixture Loading ---------------------------'''
 

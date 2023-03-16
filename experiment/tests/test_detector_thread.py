@@ -67,53 +67,55 @@ class Test_detector_thread(TestCase):
         user = models.Users.objects.create(id=0)
         exp = models.PendingExperiments.objects.create(user=user, id=0)
         exp.id = 0
-        odm_pick = random.choice(list(odm_handling.get_odm_dict().keys()))
-        print("odm_pick = ", odm_pick)
-        exp.odm = odm_handling.match_odm_by_name(odm_pick)
-        print(exp.odm)
-        exp.set_para({})
-        exp.operation = "1"
-        if operation_option == "2":
+
+        # odm_pick = random.choice(list(odm_handling.get_odm_dict().keys()))
+        for odm_pick in list(odm_handling.get_odm_dict().keys()):
+            print("odm_pick = ", odm_pick)
+            exp.odm = odm_handling.match_odm_by_name(odm_pick)
+            print(exp.odm)
+            exp.set_para({})
             exp.operation = "1"
-        if operation_option == "3":
-            exp.operation = "{1,2}|{1,3}&{2,3}"
+            if operation_option == "2":
+                exp.operation = "1"
+            if operation_option == "3":
+                exp.operation = "{1,2}|{1,3}&{2,3}"
 
-        exp.operation_option = operation_option
-        exp.start_time = timezone.now()
-        exp.run_name = "test_exp"
+            exp.operation_option = operation_option
+            exp.start_time = timezone.now()
+            exp.run_name = "test_exp"
 
-        exp.main_file = File(open(self.path_input))
-        exp.file_name = self.path_input
+            exp.main_file = File(open(self.path_input))
+            exp.file_name = self.path_input
 
-        if use_gt:
-            exp.ground_truth = File(open(self.path_gt))
-            exp.has_ground_truth = True
-        if use_gen:
-            exp.generated_file = File(open(self.path_gen))
-            exp.has_generated_file = True
-        exp.save()
+            if use_gt:
+                exp.ground_truth = File(open(self.path_gt))
+                exp.has_ground_truth = True
+            if use_gen:
+                exp.generated_file = File(open(self.path_gen))
+                exp.has_generated_file = True
+            exp.save()
 
-        det_thread = detector_thread.DetectorThread(id=0)
-        det_thread.run()
-        time.sleep(1.0)
+            det_thread = detector_thread.DetectorThread(id=0)
+            det_thread.run()
+            time.sleep(1.0)
 
-        if not use_gen:
-            self.assertTrue(os.path.exists(self.path_outputs + "metrics_" + self.path_input))
-        self.assertTrue(os.path.exists(self.path_outputs + "result_" + self.path_input))
-        path_gen_res = self.path_outputs + "result_" + self.path_input.replace(".csv", "") + "_with_addition.csv"
-        if use_gen:
-            self.assertTrue(os.path.exists(path_gen_res))
+            if not use_gen:
+                self.assertTrue(os.path.exists(self.path_outputs + "metrics_" + self.path_input))
+            self.assertTrue(os.path.exists(self.path_outputs + "result_" + self.path_input))
+            path_gen_res = self.path_outputs + "result_" + self.path_input.replace(".csv", "") + "_with_addition.csv"
+            if use_gen:
+                self.assertTrue(os.path.exists(path_gen_res))
 
-        path_input_roc = self.path_outputs + "main_input_roc.png"
-        if use_gt:
-            self.assertTrue(os.path.exists(path_input_roc))
+            path_input_roc = self.path_outputs + "main_input_roc.png"
+            if use_gt:
+                self.assertTrue(os.path.exists(path_input_roc))
 
-        path_gen_roc = self.path_outputs + "additional_gen_roc.png"
-        if use_gt and use_gen:
-            self.assertTrue(os.path.exists(path_gen_roc))
+            path_gen_roc = self.path_outputs + "additional_gen_roc.png"
+            if use_gt and use_gen:
+                self.assertTrue(os.path.exists(path_gen_roc))
 
-        models.Users.objects.all().delete()
-        models.PendingExperiments.objects.all().delete()
+            models.Users.objects.all().delete()
+            models.PendingExperiments.objects.all().delete()
 
 
 
