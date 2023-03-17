@@ -43,8 +43,8 @@ Supported local installations:
 ```
     $ cd pse-implementation
     $ cd docker
-    $ USER = your username on GitLab
-    $ PASSWORD = your password
+    $ export USER=your username on GitLab
+    $ export PASSWORD=your password
     $ docker build --build-arg GITLAB="$USER:$PASSWORD" -t odex:v1 .
 ```
 - Run Server(location: pse-implementation/docker)
