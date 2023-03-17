@@ -2,7 +2,7 @@ version: '3'
 services:
   web:
     build:
-      context: ../../../Desktop
+      context: ./
       dockerfile: Dockerfile
     ports:
       - 3214:8000
