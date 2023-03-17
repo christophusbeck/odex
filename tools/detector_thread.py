@@ -45,10 +45,11 @@ class DetectorThread(threading.Thread):
     def __run(self, wc):
         try:
             # print("detector thread starts")
-            start = timezone.now()
-            print("2: id:", self.id)
-            print("2, ", models.Experiments.objects.all(), len(models.Experiments.objects.all()))
-            print("2: ", models.PendingExperiments.objects.all(), len(models.Experiments.objects.all()))
+            # start = timezone.now()
+            # print("2: id:", self.id)
+            # print("2, ", models.Experiments.objects.all(), len(models.Experiments.objects.all()))
+            # print("2: ", models.PendingExperiments.objects.all(), len(models.PendingExperiments.objects.all()))
+            # print("2: ", models.FinishedExperiments.objects.all(), len(models.FinishedExperiments.objects.all()))
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
             if exp is None:
                 return
@@ -264,12 +265,12 @@ class DetectorThread(threading.Thread):
             odm_handling.write_data_to_csv(result_csv_path, result_csv)
             odm_handling.write_data_to_csv(result_with_addition_path, result_with_addition)
 
-            end = timezone.now()
-            print("end-start: ", end-start)
-            print("2.4: id:", exp.id)
-            print("2.4, ", models.Experiments.objects.all(), len(models.Experiments.objects.all()))
-            print("2.4: ", models.PendingExperiments.objects.all(), len(models.Experiments.objects.all()))
-            print("2.4: ", models.FinishedExperiments.objects.all(), len(models.FinishedExperiments.objects.all()))
+            # end = timezone.now()
+            # print("end-start: ", end-start)
+            # print("3: id:", exp.id)
+            # print("3, ", models.Experiments.objects.all(), len(models.Experiments.objects.all()))
+            # print("3: ", models.PendingExperiments.objects.all(), len(models.PendingExperiments.objects.all()))
+            # print("3: ", models.FinishedExperiments.objects.all(), len(models.FinishedExperiments.objects.all()))
 
             # exp = models.PendingExperiments.objects.filter(id=self.id).first()
             # user = exp.user
@@ -319,7 +320,8 @@ class DetectorThread(threading.Thread):
             metrics_path = "media/" + models.user_metrics_path(finished_exp, finished_exp.file_name)
             odm_handling.write_data_to_csv(metrics_path, self.metrics_to_csv(finished_exp, metrics))
 
-            print(wc.messages)
+            if len(wc.messages)>0:
+                print(wc.messages)
             finished_exp.warnings = json.dumps(wc.messages)
             finished_exp.save()
 

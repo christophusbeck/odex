@@ -218,10 +218,6 @@ class Test_DeleteView(TestCase):
 
     def test_delete_experiment(self):
         response = self.client.get(self.url, {'id': self.exp.id})
-        print("6: ", Users.objects.all(), len(Users.objects.all()))
-        print("6: ", Experiments.objects.all(), len(Experiments.objects.all()))
-        print("6: ", PendingExperiments.objects.all(), len(PendingExperiments.objects.all()))
-        print("6: ", FinishedExperiments.objects.all(), len(FinishedExperiments.objects.all()))
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Experiments.objects.filter(id=self.exp.id).exists())
         self.assertJSONEqual(str(response.content, encoding='utf8'), {"status": True})
@@ -302,7 +298,6 @@ class ConfigurationTest(TransactionTestCase):
 
         '''--------------------------- logged in ---------------------------'''
         user = Users.objects.create(username='tester3', password='123')
-        print("user.id:", user.id)
         session = self.client.session
         session['info'] = {'id': user.id, 'username': user.username}
         session.save()
@@ -948,10 +943,17 @@ class ResultViewTest(TransactionTestCase):
     '''---------------------------   Basic URL tests for GET    ---------------------------'''
 
     def test_get_pending_experiment(self):
+        odms = get_odm_dict()
+        index = list(odms.keys()).index("LUNAR") + 1
+
+        data = self.data.copy()
+        data['odms'] = str(index)
+        data['LUNAR_n_neighbours'] = '1'
+        data['LUNAR_scaler'] = 'MinMaxScaler()'
         url = reverse('configuration')
         params = {'id': self.exp.id}
         query_string = urlencode(params)
-        response_post = self.client.post(url + f'?{query_string}', data=self.data)
+        response_post = self.client.post(url + f'?{query_string}', data=data)
         self.assertRedirects(response_post, reverse('main'), status_code=302, target_status_code=200)
 
         exp = PendingExperiments.objects.get(id=self.exp.id)
@@ -960,6 +962,8 @@ class ResultViewTest(TransactionTestCase):
         self.assertEqual(response_get.status_code, 200)
         self.assertTemplateUsed(response_get, 'result.html')
         self.assertContains(response_get, self.exp.id)
+
+        time.sleep(10)
 
     def test_get_finished_experiment(self):
         self.basic_protreatment()
