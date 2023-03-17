@@ -51,12 +51,12 @@ class DetectorThread(threading.Thread):
             # print("2: ", models.PendingExperiments.objects.all(), len(models.PendingExperiments.objects.all()))
             # print("2: ", models.FinishedExperiments.objects.all(), len(models.FinishedExperiments.objects.all()))
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
-            if exp is None:
-                return
+            # if exp is None:
+            #     return
 
             user = exp.user
-            if models.Users.objects.filter(id=user.id).first() is None:
-                return
+            # if models.Users.objects.filter(id=user.id).first() is None:
+            #     return
 
             exp_odm = odm_handling.match_odm_by_name(exp.odm)
             exp_para = exp.get_para()
@@ -320,14 +320,11 @@ class DetectorThread(threading.Thread):
             metrics_path = "media/" + models.user_metrics_path(finished_exp, finished_exp.file_name)
             odm_handling.write_data_to_csv(metrics_path, self.metrics_to_csv(finished_exp, metrics))
 
-            if len(wc.messages)>0:
+            if len(wc.messages) > 0:
                 print(wc.messages)
-            finished_exp.warnings = json.dumps(wc.messages)
+                finished_exp.warnings = json.dumps(wc.messages)
             finished_exp.save()
 
-        except OperationalError as e:
-            print("Error occured")
-            print(e)
 
         except Exception as e:
             try:

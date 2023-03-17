@@ -1,3 +1,5 @@
+import os
+
 from django.test import TestCase
 from django.urls import reverse, resolve
 from django.utils.http import urlencode
@@ -103,6 +105,21 @@ class RegistrationViewTest(TestCase):
         form = response.context.get('form')
         self.assertEqual(str(form.errors['tan'][0]), "invalid tan")
 
+    def test_with_wrong_repeat(self):
+        data = {
+            'username': 'tester',
+            'password': '123456',
+            'repeat_password': '123',
+            'tan': '124',
+            'question': 2,
+            'answer': 'cat'
+        }
+        query_string = urlencode({'username': 'tester1'})
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
+        self.assertEqual(response_post.status_code, 200)
+        self.assertTemplateUsed(response_post, 'register.html')
+        self.assertIn('Inconsistent password input.', response_post.context['form'].errors['__all__'])
+
 
 class ResetPasswordViewTest(TestCase):
     fixtures = ['user_tests.json']
@@ -207,7 +224,7 @@ class ResetPasswordViewTest(TestCase):
         self.assertIn('Ensure this value has at least 6 characters (it has 3).',
                       response_post.context['form'].errors['password'])
         self.assertIn('Ensure this value has at least 6 characters (it has 3).',
-                      response_post.context['form'].errors['reset_password'])
+                      response_post.context['form'].errors['repeat_password'])
 
 
 class LoginViewTest(TestCase):
@@ -531,7 +548,13 @@ class DeleteAccountViewTest(TestCase):
     fixtures = ['user_tests.json']
 
     def setUp(self):
-        user = models.Users.objects.filter(username="tester1").first()
+        user = models.Users.objects.filter(username="tester1", id=1).first()
+        if not os.path.exists("media/"):
+            os.mkdir("media/")
+        if not os.path.exists("media/user_1/"):
+            os.mkdir("media/user_1/")
+        self.assertTrue(os.path.exists("media/user_1/"))
+
         session = self.client.session
         session['info'] = {'id': user.id, 'username': user.username}
         session.save()
@@ -539,11 +562,15 @@ class DeleteAccountViewTest(TestCase):
         self.successful_url = reverse('login')
         self.response = self.client.get(self.url, follow=True)
 
+    def tearDown(self):
+        for u in Users.objects.all():
+            u.delete()
+
     '''--------------------------- Test Fixture Loading ---------------------------'''
 
     def test_fixtures(self):
-        user = models.Users.objects.get(id=1)
-        self.assertEqual(user.username, 'tester1')
+        user = models.Users.objects.get(id=2)
+        self.assertEqual(user.username, 'tester2')
 
     '''---------------------------   Basic URL tests    ---------------------------'''
 
@@ -551,7 +578,7 @@ class DeleteAccountViewTest(TestCase):
         self.assertEqual(self.response.status_code, 200)
 
     def test_register_url_resolves_registration_view(self):
-        view = resolve('/user/delete')
+        view = resolve('/user/delete/')
         self.assertEqual(view.func.view_class, views.DeleteAccountView)
 
     def test_csrf(self):

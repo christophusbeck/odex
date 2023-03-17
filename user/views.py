@@ -1,3 +1,5 @@
+import os
+
 from django.http import JsonResponse
 
 from user.models import Users, TANs, SecurityAnswers
@@ -168,7 +170,8 @@ class DeleteAccountView(View):
     def get(self, request, *args, **kwargs):
         info_dict = request.session['info']
         u_id = info_dict['id']
-        Users.objects.filter(id=u_id).delete()
+        Users.objects.filter(id=u_id).first().delete()
+
         return redirect("/login/")
 
 

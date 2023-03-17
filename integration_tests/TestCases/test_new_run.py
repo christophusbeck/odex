@@ -83,8 +83,8 @@ class test_failed_new_run(SeleniumTestCase):
 
         error_info = "Unsupported file extension."
 
-        hint_info =  self.driver.find_element(By.ID, 'main_file').text
+        hint_info = self.driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div/div/div[2]/form/div/div/div/div[2]/div').text
 
         assert hint_info == error_info
 
-        input()
+        #input()

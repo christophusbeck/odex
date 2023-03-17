@@ -32,6 +32,10 @@ class UsersModelTest(TestCase):
         expected_object_name = f'{user.username}'
         self.assertEquals(expected_object_name, str(user.username))
 
+    def test_str_representation(self):
+        user = Users.objects.get(id=1)
+        self.assertEqual(str(user), 'tester (id:1)')
+
 class SecurityQuestionsTest(TestCase):
     def setUp(self):
         SecurityQuestions.objects.create(question='What is your favorite movie?')

@@ -37,7 +37,7 @@ class test_reset_password(SeleniumTestCase):
 
         # now in the secondary page of reset password
 
-        new_password = '456'
+        new_password = '456789'
 
         self.driver.find_element(By.NAME, 'new_password').send_keys(new_password)
         self.driver.find_element(By.NAME, 'repeat_password').send_keys(new_password)
@@ -56,8 +56,5 @@ class test_reset_password(SeleniumTestCase):
 
         self.driver.find_element(By.ID, 'btnLogin').click()
 
-
-        main_url = self.live_server_url + "/main/"
-
         # successful log in with new password
-        assert self.driver.current_url == main_url
+        assert self.driver.current_url == self.live_server_url + "/main/"

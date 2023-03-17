@@ -46,6 +46,13 @@ class Test_detector_thread(TestCase):
         for row in train_gt:
             gt_list.append([row])
 
+        if not os.path.exists("media/"):
+            os.mkdir("media/")
+        if not os.path.exists("media/user_0/"):
+            os.mkdir("media/user_0/")
+        self.assertTrue(os.path.exists("media/user_0/"))
+
+
         odm_handling.write_data_to_csv(self.path_input, training_data)
         odm_handling.write_data_to_csv(self.path_gt, gt_list)
         odm_handling.write_data_to_csv(self.path_gen, test_data)
@@ -95,7 +102,6 @@ class Test_detector_thread(TestCase):
             ff = models.FinishedExperiments.objects.get(id=exp.id)
             if not use_gen:
                 self.assertTrue(os.path.exists(self.path_outputs + str(exp.id) + "/metrics_" + self.path_input))
-            # print(ff.result.path)
             self.assertTrue(os.path.exists(self.path_outputs + str(exp.id) + "/result_" + self.path_input))
             path_gen_res = self.path_outputs + str(exp.id) + "/result_" + self.path_input.replace(".csv", "") + "_with_addition.csv"
             if use_gen:
@@ -109,8 +115,10 @@ class Test_detector_thread(TestCase):
             if use_gt and use_gen:
                 self.assertTrue(os.path.exists(path_gen_roc))
 
-        models.Users.objects.all().delete()
-        models.PendingExperiments.objects.all().delete()
+        for e in models.Experiments.objects.all():
+            e.delete()
+        for u in models.Users.objects.all():
+            u.delete()
 
     def test_run_only_od_1(self):
         self.__run_detector_thread(False, False, "1")
