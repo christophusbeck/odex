@@ -13,7 +13,7 @@ The building blocks are:
 
 # Overview for this README
 - [Dependencies](#dependencies)
-- [Instructions](#instructions)
+- [Instructions](#installation)
 - [Run Tests](#run-Tests)
 - [Problem & Solution](#problem-&-solution)
 
@@ -21,10 +21,11 @@ The building blocks are:
 See 
 
 
-# Instructions
+# Installation
 Supported local installations:
 - [Docker (recommended)](#docker)
 - [Instructions](#instructions)
+
 
 # Docker
 - [ ] Prepare directory for project code and virtualenv. Feel free to use a different location:
