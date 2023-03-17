@@ -1,4 +1,5 @@
 import json
+import os
 import shutil
 
 import numpy as np
@@ -114,12 +115,14 @@ class Experiments(models.Model):
         return para
 
     def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
         # Delete the file before the model
-        shutil.rmtree(user_experiment_directory(self))
-        super(Experiments, self).delete(*args, **kwargs)
+        path = user_experiment_directory(self)
+        if os.path.exists(path):
+            shutil.rmtree(path)
 
     def __str__(self):
-        return self.run_name + " (" + self.state + ")"
+        return self.run_name + " (" + self.state + ")" + " (id:" + str(self.id) + ")"
 
 
 def user_experiment_directory(instance):

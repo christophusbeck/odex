@@ -1,4 +1,9 @@
+import os.path
+import shutil
+
 from django.db import models
+
+from odex import settings
 
 
 # Create your models here.
@@ -32,6 +37,16 @@ class Users(models.Model):
         max_length=64,
         help_text="Please enter at least 6 characters"
     )
+
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        # Delete the directory before the user
+        path = '{0}/user_{1}'.format(settings.MEDIA_ROOT, self.id)
+        if os.path.exists(path):
+            shutil.rmtree(path)
+
+    def __str__(self):
+        return self.username + " (id:" + str(self.id) + ")"
 
 
 class SecurityAnswers(models.Model):
