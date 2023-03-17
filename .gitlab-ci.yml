@@ -71,14 +71,6 @@ unit-tests:
     - python3 manage.py makemigrations experiment
     - python3 manage.py migrate
     - coverage run manage.py test user.tests experiment.tests --settings=odex.settings_test || coverage report
-    - coverage xml -o coverage.xml
-  artifacts:
-    when: always
-    reports:
-      coverage_report:
-        coverage_format: cobertura
-        path: coverage.xml
-      junit: coverage.xml
   coverage: '/TOTAL.*\s+(\d+%)$/'
 
 integration-tests:

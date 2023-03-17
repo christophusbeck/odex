@@ -1,5 +1,7 @@
 import csv
 import inspect
+import os
+
 import numpy as np
 import re
 
@@ -39,7 +41,6 @@ def write_data_to_csv(path: str, data):
     for row in data:
         writer.writerow(row)
     writefile.close()
-    pass
 
 
 def get_data_from_csv(path: str) -> list[list[str]]:

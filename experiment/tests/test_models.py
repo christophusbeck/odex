@@ -10,8 +10,7 @@ from datetime import timedelta, datetime
 import pytz
 
 from user.models import Users
-from experiment.models import Experiments, Experiment_state, PendingExperiments, FinishedExperiments, \
-    user_main_file_path, NpEncoder, user_roc_path
+from experiment.models import Experiments, Experiment_state, PendingExperiments, FinishedExperiments, user_roc_path
 
 
 class ExperimentsBaseTest(TestCase):
@@ -110,7 +109,7 @@ class ExperimentsTest(ExperimentsBaseTest):
 
     def test_experiment_has_columns(self):
         experiment = Experiments.objects.get(run_name='testexperiment')
-        self.assertEqual(experiment.get_columns(), {"testcolumn1": "6.433658544295",  "testcolumn2": "5.509168303351"})
+        self.assertEqual(experiment.get_columns(), {"testcolumn1": "6.433658544295", "testcolumn2": "5.509168303351"})
 
     def test_experiment_has_parameters(self):
         experiment = Experiments.objects.get(run_name='testexperiment')
@@ -294,8 +293,6 @@ class ExperimentsTest(ExperimentsBaseTest):
         self.assertEqual(experiment.columns, json.dumps(columns))
 
 
-
-
 class PendingExperimentsTest(ExperimentsBaseTest):
     @classmethod
     def setUp(cls):
@@ -448,7 +445,8 @@ class FinishedExperimentsTest(ExperimentsBaseTest):
         super().setUp()
 
         cls.result = SimpleUploadedFile("testresult.csv", b"file_content", content_type="text/csv")
-        cls.result_with_addition = SimpleUploadedFile("testresult_with_addition.csv", b"file_content", content_type="text/csv")
+        cls.result_with_addition = SimpleUploadedFile("testresult_with_addition.csv", b"file_content",
+                                                      content_type="text/csv")
         cls.metrics_file = SimpleUploadedFile("testmetrics.csv", b"file_content", content_type="text/csv")
         cls.roc = SimpleUploadedFile("testroc.png", b"PNG_FILE_CONTENT", content_type="image/png")
         cls.roc_after_merge = SimpleUploadedFile("test_after_merge.png", b"PNG_FILE_CONTENT", content_type="image/png")
@@ -580,13 +578,12 @@ class NpEncoderTest(ExperimentsBaseTest):
             metrics_file='metrics.csv'
         )
 
-
     def test_integer_encoding(self):
         obj = np.int32(10)
         expected_output = 10
         experiment = FinishedExperiments.objects.get(id=1)
         experiment.set_metrics(obj)
-        self.assertEqual(experiment.get_metrics(),expected_output)
+        self.assertEqual(experiment.get_metrics(), expected_output)
 
     def test_float_encoding(self):
         obj = np.float32(3.14)
@@ -626,11 +623,3 @@ class NpEncoderTest(ExperimentsBaseTest):
         experiment = FinishedExperiments.objects.get(id=1)
         with self.assertRaises(TypeError):
             experiment.set_metrics(obj)
-
-
-
-
-
-
-
-

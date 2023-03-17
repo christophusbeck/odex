@@ -55,8 +55,9 @@
                                     {{ form.run_name }}
                                     <small>{{ form.run_name.help_text }}</small>
                                     <div id="run_name" style="color: red;">{{ form.run_name.errors.0 }}</div>
+                                    <br>
                                     <div class="form-group" style="position: relative;margin-bottom: 25px;">
-                                        <label>Run Name</label>
+                                        <label>Detected File</label>
                                         {{ form.main_file }}
                                         <small>{{ form.main_file.help_text }}</small>
                                         <div id="main_file" style="color: red;"></div>
@@ -82,7 +83,7 @@
                 <h4>Are you sure to delete?</h4>
                 <p style="text-align: right;">
                     <input type="image" src="/static/img/button/delete.png" id="btnConfirmDelete" width="65" onclick="bindBtnConfirmDeleteEvent()">
-                    <input type="image" src="/static/img/button/cancel.png" data-dismiss="modal" width="75" align="top">
+                    <input type="image" id="cancel" src="/static/img/button/cancel.png" data-dismiss="modal" width="75" align="top">
                 </p>
             </div>
         </div>

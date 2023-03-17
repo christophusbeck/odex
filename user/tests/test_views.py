@@ -1,5 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse, resolve
+from django.utils.http import urlencode
+
 from user import views, forms, models
 from user.models import Users
 from tools.encrypt import md5
@@ -106,6 +108,16 @@ class ResetPasswordViewTest(TestCase):
     fixtures = ['user_tests.json']
 
     def setUp(self):
+        data = {
+            'username': 'tester',
+            'password': '123456',
+            'repeat_password': '123456',
+            'tan': '124',
+            'question': 2,
+            'answer': 'cat'
+        }
+
+
         self.url = reverse('reset_password')
         self.successful_url = reverse('login')
         self.response = self.client.get(self.url)
@@ -149,6 +161,53 @@ class ResetPasswordViewTest(TestCase):
         form = response.context.get('form')
         self.assertIsInstance(initial_form, forms.InitialResetForm)
         self.assertIsInstance(form, forms.ResetPasswordForm)
+
+    '''---------------------------   Basic URL tests for POST   ---------------------------'''
+
+    def test_post_empty_form(self):
+        data = {}
+        query_string = urlencode({'username': 'tester1'})
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
+        self.assertEqual(response_post.status_code, 200)
+        self.assertTemplateUsed(response_post, 'reset_password.html')
+        self.assertIn('This field is required.', response_post.context['form'].errors['password'])
+        self.assertIn('This field is required.', response_post.context['form'].errors['repeat_password'])
+        self.assertIn('This field is required.', response_post.context['form'].errors['answer'])
+
+    def test_post_valid_form(self):
+        data = {'password': '123123', 'repeat_password': '123123', 'answer': 'cat'}
+        query_string = urlencode({'username': 'tester1'})
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
+        self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
+        user = Users.objects.get(id=1)
+        self.assertEqual(user.password, md5('123123'))
+
+    def test_post_invalid_form_with_wrong_repeat(self):
+        data = {'password': '123123', 'repeat_password': '111111', 'answer': 'cat'}
+        query_string = urlencode({'username': 'tester1'})
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
+        self.assertEqual(response_post.status_code, 200)
+        self.assertTemplateUsed(response_post, 'reset_password.html')
+        self.assertIn('Inconsistent password input.', response_post.context['form'].errors['__all__'])
+
+    def test_post_invalid_form_with_wrong_answer(self):
+        data = {'password': '123123', 'repeat_password': '123123', 'answer': 'dog'}
+        query_string = urlencode({'username': 'tester1'})
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
+        self.assertEqual(response_post.status_code, 200)
+        self.assertTemplateUsed(response_post, 'reset_password.html')
+        self.assertIn('Your answer is wrong.', response_post.context['form'].errors['answer'])
+
+    def test_post_invalid_form_with_invalid_password(self):
+        data = {'password': '123', 'repeat_password': '123', 'answer': 'cat'}
+        query_string = urlencode({'username': 'tester1'})
+        response_post = self.client.post(self.url + f'?{query_string}', data=data)
+        self.assertEqual(response_post.status_code, 200)
+        self.assertTemplateUsed(response_post, 'reset_password.html')
+        self.assertIn('Ensure this value has at least 6 characters (it has 3).',
+                      response_post.context['form'].errors['password'])
+        self.assertIn('Ensure this value has at least 6 characters (it has 3).',
+                      response_post.context['form'].errors['reset_password'])
 
 
 class LoginViewTest(TestCase):
@@ -335,20 +394,60 @@ class ChangePasswordViewTest(TestCase):
         form = response.context.get('initial_form')
         self.assertEqual(str(form.errors['old_password'][0]), "The password is wrong")
 
+    def test_correct_old_password_with_invalid_password(self):
+        data1 = {
+            'old_password': "123"
+        }
+        response_post_1 = self.client.post(self.url, data1)
+        self.assertEqual(response_post_1.status_code, 200)
+        self.assertTemplateUsed(response_post_1, 'change_password.html')
+
+        data2 = {
+            "new_password": "123",
+            "repeat_password": "123"
+        }
+        response_post_2 = self.client.post(self.url, data2)
+        self.assertTemplateUsed(response_post_2, 'change_password.html')
+        self.assertIn('Ensure this value has at least 6 characters (it has 3).',
+                      response_post_2.context['form'].errors['new_password'])
+        self.assertIn('Ensure this value has at least 6 characters (it has 3).',
+                      response_post_2.context['form'].errors['repeat_password'])
+
+    def test_correct_old_password_with_wrong_repeat(self):
+        data1 = {
+            'old_password': "123"
+        }
+        response_post_1 = self.client.post(self.url, data1)
+        self.assertEqual(response_post_1.status_code, 200)
+        self.assertTemplateUsed(response_post_1, 'change_password.html')
+
+        data2 = {
+            "new_password": "123123",
+            "repeat_password": "123"
+        }
+        response_post_2 = self.client.post(self.url, data2)
+        self.assertTemplateUsed(response_post_2, 'change_password.html')
+        self.assertIn('Inconsistent password input.', response_post_2.context['form'].errors['__all__'])
+
     '''--------------------------- Successful Changing Password ---------------------------'''
 
     def test_correct_old_password(self):
         data1 = {
-            'old_password': md5("123")
+            'old_password': "123"
         }
-        self.client.post(self.url, data1)
+        response_post = self.client.post(self.url, data1)
+        self.assertEqual(response_post.status_code, 200)
+        self.assertTemplateUsed(response_post, 'change_password.html')
+
         data2 = {
-            "new_password": "321",
-            "repeat_password": "321"
+            "new_password": "123123",
+            "repeat_password": "123123"
         }
         self.client.post(self.url, data2)
         user = models.Users.objects.filter(username="tester1").first()
-        self.assertEqual(user.password, md5("321"))
+        self.assertEqual(user.password, md5("123123"))
+
+
 
 
 class CheckUsernameTest(TestCase):
