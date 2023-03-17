@@ -18,7 +18,7 @@ The building blocks are:
 - [Problem & Solution](#Problem-&-Solution)
 
 # Dependencies
-
+See 
 
 
 # Instructions
@@ -27,8 +27,30 @@ Supported local installations:
 - [Instructions](#Instructions)
 
 # Docker
+- [ ] Prepare directory for project code and virtualenv. Feel free to use a different location:
+```
+    $ mkdir -p ~/odex
+    $ cd ~/odex
+```
 
-The site should now be running at `http://127.0.0.1:8000`
+- [ ] Pull project code from [GitLab](https://git.scc.kit.edu/ipd-boehm/pse/ipd-pse-2022-ws/subspace-outlier-profiling/team-1/pse-implementation)
+```
+    $ git clone https://git.scc.kit.edu/ipd-boehm/pse/ipd-pse-2022-ws/subspace-outlier-profiling/team-1/pse-implementation.git
+```
+
+- [ ] Build image(get into pse-implementation/docker) with GitLab account
+```
+    $ cd docker
+    $ USER = your username on GitLab
+    $ PASSWORD = your password
+    $ docker build --build-arg GITLAB="$USER:$PASSWORD" -t odex:v1 .
+```
+- [ ] Run Server(location: pse-implementation/docker)
+```
+    $ docker-compose up
+```
+
+The site should now be running at `http://127.0.0.1:3214`
 
 # Instructions
 
@@ -53,7 +75,7 @@ The site should now be running at `http://127.0.0.1:8000`
     $ pip3 install wheel 
 ```
 
-- [ ] Pull project code from [GitLab](https://git.scc.kit.edu/ipd-boehm/pse/ipd-pse-2022-ws/subspace-outlier-profiling/team-1/pse-implementation):
+- [ ] Pull project code from [GitLab](https://git.scc.kit.edu/ipd-boehm/pse/ipd-pse-2022-ws/subspace-outlier-profiling/team-1/pse-implementation)
 ```
     $ git clone https://git.scc.kit.edu/ipd-boehm/pse/ipd-pse-2022-ws/subspace-outlier-profiling/team-1/pse-implementation.git
 ```
