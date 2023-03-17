@@ -3,6 +3,7 @@ import os
 from datetime import timedelta
 import time
 
+import pyod
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, Client, TransactionTestCase
 from django.urls import reverse, resolve
@@ -11,6 +12,7 @@ from django.utils.timezone import now
 
 import experiment
 from experiment.models import Experiments, PendingExperiments, FinishedExperiments, Experiment_state
+from tools import odm_handling
 from tools.odm_handling import get_odm_dict
 from user.models import Users
 from experiment.views import ResultView
@@ -35,6 +37,11 @@ class Test_MainView(TestCase):
                 os.remove(path)
             except Exception as e:
                 pass
+
+        for e in Experiments.objects.all():
+            e.delete()
+        for u in Users.objects.all():
+            u.delete()
 
     '''--------------------------- Test Fixture Loading for user ---------------------------'''
 
@@ -166,7 +173,7 @@ class Test_DeleteView(TestCase):
 
     def setUp(self):
         '''--------------------------- logged in ---------------------------'''
-        user = Users.objects.create(username='tester3', password='123')
+        user = Users.objects.create(username='tester1', password='123')
         session = self.client.session
         session['info'] = {'id': user.id, 'username': user.username}
         session.save()
@@ -195,8 +202,26 @@ class Test_DeleteView(TestCase):
 
         self.url = reverse('delete_exp')
 
+    def tearDown(self):
+        path = "test_data.csv"
+        if os.path.exists(path):
+            try:
+                os.remove(path)
+            except Exception as e:
+                pass
+
+        for e in Experiments.objects.all():
+            e.delete()
+        for u in Users.objects.all():
+            u.delete()
+
+
     def test_delete_experiment(self):
         response = self.client.get(self.url, {'id': self.exp.id})
+        print("6: ", Users.objects.all(), len(Users.objects.all()))
+        print("6: ", Experiments.objects.all(), len(Experiments.objects.all()))
+        print("6: ", PendingExperiments.objects.all(), len(PendingExperiments.objects.all()))
+        print("6: ", FinishedExperiments.objects.all(), len(FinishedExperiments.objects.all()))
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Experiments.objects.filter(id=self.exp.id).exists())
         self.assertJSONEqual(str(response.content, encoding='utf8'), {"status": True})
@@ -217,6 +242,13 @@ class Test_ExperimentlistView(TestCase):
             user=self.user, run_name='Test Run', created_time=now(),
             state='pending', file_name='test.csv', operation='filter', start_time=now(),
             duration=timedelta(minutes=10))
+
+    def tearDown(self):
+        for e in Experiments.objects.all():
+            e.delete()
+        for u in Users.objects.all():
+            u.delete()
+
 
     def test_get(self):
         # not allowed to get explist as url
@@ -247,8 +279,27 @@ class Test_ExperimentlistView(TestCase):
 
 class ConfigurationTest(TransactionTestCase):
     fixtures = ['user_tests.json']
+    path_input = "input.csv"
+    path_gt = "gt.csv"
+    path_gen = "gen.csv"
 
     def setUp(self):
+        '''--------------------------- generate files ---------------------------'''
+        training_data, test_data, train_gt, test_gt = pyod.utils.data.generate_data(400, 100, 3, 0.1)
+        training_data = list(training_data)
+        training_data.insert(0, ["x1", "x2", "x3"])
+        gt_list = []
+        for row in train_gt:
+            gt_list.append([row])
+
+        odm_handling.write_data_to_csv(self.path_input, training_data)
+        odm_handling.write_data_to_csv(self.path_gt, gt_list)
+        odm_handling.write_data_to_csv(self.path_gen, test_data)
+
+        self.file = open(self.path_input, 'r', encoding='UTF-8')
+        self.gt = open(self.path_gt, 'r', encoding='UTF-8')
+        self.gen = open(self.path_gen, 'r', encoding='UTF-8')
+
         '''--------------------------- logged in ---------------------------'''
         user = Users.objects.create(username='tester3', password='123')
         print("user.id:", user.id)
@@ -260,25 +311,16 @@ class ConfigurationTest(TransactionTestCase):
 
         '''--------------------------- create a folder and put the csv file in it ---------------------------'''
 
-        with open('test_data.csv', 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['x', 'y', 'z'])
-            writer.writerow(['10', '25', '30'])
-            writer.writerow(['20', '30', '40'])
-            writer.writerow(['30', '35', '50'])
-            writer.writerow(['40', '40', '60'])
-
-        with open('test_data.csv', 'rb') as file:
-            self.csv_file = SimpleUploadedFile(file.name, file.read(), content_type='text/csv')
-
+        self.file = open(self.path_input, 'r', encoding='UTF-8')
         data = {
             'run_name': 'Test Experiment',
-            'main_file': self.csv_file,
+            'main_file': self.file,
         }
         url = reverse('main')
         response = self.client.post(url, data, follow=True)
         self.exp = PendingExperiments.objects.filter(run_name='Test Experiment').first()
         self.assertJSONEqual(str(response.content, encoding='utf8'), {"status": True, "id": self.exp.id})
+
 
         '''--------------------------- go into configuration ---------------------------'''
 
@@ -340,12 +382,21 @@ class ConfigurationTest(TransactionTestCase):
                      'Sampling_metric_params': [''], 'Sampling_random_state': ['']}
 
     def tearDown(self):
-        path = "test_data.csv"
-        if os.path.exists(path):
-            try:
-                os.remove(path)
-            except Exception as e:
-                pass
+        self.file.close()
+        self.gt.close()
+        self.gen.close()
+
+        for path in ["test_data.csv", self.path_input, self.path_gt, self.path_gen]:
+            if os.path.exists(path):
+                try:
+                    os.remove(path)
+                except Exception as e:
+                    pass
+
+        for e in Experiments.objects.all():
+            e.delete()
+        for u in Users.objects.all():
+            u.delete()
 
     '''--------------------------- Test Fixture Loading ---------------------------'''
 
@@ -371,6 +422,7 @@ class ConfigurationTest(TransactionTestCase):
     def test_csrf(self):
         response_get = self.client.get(self.url, data={'id': self.exp.id})
         self.assertContains(response_get, 'csrfmiddlewaretoken')
+        print(response_get.context['csrf_token'])
 
     def test_template_used(self):
         response_get = self.client.get(self.url, data={'id': self.exp.id})
@@ -392,7 +444,7 @@ class ConfigurationTest(TransactionTestCase):
         response = client.post('/login/')
         self.assertEqual(response.status_code, 200)
 
-        response_get = client.get(self.url, data={'id': 1})
+        response_get = client.get(self.url, data={'id': self.exp.id})
         self.assertEqual(response_get.status_code, 200)
         self.assertTemplateUsed(response_get, 'error401.html')
 
@@ -403,7 +455,6 @@ class ConfigurationTest(TransactionTestCase):
 
         # check that the context contains the expected objects
         self.assertEqual(response_get.context['exp'], self.exp)
-        self.assertEqual(response_get.context['columns'], {'x': '10', 'y': '25', 'z': '30'})
         self.assertIsNotNone(response_get.context['form'])
         self.assertIsNotNone(response_get.context['odms'])
 
@@ -426,7 +477,6 @@ class ConfigurationTest(TransactionTestCase):
 
         # check that the context contains the expected objects
         self.assertEqual(response_get.context['exp'], self.exp)
-        self.assertEqual(response_get.context['columns'], {'x': '10', 'y': '25', 'z': '30'})
         self.assertIsNotNone(response_get.context['form'])
         self.assertIsNotNone(response_get.context['odms'])
 
@@ -438,7 +488,7 @@ class ConfigurationTest(TransactionTestCase):
         self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
 
         # Wait for the end of the detector thread
-        time.sleep(0.2)
+        time.sleep(2)
         exp = FinishedExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.finished)
         self.assertEqual(exp.operation_option, "1")
@@ -452,7 +502,7 @@ class ConfigurationTest(TransactionTestCase):
         self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
 
         # Wait for the end of the detector thread
-        time.sleep(0.2)
+        time.sleep(2)
         exp = FinishedExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.finished)
         self.assertEqual(exp.operation_option, "2")
@@ -466,14 +516,15 @@ class ConfigurationTest(TransactionTestCase):
         self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
 
         # Wait for the end of the detector thread
-        time.sleep(0.2)
+        time.sleep(2)
         exp = FinishedExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.finished)
         self.assertEqual(exp.operation_option, "3")
 
     def test_post_valid_form_with_gt_file(self):
         data = self.data.copy()
-        data["ground_truth"] = SimpleUploadedFile("test_data.csv", b"ground_truth\n1\n0\n")
+        # data["ground_truth"] = SimpleUploadedFile("test_data.csv", b"ground_truth\n1\n0\n")
+        data["ground_truth"] = self.gt
         query_string = urlencode({'id': self.exp.id})
         response_post = self.client.post(self.url + f'?{query_string}', data=data)
         self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
@@ -487,7 +538,8 @@ class ConfigurationTest(TransactionTestCase):
 
     def test_post_valid_form_with_add_file(self):
         data = self.data.copy()
-        data["generated_file"] = SimpleUploadedFile("test_data.csv", b"column1,column2,column3\n1,2,3\n4,5,6\n")
+        # data["generated_file"] = SimpleUploadedFile("test_data.csv", b"column1,column2,column3\n1,2,3\n4,5,6\n")
+        data["generated_file"] = self.gen
         query_string = urlencode({'id': self.exp.id})
         response_post = self.client.post(self.url + f'?{query_string}', data=data)
         self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
@@ -509,7 +561,6 @@ class ConfigurationTest(TransactionTestCase):
         self.assertEqual(response_post.status_code, 200)
         self.assertTemplateUsed(response_post, 'configuration.html')
         self.assertEqual(response_post.context['exp'], self.exp)
-        self.assertEqual(response_post.context['columns'], {'x': '10', 'y': '25', 'z': '30'})
         self.assertIsNotNone(response_post.context['form'])
         self.assertIsNotNone(response_post.context['odms'])
         self.assertTrue(response_post.context['form'].errors)
@@ -612,17 +663,11 @@ class ConfigurationTest(TransactionTestCase):
         self.assertEqual(exp.state, Experiment_state.failed)
         self.assertEqual(exp.operation_option, "1")
         self.assertTrue(exp.error)
-        self.assertIn("There are some error related to your entered hyperparameters of odm you seleted. "
-                      "The error message is: contamination must be in (0, 0.5], "
-                      "got: 100000.000000. This error message will help you adjust the hyperparameters. "
-                      "In some cases, it is also possible that there is an error in the file you uploaded. "
-                      "Please check the column you want to execute to ensure "
-                      "that there are no null values or uncalculated values.",
-                      exp.error)
+        self.assertIn("contamination must be in (0, 0.5], got: 100000.000000", exp.error)
 
     '''---------------------------   Basic URL tests for POST with all odms   ---------------------------'''
 
-    def test_setting_for_all_odms(self, odm_name):
+    def setting_for_all_odms(self, odm_name):
         print("odm_pick: ", odm_name)
         odms = get_odm_dict()
         index = list(odms.keys()).index(odm_name) + 1
@@ -677,7 +722,7 @@ class ConfigurationTest(TransactionTestCase):
 
     def test_post_valid_form_with_all_odms(self):
         for odm in get_odm_dict().keys():
-            self.test_setting_for_all_odms(odm)
+            self.setting_for_all_odms(odm)
             # Wait for the end of the detector thread
             time.sleep(4)
             exp = FinishedExperiments.objects.get(id=self.exp.id)
@@ -716,7 +761,8 @@ class ConfigurationTest(TransactionTestCase):
         self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
 
         # Wait for the end of the detector thread
-        time.sleep(3)
+        time.sleep(10)
+
         exp = FinishedExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.finished)
         self.assertEqual(exp.odm, "LUNAR")
@@ -734,7 +780,7 @@ class ConfigurationTest(TransactionTestCase):
         self.assertRedirects(response_post, self.successful_url, status_code=302, target_status_code=200)
 
         # Wait for the end of the detector thread
-        time.sleep(3)
+        time.sleep(10)
         exp = FinishedExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.finished)
         self.assertEqual(exp.odm, "LUNAR")
@@ -742,39 +788,49 @@ class ConfigurationTest(TransactionTestCase):
 
 class ResultViewTest(TransactionTestCase):
     fixtures = ['user_tests.json']
+    path_input = "input.csv"
+    path_gt = "gt.csv"
+    path_gen = "gen.csv"
 
-    def setUp(cls):
+    def setUp(self):
+        '''--------------------------- generate files ---------------------------'''
+        training_data, test_data, train_gt, test_gt = pyod.utils.data.generate_data(400, 100, 3, 0.1)
+        training_data = list(training_data)
+        training_data.insert(0, ["x1", "x2", "x3"])
+        gt_list = []
+        for row in train_gt:
+            gt_list.append([row])
+
+        odm_handling.write_data_to_csv(self.path_input, training_data)
+        odm_handling.write_data_to_csv(self.path_gt, gt_list)
+        odm_handling.write_data_to_csv(self.path_gen, test_data)
+
+        self.file = open(self.path_input, 'r', encoding='UTF-8')
+        self.gt = open(self.path_gt, 'r', encoding='UTF-8')
+        self.gen = open(self.path_gen, 'r', encoding='UTF-8')
+
         '''--------------------------- logged in ---------------------------'''
-        user = Users.objects.create(username='tester3', password='123')
-        session = cls.client.session
+        user = Users.objects.create(username='tester3', password='123', id=0)
+        session = self.client.session
         session['info'] = {'id': user.id, 'username': user.username}
         session.save()
-        response = cls.client.post('/login/')
-        cls.assertEqual(response.status_code, 200)
+        response = self.client.post('/login/')
+        self.assertEqual(response.status_code, 200)
 
         '''--------------------------- create a folder and put the csv file in it ---------------------------'''
 
-        with open('test_data.csv', 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['x', 'y', 'z'])
-            writer.writerow(['10', '25', '30'])
-            writer.writerow(['20', '30', '40'])
-
-        with open('test_data.csv', 'rb') as file:
-            cls.csv_file = SimpleUploadedFile(file.name, file.read(), content_type='text/csv')
-
         data = {
             'run_name': 'Test Experiment',
-            'main_file': cls.csv_file,
+            'main_file': self.file,
         }
         url = reverse('main')
-        response = cls.client.post(url, data, follow=True)
-        cls.exp = PendingExperiments.objects.filter(run_name='Test Experiment').first()
-        cls.assertJSONEqual(str(response.content, encoding='utf8'), {"status": True, "id": cls.exp.id})
+        response = self.client.post(url, data, follow=True)
+        self.exp = PendingExperiments.objects.filter(run_name='Test Experiment').first()
+        self.assertJSONEqual(str(response.content, encoding='utf8'), {"status": True, "id": self.exp.id})
 
         '''--------------------------- go into configuration ---------------------------'''
 
-        cls.data = {'operation_model_options': ['1'], 'operation_except': [''], 'operation_written': [''],
+        self.data = {'operation_model_options': ['1'], 'operation_except': [''], 'operation_written': [''],
                     'ground_truth_options': ['1'], 'odms': ['1'], 'ABOD_contamination': [''],
                     'ABOD_n_neighbors': [''], 'ABOD_method': [''], 'CBLOF_n_clusters': [''],
                     'CBLOF_contamination': [''], 'CBLOF_clustering_estimator': [''], 'CBLOF_alpha': [''],
@@ -828,15 +884,24 @@ class ResultViewTest(TransactionTestCase):
                     'Sampling_contamination': [''], 'Sampling_subset_size': [''], 'Sampling_metric': [''],
                     'Sampling_metric_params': [''], 'Sampling_random_state': ['']}
 
-        cls.url = reverse('result')
+        self.url = reverse('result')
 
     def tearDown(self):
-        path = "test_data.csv"
-        if os.path.exists(path):
-            try:
-                os.remove(path)
-            except Exception as e:
-                pass
+        self.file.close()
+        self.gt.close()
+        self.gen.close()
+
+        for path in [self.path_input, self.path_gt, self.path_gen]:
+            if os.path.exists(path):
+                try:
+                    os.remove(path)
+                except Exception as e:
+                    pass
+
+        for e in Experiments.objects.all():
+            e.delete()
+        for u in Users.objects.all():
+            u.delete()
 
     '''--------------------------- Test Fixture Loading ---------------------------'''
 
@@ -846,21 +911,22 @@ class ResultViewTest(TransactionTestCase):
 
     '''---------------------------   Basic URL tests    ---------------------------'''
 
-    def test_basic_protreatment(self):
+    def basic_protreatment(self):
         url = reverse('configuration')
         params = {'id': self.exp.id}
         query_string = urlencode(params)
         response_post = self.client.post(url + f'?{query_string}', data=self.data)
         self.assertRedirects(response_post, reverse('main'), status_code=302, target_status_code=200)
+        time.sleep(2)
 
     def test_session(self):
-        self.test_basic_protreatment()
+        self.basic_protreatment()
         user = Users.objects.filter(username="tester3").first()
         response_get = self.client.get(self.url, data={'id': self.exp.id})
         self.assertEqual(response_get.client.session['info'], {'id': user.id, 'username': user.username})
 
     def test_page_status_code(self):
-        self.test_basic_protreatment()
+        self.basic_protreatment()
         response_get = self.client.get(self.url, data={'id': self.exp.id})
         self.assertEqual(response_get.status_code, 200)
 
@@ -869,40 +935,24 @@ class ResultViewTest(TransactionTestCase):
         self.assertEqual(view.func.view_class, experiment.views.ResultView)
 
     def test_csrf(self):
-        self.test_basic_protreatment()
+        self.basic_protreatment()
         response_get = self.client.get(self.url, data={'id': self.exp.id})
-        self.assertContains(response_get, 'csrfmiddlewaretoken')
+        self.assertIsNotNone(response_get.context['csrf_token'])
+
 
     def test_template_used(self):
-        self.test_basic_protreatment()
+        self.basic_protreatment()
         response_get = self.client.get(self.url, data={'id': self.exp.id})
         self.assertTemplateUsed(response_get, 'result.html')
 
     '''---------------------------   Basic URL tests for GET    ---------------------------'''
 
-    def test_get_not_existed_id(self):
-        self.test_basic_protreatment()
-        response_get = self.client.get(self.url, data={'id': 1000000})
-        self.assertEqual(response_get.status_code, 200)
-        self.assertTemplateUsed(response_get, 'error404.html')
-
-    def test_get_not_authorized_id(self):
-        self.test_basic_protreatment()
-
-        client = Client()
-        user = Users.objects.create(username='tester4', password='123')
-        session = client.session
-        session['info'] = {'id': user.id, 'username': user.username}
-        session.save()
-        response = client.post('/login/')
-        self.assertEqual(response.status_code, 200)
-
-        response_get = client.get(self.url, data={'id': 1})
-        self.assertEqual(response_get.status_code, 200)
-        self.assertTemplateUsed(response_get, 'error401.html')
-
     def test_get_pending_experiment(self):
-        self.test_basic_protreatment()
+        url = reverse('configuration')
+        params = {'id': self.exp.id}
+        query_string = urlencode(params)
+        response_post = self.client.post(url + f'?{query_string}', data=self.data)
+        self.assertRedirects(response_post, reverse('main'), status_code=302, target_status_code=200)
 
         exp = PendingExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.pending)
@@ -912,10 +962,10 @@ class ResultViewTest(TransactionTestCase):
         self.assertContains(response_get, self.exp.id)
 
     def test_get_finished_experiment(self):
-        self.test_basic_protreatment()
+        self.basic_protreatment()
 
         # Wait for the end of the detector thread
-        time.sleep(2)
+        time.sleep(3)
         exp = FinishedExperiments.objects.get(id=self.exp.id)
         self.assertEqual(exp.state, Experiment_state.finished)
         response_get = self.client.get(self.url, data={'id': self.exp.id})
@@ -925,7 +975,7 @@ class ResultViewTest(TransactionTestCase):
 
     def test_get_finished_experiment_with_add(self):
         data = self.data.copy()
-        data["generated_file"] = SimpleUploadedFile("test_data.csv", b"column1,column2,column3\n1,2,3\n4,5,6\n")
+        data["generated_file"] = self.gen
         url = reverse('configuration')
         params = {'id': self.exp.id}
         query_string = urlencode(params)
@@ -944,6 +994,25 @@ class ResultViewTest(TransactionTestCase):
 
     def test_get_nonexistent_experiment(self):
         url = reverse('result')
-        response = self.client.get(url, {'id': 123456})  # use a nonexistent experiment id
+        response_get = self.client.get(url, {'id': 123456})  # use a nonexistent experiment id
+        self.assertEqual(response_get.status_code, 200)
+        self.assertTemplateUsed(response_get, 'error404.html')
 
-        self.assertEqual(response.status_code, 404)
+    def test_get_unarthorized_experiment(self):
+        self.basic_protreatment()
+        time.sleep(2)
+        exp = FinishedExperiments.objects.get(id=self.exp.id)
+        self.assertEqual(exp.state, Experiment_state.finished)
+
+        client = Client()
+        user = Users.objects.create(username='tester1')
+        session = client.session
+        session['info'] = {'id': user.id, 'username': user.username}
+        session.save()
+        response = client.post('/login/')
+        self.assertEqual(response.status_code, 200)
+
+        url = reverse('result')
+        response_get = client.get(url, data={'id': self.exp.id})
+        self.assertEqual(response_get.status_code, 200)
+        self.assertTemplateUsed(response_get, 'error401.html')

@@ -45,9 +45,18 @@ class DetectorThread(threading.Thread):
     def __run(self, wc):
         try:
             # print("detector thread starts")
-            # print("exp id:", self.id)
+            start = timezone.now()
+            print("2: id:", self.id)
+            print("2, ", models.Experiments.objects.all(), len(models.Experiments.objects.all()))
+            print("2: ", models.PendingExperiments.objects.all(), len(models.Experiments.objects.all()))
             exp = models.PendingExperiments.objects.filter(id=self.id).first()
+            if exp is None:
+                return
+
             user = exp.user
+            if models.Users.objects.filter(id=user.id).first() is None:
+                return
+
             exp_odm = odm_handling.match_odm_by_name(exp.odm)
             exp_para = exp.get_para()
 
@@ -255,6 +264,13 @@ class DetectorThread(threading.Thread):
             odm_handling.write_data_to_csv(result_csv_path, result_csv)
             odm_handling.write_data_to_csv(result_with_addition_path, result_with_addition)
 
+            end = timezone.now()
+            print("end-start: ", end-start)
+            print("2.4: id:", exp.id)
+            print("2.4, ", models.Experiments.objects.all(), len(models.Experiments.objects.all()))
+            print("2.4: ", models.PendingExperiments.objects.all(), len(models.Experiments.objects.all()))
+            print("2.4: ", models.FinishedExperiments.objects.all(), len(models.FinishedExperiments.objects.all()))
+
             # exp = models.PendingExperiments.objects.filter(id=self.id).first()
             # user = exp.user
             models.PendingExperiments.objects.filter(id=self.id).delete()
@@ -288,12 +304,6 @@ class DetectorThread(threading.Thread):
 
             duration = timezone.now() - exp.start_time
 
-            # print("timezone.now(): ", timezone.now())
-            # print("exp.start_time: ", exp.start_time)
-            # print("duration: ", duration)
-            # print("duration.type: ", type(duration))
-            # print("start_time.type: ", type(exp.start_time))
-
             finished_exp.duration = duration
             finished_exp.full_clean()
             finished_exp.save()
@@ -313,7 +323,6 @@ class DetectorThread(threading.Thread):
             finished_exp.warnings = json.dumps(wc.messages)
             finished_exp.save()
 
-
         except OperationalError as e:
             print("Error occured")
             print(e)
@@ -324,6 +333,8 @@ class DetectorThread(threading.Thread):
                 print("Error occured")
                 print(e)
                 exp = models.PendingExperiments.objects.filter(experiments_ptr_id=self.id).first()
+                if exp is None:
+                    return
                 exp.state = models.Experiment_state.failed
                 exp.error = str(e)
                 exp.full_clean()
