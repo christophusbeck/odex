@@ -105,19 +105,6 @@
     }
   },
   {
-    "model": "experiment.experiments",
-    "pk": 1,
-    "fields": {
-        "user_id": 1,
-        "run_name": "test run",
-        "file_name": "test file",
-        "state": "finished",
-        "odm": "text odm",
-        "operation": "xi and x2",
-        "columns": "[\"x1\", \"x2\"]"
-    }
-  },
-  {
     "model": "user.SecurityQuestions",
     "pk": 1,
     "fields": {
