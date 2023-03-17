@@ -163,7 +163,7 @@ def user_metrics_path(instance, filename):
 
 def user_roc_path(filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<exp_id>/<filename>_roc.jpg
-    return '{0}_roc.jpg'.format(filename.removesuffix('.csv'))
+    return '{0}_roc.png'.format(filename.removesuffix('.csv'))
 
 
 def validate_file_extension(value):
