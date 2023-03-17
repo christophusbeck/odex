@@ -41,7 +41,7 @@ Supported local installations:
 
 - Build image(get into pse-implementation/docker) with GitLab account
 ```
-    $ cd docker
+    $ cd pse-implementation/docker
     $ USER = your username on GitLab
     $ PASSWORD = your password
     $ docker build --build-arg GITLAB="$USER:$PASSWORD" -t odex:v1 .
