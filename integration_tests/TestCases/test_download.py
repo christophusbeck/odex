@@ -1,3 +1,5 @@
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from integration_tests.testing_tools import SeleniumTestCase
 from selenium.webdriver.common.by import By
 from odex import settings
@@ -18,6 +20,7 @@ class DownloadTest(SeleniumTestCase):
         login_button.click()
         '''--------------------------- login ---------------------------'''
 
+        wait = WebDriverWait(self.driver, 20)
         '''--------------------------- create experiment ---------------------------'''
 
         # runname_input = self.driver.find_element(By.NAME, 'run_name')
@@ -55,7 +58,9 @@ class DownloadTest(SeleniumTestCase):
         '''--------------------------- create experiment ---------------------------'''
 
         '''--------------------------- show details ---------------------------'''
-        self.driver.find_element(By.CLASS_NAME, "btn-details").click()
+        add_button = wait.until(EC.element_to_be_clickable(By.CLASS_NAME, 'btn-details'))
+
+        add_button.click()
 
         # to the result page
        #assert self.driver.current_url == self.live_server_url + "/result/"
