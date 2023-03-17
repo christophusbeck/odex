@@ -47,5 +47,3 @@ class test_successful_download(SeleniumTestCase):
         '''--------------------------- get into the result page ---------------------------'''
         self.driver.find_element(By.CLASS_NAME, 'btn-details').click()
         self.driver.find_element(By.ID, 'download').click()
-
-        input()
