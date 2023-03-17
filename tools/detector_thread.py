@@ -1,4 +1,6 @@
 import csv
+import io
+import json
 import os
 import threading
 import warnings
@@ -11,7 +13,23 @@ from experiment import models
 from tools import odm_handling
 
 
-warnings.filterwarnings("error")
+class WarningCapture:
+
+    def __init__(self):
+        self.messages = []
+
+    def __enter__(self):
+        self._filters = warnings.filters[:]
+        warnings.simplefilter("always")
+        warnings.showwarning = self._capture_warning
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        warnings.filters = self._filters
+        # warnings.showwarning = warnings._showwarning_orig
+
+    def _capture_warning(self, message, category, filename, lineno, file=None, line=None):
+        self.messages.append(str(message))
 
 class DetectorThread(threading.Thread):
 
@@ -20,6 +38,11 @@ class DetectorThread(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
+        # Capture warning messages without breaking the code
+        with WarningCapture() as wc:
+            self.__run(wc)
+
+    def __run(self, wc):
         try:
             # print("detector thread starts")
             # print("exp id:", self.id)
@@ -286,21 +309,23 @@ class DetectorThread(threading.Thread):
             metrics_path = "media/" + models.user_metrics_path(finished_exp, finished_exp.file_name)
             odm_handling.write_data_to_csv(metrics_path, self.metrics_to_csv(finished_exp, metrics))
 
+            print(wc.messages)
+            finished_exp.warnings = json.dumps(wc.messages)
+            finished_exp.save()
+
+
         except OperationalError as e:
             print("Error occured")
             print(e)
 
-        except (Exception, Warning) as e:
+        except Exception as e:
             try:
                 # print("exp id:", self.id)
                 print("Error occured")
                 print(e)
                 exp = models.PendingExperiments.objects.filter(experiments_ptr_id=self.id).first()
                 exp.state = models.Experiment_state.failed
-                exp.error = "There are some error related to your entered hyperparameters of odm you seleted. The error message is: \n\n" + \
-                            str(e) + ".\n\n This error message will help you adjust the hyperparameters. " \
-                                     "In some cases, it is also possible that there is an error in the file you uploaded or your seleted subspaces. " \
-                                     "Please check the column you want to execute to ensure that there are no null values or uncalculated values. "
+                exp.error = str(e)
                 exp.full_clean()
                 exp.save()
             except Exception as ee:

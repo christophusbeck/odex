@@ -235,6 +235,8 @@ class FinishedExperiments(Experiments):
         blank=True,
         null=True
     )
+    warnings = models.TextField(blank=True, null=True)
+
 
     def set_metrics(self, x):
         self.metrics = json.dumps(x, cls=NpEncoder)
