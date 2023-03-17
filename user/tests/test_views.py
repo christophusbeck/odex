@@ -1,3 +1,5 @@
+import os
+
 from django.test import TestCase
 from django.urls import reverse, resolve
 from django.utils.http import urlencode
@@ -546,7 +548,13 @@ class DeleteAccountViewTest(TestCase):
     fixtures = ['user_tests.json']
 
     def setUp(self):
-        user = models.Users.objects.filter(username="tester1").first()
+        user = models.Users.objects.filter(username="tester1", id=1).first()
+        if not os.path.exists("media/"):
+            os.mkdir("media/")
+        if not os.path.exists("media/user_1/"):
+            os.mkdir("media/user_1/")
+        self.assertTrue(os.path.exists("media/user_1/"))
+
         session = self.client.session
         session['info'] = {'id': user.id, 'username': user.username}
         session.save()
@@ -554,11 +562,15 @@ class DeleteAccountViewTest(TestCase):
         self.successful_url = reverse('login')
         self.response = self.client.get(self.url, follow=True)
 
+    def tearDown(self):
+        for u in Users.objects.all():
+            u.delete()
+
     '''--------------------------- Test Fixture Loading ---------------------------'''
 
     def test_fixtures(self):
-        user = models.Users.objects.get(id=1)
-        self.assertEqual(user.username, 'tester1')
+        user = models.Users.objects.get(id=2)
+        self.assertEqual(user.username, 'tester2')
 
     '''---------------------------   Basic URL tests    ---------------------------'''
 
