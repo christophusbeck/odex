@@ -68,7 +68,7 @@ class RegisterForm(BootStrapForm):
             pass
         else:
             from django.core.exceptions import ValidationError
-            raise ValidationError('Inconsistent password input')
+            raise ValidationError('Inconsistent password input.')
 
     def clean_repeat_password(self):
         return md5(self.cleaned_data.get("repeat_password"))
