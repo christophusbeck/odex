@@ -286,7 +286,6 @@ class ExperimentListView(View):
         total = result.count()
 
         rows = self.row_generator(result)
-        print(len(rows))
         data = {'total': total, 'rows': rows}
         return JsonResponse(data, safe=False)
 
