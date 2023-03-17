@@ -1,0 +1,8 @@
+version: '3'
+services:
+  web:
+    build:
+      context: ../../../Desktop
+      dockerfile: Dockerfile
+    ports:
+      - 3214:8000
