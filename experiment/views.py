@@ -312,7 +312,7 @@ class ExperimentListView(View):
                         item_dict[k] = str(v)
                     else:
                         item_dict[k] = item.get_operation_option_display()
-            item_dict['operation'] = item_dict['operation_option'] + item_dict['operation']
+            item_dict['operation'] = item_dict['operation_option'] + ' ' + item_dict['operation']
             row = {k: v for k, v in item_dict.items() if k in selected_records}
             rows.append(row)
         return rows

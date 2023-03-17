@@ -14,13 +14,24 @@
                 background-repeat: no-repeat, no-repeat;
             }
         </style>
-        {% if exp.state == "failed" %}
-            <div class="alert alert-danger" role="alert">Error: {{ exp.error }}</div>
-        {% endif %}
         <h2>Run title: {{ exp.run_name }}</h2>
+
+        <br>
+        {% if exp.state == "failed" %}
+            <div class="alert alert-danger" role="alert">
+                <h2>Error</h2>
+                There are some errors related to your entered hyperparameters of odm you seleted. The error message is:
+                <br><br>
+                {{ exp.error }}.
+                <br><br>
+                This error message will help you adjust the hyperparameters.
+                In some cases, it is also possible that there is an error in the file you uploaded or your seleted subspaces.
+                Please check the column you want to execute to ensure that there are no null values or uncalculated values.
+            </div>
+        {% endif %}
+        <br>
+
         <h4>Detected subspaces: {{ columns|length }}</h4>
-
-
         <table class="table table-bordered" align="center" border="1" id="table_subspace"
                data-pagination="true"
                data-side-pagination="client"

@@ -265,6 +265,8 @@ class ConfigurationTest(TransactionTestCase):
             writer.writerow(['x', 'y', 'z'])
             writer.writerow(['10', '25', '30'])
             writer.writerow(['20', '30', '40'])
+            writer.writerow(['30', '35', '50'])
+            writer.writerow(['40', '40', '60'])
 
         with open('test_data.csv', 'rb') as file:
             self.csv_file = SimpleUploadedFile(file.name, file.read(), content_type='text/csv')
@@ -621,6 +623,7 @@ class ConfigurationTest(TransactionTestCase):
     '''---------------------------   Basic URL tests for POST with all odms   ---------------------------'''
 
     def test_setting_for_all_odms(self, odm_name):
+        print("odm_pick: ", odm_name)
         odms = get_odm_dict()
         index = list(odms.keys()).index(odm_name) + 1
 
