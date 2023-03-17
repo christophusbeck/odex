@@ -221,7 +221,6 @@ class ConfigView(View):
             exp.odm = selected_odm
             exp.set_para(parameters)
             exp.operation = operation
-            exp.state = models.Experiment_state.pending
             exp.operation_option = form.cleaned_data['operation_model_options']
             exp.has_ground_truth = 'ground_truth' in form.files
             exp.has_generated_file = 'generated_file' in form.files
@@ -231,12 +230,16 @@ class ConfigView(View):
             if 'generated_file' in form.files:
                 exp.generated_file = form.files['generated_file']
 
-            exp.start_time = timezone.now()
+            if models.Experiments.objects.filter(id=request.GET['id']).first() is not None:
+                locked_exp = models.Experiments.objects.filter(id=request.GET['id']).first()
 
-            exp.full_clean()
-            exp.save()
+                if locked_exp.state == models.Experiment_state.editing:
+                    exp.state = models.Experiment_state.pending
+                    exp.start_time = timezone.now()
+                    exp.full_clean()
+                    exp.save()
 
-            DetectorThread(exp.id).start()
+                    DetectorThread(exp.id).start()
 
             return redirect("/main/")
 
