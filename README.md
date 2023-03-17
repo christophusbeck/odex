@@ -12,10 +12,10 @@ The building blocks are:
 - [ ] Sqlite3
 
 # Overview for this README
-- [Dependencies](#Dependencies)
-- [Instructions](#Instructions)
-- [Run Tests](#Run-Tests)
-- [Problem & Solution](#Problem-&-Solution)
+- [Dependencies](#dependencies)
+- [Instructions](#instructions)
+- [Run Tests](#run-Tests)
+- [Problem & Solution](#problem-&-solution)
 
 # Dependencies
 See 
@@ -23,8 +23,8 @@ See
 
 # Instructions
 Supported local installations:
-- [Docker (recommended)](#Docker)
-- [Instructions](#Instructions)
+- [Docker (recommended)](#docker)
+- [Instructions](#instructions)
 
 # Docker
 - [ ] Prepare directory for project code and virtualenv. Feel free to use a different location:
