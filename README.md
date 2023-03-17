@@ -17,7 +17,7 @@ The building blocks are:
 - [Run Tests](#run-Tests)
 
 # Dependencies
-See requirements.txt
+See [requirements.txt](https://git.scc.kit.edu/ipd-boehm/pse/ipd-pse-2022-ws/subspace-outlier-profiling/team-1/pse-implementation/-/blob/514efcf442ab5e1f37a2dec8c930c2fdbd023299/requirements.txt)
 
 
 # Installation
@@ -53,15 +53,27 @@ Supported local installations:
 
 The site should now be running at `http://127.0.0.1:3214`
 
-- Default user
+- Default users
 ```
     username: tester1
     password: 123
+
+    username: tester2
+    password: 123
+
 ```
 
 - Available TANs
 ```
+    121
+    122
     124
+    125
+    126
+    127
+    128
+    129
+    130
 ```
 
 - Used TANs
@@ -126,11 +138,22 @@ The site should now be running at `http://127.0.0.1:8000`
 ```
     username: tester1
     password: 123
+
+    username: tester2
+    password: 123
 ```
 
 - Available TANs
 ```
+    121
+    122
     124
+    125
+    126
+    127
+    128
+    129
+    130
 ```
 
 - Used TANs
