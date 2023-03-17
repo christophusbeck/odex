@@ -1,6 +1,8 @@
 import time
+from selenium.webdriver.support import expected_conditions as EC
 
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.wait import WebDriverWait
 
 from integration_tests.testing_tools import SeleniumTestCase
 from selenium.webdriver.common.by import By
@@ -54,6 +56,9 @@ class RegistrationSuccessfulTest(SeleniumTestCase):
         username_input.send_keys("tester1")
         password_input.click()
         time.sleep(0.5)
+        assert self.driver.current_url == self.live_server_url + "/register/"
+        error_message = self.driver.find_element(By.XPATH,"/html/body/div/form/div[1]/span/span")
+        assert error_message.text == "Username already exists"
 
         # reenter a not-existed username
         username_input.clear()
@@ -63,10 +68,9 @@ class RegistrationSuccessfulTest(SeleniumTestCase):
         question_select.select_by_value("2")
         answer_input.send_keys("cat")
         tan_input.send_keys("124")
-
         create_button.click()
-
         time.sleep(2)
+        assert self.driver.current_url == self.live_server_url + "/login/"
 
 
 class RegistrationWithEmptyEntries(SeleniumTestCase):
@@ -74,9 +78,12 @@ class RegistrationWithEmptyEntries(SeleniumTestCase):
     def test_registration_with_empty_entries(self):
         self.driver.get(self.live_server_url + "/register/")
         create_button = self.driver.find_element(By.ID, "create")
-
         create_button.click()
         time.sleep(2)
+        assert self.driver.current_url == self.live_server_url + "/register/"
+        error_message = self.driver.find_element(By.XPATH, "/html/body/div/form/div[2]/div")
+        assert error_message.text == "This field is required."
+
 
 
 class RegistrationWithEmptyUsername(SeleniumTestCase):
@@ -92,13 +99,14 @@ class RegistrationWithEmptyUsername(SeleniumTestCase):
         tan_input = self.driver.find_element(By.NAME, "tan")
         create_button = self.driver.find_element(By.ID, "create")
 
-        password_input.send_keys("123")
-        repeat_password_input.send_keys("123")
+        password_input.send_keys("123456")
+        repeat_password_input.send_keys("123456")
         question_select.select_by_value("2")
         answer_input.send_keys("cat")
         tan_input.send_keys("124")
         create_button.click()
         time.sleep(2)
+        assert self.driver.current_url == self.live_server_url + "/register/"
 
 
 class RegistrationWithEmptyPassword(SeleniumTestCase):
@@ -115,12 +123,15 @@ class RegistrationWithEmptyPassword(SeleniumTestCase):
         create_button = self.driver.find_element(By.ID, "create")
 
         username_input.send_keys("test")
-        repeat_password_input.send_keys("123")
+        repeat_password_input.send_keys("123456")
         question_select.select_by_value("2")
         answer_input.send_keys("cat")
         tan_input.send_keys("124")
         create_button.click()
         time.sleep(2)
+        assert self.driver.current_url == self.live_server_url + "/register/"
+        error_message = self.driver.find_element(By.XPATH, "/html/body/div/form/div[2]/div")
+        assert error_message.text == "This field is required."
 
 
 class RegistrationWithEmptyRepeatPassword(SeleniumTestCase):
@@ -137,12 +148,15 @@ class RegistrationWithEmptyRepeatPassword(SeleniumTestCase):
         create_button = self.driver.find_element(By.ID, "create")
 
         username_input.send_keys("test")
-        password_input.send_keys("123")
+        password_input.send_keys("123456")
         question_select.select_by_value("2")
         answer_input.send_keys("cat")
         tan_input.send_keys("124")
         create_button.click()
         time.sleep(2)
+        assert self.driver.current_url == self.live_server_url + "/register/"
+        error_message = self.driver.find_element(By.XPATH, "/html/body/div/form/div[3]/div")
+        assert error_message.text == "This field is required.Inconsistent password input"
 
 
 class RegistrationWithEmptyQuestion(SeleniumTestCase):
@@ -159,12 +173,15 @@ class RegistrationWithEmptyQuestion(SeleniumTestCase):
         create_button = self.driver.find_element(By.ID, "create")
 
         username_input.send_keys("test")
-        password_input.send_keys("123")
-        repeat_password_input.send_keys("123")
+        password_input.send_keys("123456")
+        repeat_password_input.send_keys("123456")
         answer_input.send_keys("cat")
         tan_input.send_keys("124")
         create_button.click()
         time.sleep(2)
+        assert self.driver.current_url == self.live_server_url + "/register/"
+        error_message = self.driver.find_element(By.XPATH, "/html/body/div/form/div[4]/div")
+        assert error_message.text == "Select a valid choice. That choice is not one of the available choices."
 
 
 class RegistrationWithEmptyAnswer(SeleniumTestCase):
@@ -181,12 +198,15 @@ class RegistrationWithEmptyAnswer(SeleniumTestCase):
         create_button = self.driver.find_element(By.ID, "create")
 
         username_input.send_keys("test")
-        password_input.send_keys("123")
-        repeat_password_input.send_keys("123")
+        password_input.send_keys("123456")
+        repeat_password_input.send_keys("123456")
         question_select.select_by_value("2")
         tan_input.send_keys("124")
         create_button.click()
         time.sleep(2)
+        assert self.driver.current_url == self.live_server_url + "/register/"
+        error_message = self.driver.find_element(By.XPATH, "/html/body/div/form/div[5]/div")
+        assert error_message.text == "This field is required."
 
 
 class RegistrationWithEmptyTAN(SeleniumTestCase):
@@ -203,12 +223,15 @@ class RegistrationWithEmptyTAN(SeleniumTestCase):
         create_button = self.driver.find_element(By.ID, "create")
 
         username_input.send_keys("test")
-        password_input.send_keys("123")
-        repeat_password_input.send_keys("123")
+        password_input.send_keys("123456")
+        repeat_password_input.send_keys("123456")
         question_select.select_by_value("2")
         answer_input.send_keys("cat")
         create_button.click()
         time.sleep(2)
+        assert self.driver.current_url == self.live_server_url + "/register/"
+        error_message = self.driver.find_element(By.XPATH, "/html/body/div/form/div[6]/div")
+        assert error_message.text == "This field is required."
 
 
 class RegistrationWithAuthenticatedTAN(SeleniumTestCase):
@@ -226,10 +249,14 @@ class RegistrationWithAuthenticatedTAN(SeleniumTestCase):
         create_button = self.driver.find_element(By.ID, "create")
 
         username_input.send_keys("test")
-        password_input.send_keys("123")
-        repeat_password_input.send_keys("123")
+        password_input.send_keys("123456")
+        repeat_password_input.send_keys("123456")
         question_select.select_by_value("2")
         answer_input.send_keys("cat")
-        tan_input.send_keys("123")
+        tan_input.send_keys("111")
         create_button.click()
         time.sleep(2)
+        assert self.driver.current_url == self.live_server_url + "/register/"
+        error_message = self.driver.find_element(By.XPATH, "/html/body/div/form/div[6]/div")
+        assert error_message.text == "invalid tan"
+
