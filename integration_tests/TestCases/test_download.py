@@ -58,7 +58,7 @@ class DownloadTest(SeleniumTestCase):
         '''--------------------------- create experiment ---------------------------'''
 
         '''--------------------------- show details ---------------------------'''
-        add_button = wait.until(EC.element_to_be_clickable(By.CLASS_NAME, 'btn-details'))
+        add_button = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'btn-details')))
 
         add_button.click()
 
