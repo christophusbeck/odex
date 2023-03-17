@@ -322,7 +322,7 @@ class DetectorThread(threading.Thread):
 
             if len(wc.messages) > 0:
                 print(wc.messages)
-            finished_exp.warnings = json.dumps(wc.messages)
+                finished_exp.warnings = json.dumps(wc.messages)
             finished_exp.save()
 
 
