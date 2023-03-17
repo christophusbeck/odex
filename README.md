@@ -15,10 +15,9 @@ The building blocks are:
 - [Dependencies](#dependencies)
 - [Instructions](#installation)
 - [Run Tests](#run-Tests)
-- [Problem & Solution](#problem-&-solution)
 
 # Dependencies
-See 
+See requirements.txt
 
 
 # Installation
@@ -141,5 +140,14 @@ The site should now be running at `http://127.0.0.1:8000`
 
 # Run Tests
 
+location: pse-implementation/
 
-#Problem-&-Solution
+## Unit tests
+```
+    $ coverage run manage.py test user.tests experiment.tests
+```
+
+## Integration tests
+```
+    $ python3 manage.py test integration_tests.TestCases
+```
