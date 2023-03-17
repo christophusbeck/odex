@@ -1,15 +1,34 @@
+import csv
+import os
+
+from django.core.files import File
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from experiment.forms import CreateForm, ConfigForm
 
 
 class CreateFormTest(TestCase):
+    def tearDown(self):
+        path = "test_data.csv"
+        if os.path.exists(path):
+            try:
+                os.remove(path)
+            except Exception as e:
+                pass
     def test_form_valid(self):
-        form = CreateForm(data={'run_name': 'testexperiment'})
+        file = SimpleUploadedFile(
+            "testfile.csv",
+            b"col1,col2,col3\n1,2,3\n4,5,6\n7,8,9\n10,11,12",
+            content_type="text/csv"
+        )
+        form = CreateForm(data={'run_name': 'testexperiment'}, files={'main_file': file})
+        print(form.errors)
         self.assertTrue(form.is_valid())
 
     def test_form_missing_fields(self):
         form = CreateForm(data={})
         self.assertFalse(form.is_valid())
+        print(form.errors)
         self.assertIn('run_name', form.errors.keys())
         self.assertIn('main_file', form.errors.keys())
 

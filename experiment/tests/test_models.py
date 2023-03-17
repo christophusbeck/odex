@@ -299,10 +299,26 @@ class PendingExperimentsTest(ExperimentsBaseTest):
         super().setUp()
 
         # create a file to use in the test
-        cls.file = SimpleUploadedFile("testfile.csv", b"file_content", content_type="text/csv")
-        cls.addfile = SimpleUploadedFile("testaddfile.csv", b"file_content", content_type="text/csv")
-        cls.gtfile = SimpleUploadedFile("testgtfile.csv", b"file_content", content_type="text/csv")
-        cls.invalid_file = SimpleUploadedFile("testfile.pdf", b"file_content", content_type="application/pdf")
+        cls.file = SimpleUploadedFile(
+            "testfile.csv",
+            b"col1,col2,col3\n1,2,3\n4,5,6\n7,8,9\n10,11,12",
+            content_type="text/csv"
+        )
+        cls.addfile = SimpleUploadedFile(
+            "testaddfile.csv",
+            b"col1,col2,col3\n1,2,3\n4,5,6\n7,8,9\n10,11,12",
+            content_type="text/csv"
+        )
+        cls.gtfile = SimpleUploadedFile(
+            "testgtfile.csv",
+            b"gt\n1\n1\n1\n1",
+            content_type="text/csv"
+        )
+        cls.invalid_file = SimpleUploadedFile(
+            "testfile.pdf",
+            b"col1,col2,col3\n1,2,3\n4,5,6\n7,8,9\n10,11,12",
+            content_type="application/pdf"
+        )
 
         # create a PendingExperiments object to use in the test
         pending_experiment = PendingExperiments.objects.create(
@@ -424,7 +440,7 @@ class PendingExperimentsTest(ExperimentsBaseTest):
 
     def test_pending_experiment_str_representation(self):
         experiment = PendingExperiments.objects.get(run_name='testexperiment')
-        self.assertEqual(str(experiment), 'testexperiment (pending)')
+        self.assertEqual(str(experiment), 'testexperiment (pending) (id:1)')
 
     def test_pending_experiment_columns_and_parameters_json(self):
         experiment = PendingExperiments.objects.get(run_name='testexperiment')
@@ -558,7 +574,7 @@ class FinishedExperimentsTest(ExperimentsBaseTest):
 
     def test_roc_path(self):
         filename = 'testfile.csv'
-        expected_path = 'testfile_roc.jpg'
+        expected_path = 'testfile_roc.png'
         self.assertEqual(user_roc_path(filename), expected_path)
 
 
