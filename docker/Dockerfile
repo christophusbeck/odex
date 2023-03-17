@@ -11,4 +11,6 @@ RUN python3 manage.py makemigrations user && \
     python3 manage.py makemigrations experiment && \
     python3 manage.py migrate && \
     python3 manage.py loaddata fixtures/fixtures.json
+
+EXPOSE 8000
 CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
