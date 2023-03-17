@@ -1,6 +1,7 @@
 import csv
 import os
 import threading
+import warnings
 
 import numpy as np
 from django.db import OperationalError
@@ -9,6 +10,8 @@ from django.utils import timezone
 from experiment import models
 from tools import odm_handling
 
+
+warnings.filterwarnings("error")
 
 class DetectorThread(threading.Thread):
 
@@ -100,15 +103,21 @@ class DetectorThread(threading.Thread):
                         "No meaningful calculation of metrics is possible with the uploaded ground truth file.")
 
                 tp, fn, fp, tn = odm_handling.calculate_confusion_matrix(outlier_classification, ground_truth_array)
-                print("tp, fn, fp, tn:", tp, fn, fp, tn)
+                # print("tp, fn, fp, tn:", tp, fn, fp, tn)
                 metrics["True positives"] = tp
                 metrics["False positives"] = fp
                 metrics["True negatives"] = tn
                 metrics["False negatives"] = fn
 
-                metrics["Precision"] = '{:.5%}'.format(tp / (tp + fp))
+                try:
+                    metrics["Precision"] = '{:.5%}'.format(tp / (tp + fp))
+                except ZeroDivisionError:
+                    metrics["Precision"] = 'N/A, due to no positive case'
                 metrics["Accuracy"] = (tp + tn) / (tp + tn + fp + fn)
-                metrics["Recall"] = '{:.5%}'.format(tp / (tp + fn))
+                try:
+                    metrics["Recall"] = '{:.5%}'.format(tp / (tp + fn))
+                except ZeroDivisionError:
+                    metrics["Recall"] = 'N/A, due to no negative case'
 
                 roc_path = "media/" + models.user_roc_path(exp.main_file.name)
                 odm_handling.picture_ROC_curve(ground_truth_array, outlier_probability, roc_path)
@@ -281,9 +290,11 @@ class DetectorThread(threading.Thread):
             print("Error occured")
             print(e)
 
-        except Exception as e:
+        except (Exception, Warning) as e:
             try:
                 # print("exp id:", self.id)
+                print("Error occured")
+                print(e)
                 exp = models.PendingExperiments.objects.filter(experiments_ptr_id=self.id).first()
                 exp.state = models.Experiment_state.failed
                 exp.error = "There are some error related to your entered hyperparameters of odm you seleted. The error message is: \n\n" + \
