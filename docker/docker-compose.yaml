@@ -1,8 +1,7 @@
 version: '3'
 services:
   web:
-    build:
-      context: ./
-      dockerfile: Dockerfile
+    image: "odex:v1"
+    command: python3 manage.py runserver 0.0.0.0:8000
     ports:
       - 3214:8000
