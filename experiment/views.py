@@ -233,7 +233,7 @@ class ConfigView(View):
             if models.Experiments.objects.filter(id=request.GET['id']).first() is not None:
                 locked_exp = models.Experiments.objects.filter(id=request.GET['id']).first()
 
-                if locked_exp.state == models.Experiment_state.editing:
+                if locked_exp.state == models.Experiment_state.editing or models.Experiment_state.failed:
                     exp.state = models.Experiment_state.pending
                     exp.start_time = timezone.now()
                     exp.full_clean()
